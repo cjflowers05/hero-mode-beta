@@ -1151,9 +1151,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sess-fb-btn{background:none;border:none;cursor:pointer;font-size:14px;opacity:.4;padding:2px;filter:grayscale(1)}
 .sess-fb-btn.on{opacity:1;filter:none}
 .session-ex-list{padding:6px 0}
-.session-ex-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);transition:background .1s}
+.session-ex-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);border-left:2px solid transparent;transition:background .1s}
 .session-ex-row:last-child{border-bottom:none}
 .session-ex-row:active{background:var(--bg3)}
+.session-ex-row.sore-row-mild{border-left-color:rgba(220,180,40,.55)}
+.session-ex-row.sore-row-very{border-left-color:rgba(220,80,80,.6)}
+.session-swap-btn{flex-shrink:0;background:rgba(220,180,40,.1);border:1px solid rgba(220,180,40,.35);color:#D0A830;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;padding:4px 8px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.sore-row-very .session-swap-btn{background:rgba(220,80,80,.1);border-color:rgba(220,80,80,.35);color:#E07070}
+.session-swapped-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.05em;flex-shrink:0}
+.sore-swap-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3100;display:none;align-items:flex-end}
+.sore-swap-overlay.open{display:flex}
+.sore-swap-sheet{background:var(--bg2);border-radius:18px 18px 0 0;width:100%;max-width:600px;margin:0 auto;padding:18px 18px 32px;max-height:72vh;overflow-y:auto}
+.sore-swap-ex{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);letter-spacing:.04em;margin-bottom:3px}
+.sore-swap-warn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.sore-swap-warn.mild{color:#D0A830}.sore-swap-warn.very{color:#E07070}
+.sore-swap-coach{background:rgba(var(--accent-rgb),.07);border:1px solid rgba(var(--accent-rgb),.2);border-radius:11px;padding:12px 14px;margin-bottom:12px}
+.sore-swap-coach-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.sore-swap-coach-msg{font-size:13px;color:var(--text2);line-height:1.5}
+.sore-swap-pick{background:var(--bg3);border:1px solid var(--border2);border-radius:11px;padding:12px 14px;margin-bottom:14px}
+.sore-swap-pick-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);letter-spacing:.04em}
+.sore-swap-pick-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px}
+.sore-swap-actions{display:flex;gap:8px}
+.sore-swap-go{flex:1;background:var(--gold);color:#0A0A08;border:none;border-radius:10px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;font-weight:700;cursor:pointer}
+.sore-swap-skip{background:none;border:1px solid var(--border);color:var(--text3);border-radius:10px;padding:12px 16px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
 .session-ex-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s}
 .session-ex-check.done{background:#60D090;border-color:#60D090;color:#0A0A08}
 .session-ex-info{flex:1;min-width:0}
@@ -3274,6 +3294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- ══ WORKOUT TRACKER TAB ══ -->
 <div id="tab-tracker" class="tab-content">
 
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="section-guide-btn" onclick="hmStartSectionTour('tracker')">✨ GUIDE</button></div>
   <!-- stats row -->
   <div class="t-stat-row">
     <div class="t-stat-card"><div class="t-stat-val gold" id="tr-days">0</div><div class="t-stat-label">Days done</div></div>
@@ -3349,6 +3370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <button onclick="nutriChangeDay(1)" style="width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
   </div>
 
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')">✨ GUIDE</button></div>
   <!-- training / rest day toggle -->
   <div class="nt-day-type-row">
     <button class="nt-day-btn active" id="nt-btn-train" onclick="ntSetDayType('train')">🏋️ Training Day</button>
@@ -3728,6 +3750,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ══ RECIPE BOOK TAB ══ -->
 <div id="tab-recipes" class="tab-content">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="section-guide-btn" onclick="hmStartSectionTour('recipes')">✨ GUIDE</button></div>
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div>
@@ -4135,7 +4158,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);letter-spacing:.04em;line-height:1">Progress</div>
       <div style="font-size:12px;color:var(--text3);margin-top:3px">Charts update as you log. Keep logging to see trends build.</div>
     </div>
-    <button onclick="showTab('connect',document.querySelector('[onclick*=\"connect\"]'))" style="flex-shrink:0;padding:8px 12px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid var(--border2);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:pointer;margin-top:2px">⚡ CONNECT</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <button class="section-guide-btn" onclick="hmStartSectionTour('charts')">✨ GUIDE</button>
+      <button onclick="showTab('connect',document.querySelector('[onclick*=\"connect\"]'))" style="flex-shrink:0;padding:8px 12px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid var(--border2);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:pointer">⚡ CONNECT</button>
+    </div>
   </div>
 
   <!-- chart view tabs -->
@@ -4405,7 +4431,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);letter-spacing:.04em;line-height:1">Wellness</div>
       <div style="font-size:12px;color:var(--text3);margin-top:3px">Sleep · Cardio · Alcohol · Vitamins & Prescriptions</div>
     </div>
-    <div id="well-date-label" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:6px;text-align:right"></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <button class="section-guide-btn" onclick="hmStartSectionTour('wellness')">✨ GUIDE</button>
+      <div id="well-date-label" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;text-align:right"></div>
+    </div>
   </div>
 
   <!-- ── BODYWEIGHT LOG ── -->
@@ -5234,7 +5263,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script>
 // ── TAB / PHASE NAVIGATION ──────────────────────────────────
-function showTab(id,btn){document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');if(btn)btn.classList.add('active');if(id==='workout'&&typeof renderTodayBanner==='function')renderTodayBanner();}
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='workout'&&typeof renderTodayBanner==='function')renderTodayBanner();
+  if(HM_SECTION_TOURS&&HM_SECTION_TOURS[id]){
+    try{
+      const visited=JSON.parse(localStorage.getItem('hero-tab-toured')||'[]');
+      if(!visited.includes(id)){
+        visited.push(id);
+        localStorage.setItem('hero-tab-toured',JSON.stringify(visited));
+        setTimeout(()=>hmStartSectionTour(id),700);
+      }
+    }catch(e){}
+  }
+}
 const ACTIVE_PHASE_KEY='hero-active-phase';
 function showPhase(id,btn){document.querySelectorAll('.phase-section').forEach(s=>s.style.display='none');document.querySelectorAll('.phase-pill').forEach(b=>b.classList.remove('active'));document.getElementById(id).style.display='block';btn.classList.add('active');localStorage.setItem(ACTIVE_PHASE_KEY,id);localStorage.removeItem(SES_DOW_KEY);_sessionOpen=true;if(typeof renderTodayBanner==='function')renderTodayBanner();}
 function toggleDay(el){el.classList.toggle('open')}
@@ -11554,6 +11599,157 @@ function getSoreLevelForKey(key) {
   return groups.reduce((max, g) => Math.max(max, day[g] || 0), 0);
 }
 
+// ══ SORENESS SWAP ══════════════════════════════════════════════
+const _sessionSwaps = {};
+
+function _swapEquipOk(exKey) {
+  const tag = (EX[exKey]?.tag || '').toLowerCase();
+  const eq = hmGoals().equip || [];
+  if (tag.includes('bodyweight') || tag.includes('· bw')) return true;
+  if (tag.includes('barbell') && eq.includes('rack')) return true;
+  if ((tag.includes('dumbbell') || /·\s*db\b/.test(tag)) && eq.includes('db')) return true;
+  if (tag.includes('cable') && eq.includes('cable')) return true;
+  if (tag.includes('machine') && eq.includes('machine')) return true;
+  if (tag.includes('kettlebell') && eq.includes('kb')) return true;
+  if (tag.includes('band') && eq.includes('band')) return true;
+  if (tag.includes('smith') && eq.includes('rack')) return true;
+  return false;
+}
+
+function _buildSwapAlts(fromKey) {
+  const dayData = soreLoad()[slToday()] || {};
+  const allSore = new Set(Object.entries(dayData).filter(([,v]) => v >= 1).map(([k]) => k));
+  return Object.keys(EX).filter(k => {
+    if (k === fromKey) return false;
+    const hits = SORE_EX_MAP[k] || [];
+    if (!hits.length) return false;
+    if (hits.some(g => allSore.has(g))) return false;
+    return _swapEquipOk(k);
+  }).sort((a, b) => (SORE_EX_MAP[b]?.length || 0) - (SORE_EX_MAP[a]?.length || 0));
+}
+
+async function openSoreSwap(fromKey) {
+  let overlay = document.getElementById('sore-swap-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'sore-swap-overlay';
+    overlay.className = 'sore-swap-overlay';
+    overlay.onclick = e => { if (e.target === overlay) closeSoreSwap(); };
+    document.body.appendChild(overlay);
+  }
+  const ex = EX[fromKey] || {};
+  const soreGroups = SORE_EX_MAP[fromKey] || [];
+  const dayData = soreLoad()[slToday()] || {};
+  const level = soreGroups.reduce((m, g) => Math.max(m, dayData[g] || 0), 0);
+  const soreLabels = soreGroups
+    .filter(g => dayData[g] >= 1)
+    .map(g => { const sg = SORE_GROUPS.find(s => s.id === g); return sg ? sg.label : g; })
+    .join(', ');
+  const warnCls = level === 1 ? 'mild' : 'very';
+  const warnTxt = level === 1 ? '⚠️ Mild soreness' : '🔴 Very sore';
+
+  overlay.innerHTML = `<div class="sore-swap-sheet">
+    <div class="tc-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sch-title" style="margin:0">Coach Swap</div>
+      <div class="tc-close" style="position:static" role="button" tabindex="0" onclick="closeSoreSwap()">✕</div>
+    </div>
+    <div class="sore-swap-ex">${ex.name || fromKey}</div>
+    <div class="sore-swap-warn ${warnCls}">${warnTxt} — ${soreLabels}</div>
+    <div class="sore-swap-coach" id="swap-coach-box">
+      <div class="sore-swap-coach-label">Coach</div>
+      <div class="sore-swap-coach-msg" id="swap-coach-msg" style="color:var(--text3)">Finding the best swap for you…</div>
+    </div>
+    <div id="swap-pick-wrap"></div>
+    <div class="sore-swap-actions" id="swap-actions" style="display:none">
+      <button class="sore-swap-go" id="swap-go-btn">Swap In</button>
+      <button class="sore-swap-skip" onclick="closeSoreSwap()">Keep It</button>
+    </div>
+  </div>`;
+  overlay.classList.add('open');
+
+  const alts = _buildSwapAlts(fromKey);
+  const claudeKey = (typeof apiKeys !== 'undefined' && apiKeys.claude) ? apiKeys.claude : '';
+  if (claudeKey && alts.length) {
+    await _swapAskClaude(fromKey, alts, soreLabels, level === 1);
+  } else {
+    _swapRuleBased(fromKey, alts, soreLabels);
+  }
+}
+
+function _swapRuleBased(fromKey, alts, soreLabels) {
+  const msgEl = document.getElementById('swap-coach-msg');
+  const actEl = document.getElementById('swap-actions');
+  const pickWrap = document.getElementById('swap-pick-wrap');
+  if (!alts.length) {
+    if (msgEl) { msgEl.style.color = ''; msgEl.textContent = 'Every muscle group you have equipment for is sore today — go with cardio or active recovery instead.'; }
+    return;
+  }
+  const toKey = alts[0];
+  const toEx = EX[toKey] || {};
+  const toGroups = (SORE_EX_MAP[toKey] || []).map(g => { const sg = SORE_GROUPS.find(s => s.id === g); return sg ? sg.label : g; }).join(' + ');
+  if (msgEl) { msgEl.style.color = ''; msgEl.innerHTML = `Your <strong>${soreLabels}</strong> is sore — skip it today. <strong>${toEx.name}</strong> works your ${toGroups} instead and keeps the session productive.`; }
+  if (pickWrap) pickWrap.innerHTML = `<div class="sore-swap-pick"><div class="sore-swap-pick-name">${toEx.name}</div><div class="sore-swap-pick-tag">${toEx.tag || ''} &nbsp;·&nbsp; ${toEx.sets || ''}</div></div>`;
+  if (actEl) {
+    actEl.style.display = 'flex';
+    const goBtn = document.getElementById('swap-go-btn');
+    if (goBtn) goBtn.onclick = () => applySoreSwap(fromKey, toKey, toEx.name);
+  }
+}
+
+async function _swapAskClaude(fromKey, alts, soreLabels, isMild) {
+  const fromEx = EX[fromKey] || {};
+  const altList = alts.slice(0, 24).map(k => {
+    const e = EX[k] || {};
+    return `${k}: ${e.name} (${e.tag || ''}) [${(SORE_EX_MAP[k] || []).join(', ')}]`;
+  }).join('\n');
+  const g = hmGoals();
+  const prompt = `You are the coach in a fitness app. The user has ${fromEx.name} in their session but their ${soreLabels} is ${isMild ? 'mildly' : 'very'} sore.
+
+Pick ONE exercise from this list that works non-sore muscles and suits their equipment (${(g.equip || []).join(', ')}):
+
+${altList}
+
+Reply with ONLY a JSON object, no markdown:
+{"key":"exercise_key","name":"Exercise Name","rationale":"One direct coach sentence explaining what they'll work instead and why it's the smart call today."}`;
+
+  const msgEl = document.getElementById('swap-coach-msg');
+  const actEl = document.getElementById('swap-actions');
+  const pickWrap = document.getElementById('swap-pick-wrap');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKeys.claude, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const parsed = JSON.parse((data.content?.[0]?.text || '').match(/\{[\s\S]*\}/)?.[0] || '{}');
+    const toKey = parsed.key && EX[parsed.key] ? parsed.key : alts[0];
+    const toEx = EX[toKey] || {};
+    if (msgEl) { msgEl.style.color = ''; msgEl.textContent = parsed.rationale || ''; }
+    if (pickWrap) pickWrap.innerHTML = `<div class="sore-swap-pick"><div class="sore-swap-pick-name">${toEx.name}</div><div class="sore-swap-pick-tag">${toEx.tag || ''} &nbsp;·&nbsp; ${toEx.sets || ''}</div></div>`;
+    if (actEl) {
+      actEl.style.display = 'flex';
+      const goBtn = document.getElementById('swap-go-btn');
+      if (goBtn) goBtn.onclick = () => applySoreSwap(fromKey, toKey, toEx.name);
+    }
+  } catch(e) { _swapRuleBased(fromKey, alts, soreLabels); }
+}
+
+function closeSoreSwap() {
+  const ov = document.getElementById('sore-swap-overlay');
+  if (ov) ov.classList.remove('open');
+}
+
+function applySoreSwap(fromKey, toKey, toName) {
+  _sessionSwaps[fromKey] = { toKey, toName };
+  closeSoreSwap();
+  renderTodayBanner();
+  if (typeof showToast === 'function') showToast('↔ Swapped to ' + toName, 'success');
+}
+
 function renderSoreWarningModal(key) {
   const warn = document.getElementById('m-sore-warn');
   if (!warn) return;
@@ -16868,35 +17064,44 @@ function buildSessionCard(phaseId, dow) {
 
   let doneCount = 0;
   const rows = exercises.map(({ key, target }) => {
-    const ex      = EX[key] || {};
-    const sets    = todayLog[key] || [];
+    const _swap   = _sessionSwaps[key];
+    const logKey  = _swap ? _swap.toKey : key;
+    const ex      = EX[logKey] || EX[key] || {};
+    const sets    = todayLog[logKey] || [];
     const hasSets = sets.length > 0;
     if (hasSets) doneCount++;
 
     const chips = sets.map(s => {
       const e1rm = slEpley(s.w, s.r);
-      const isPR = prs[key] && Math.abs(e1rm - prs[key].e1rm) < 1;
-      return `<span class="session-ex-chip${isPR ? ' pr' : ''}">${slFormatSet(s, key)}${isPR ? '★' : ''}</span>`;
+      const isPR = prs[logKey] && Math.abs(e1rm - prs[logKey].e1rm) < 1;
+      return `<span class="session-ex-chip${isPR ? ' pr' : ''}">${slFormatSet(s, logKey)}${isPR ? '★' : ''}</span>`;
     }).join('');
 
-    const suggestion = !hasSets ? slSuggestion(key) : null;
+    const suggestion = !hasSets ? slSuggestion(logKey) : null;
     const subLine = chips
       ? `<div class="session-ex-chips">${chips}</div>`
       : suggestion
         ? `<div class="session-ex-suggest">↑ ${hmDispRound(suggestion)} ${hmUnitLbl()} suggested</div>`
-        : `<div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace">${target}</div>`;
+        : `<div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace">${_swap ? (EX[logKey]?.sets || target) : target}</div>`;
+
+    const _sl = !_swap ? ((typeof getSoreLevelForKey === 'function') ? getSoreLevelForKey(key) : 0) : 0;
+    const _soreCls = _sl === 2 ? ' sore-row-very' : _sl === 1 ? ' sore-row-mild' : '';
+    const _swapBtn = _swap
+      ? `<span class="session-swapped-tag">↔ subbed</span>`
+      : (_sl > 0 ? `<button class="session-swap-btn" onclick="openSoreSwap('${key}');event.stopPropagation()">↔ SWAP</button>` : '');
 
     return `
-      <div class="session-ex-row" onclick="openLogSheet('${key}');event.stopPropagation()">
+      <div class="session-ex-row${_soreCls}" onclick="openLogSheet('${logKey}');event.stopPropagation()">
         <div class="session-ex-check${hasSets ? ' done' : ''}">
           ${hasSets ? '✓' : ''}
         </div>
         <div class="session-ex-info">
-          <div class="session-ex-name">${ex.name || key}</div>
+          <div class="session-ex-name">${ex.name || logKey}</div>
           ${subLine}
         </div>
+        ${_swapBtn}
         <button class="session-log-btn${hasSets ? ' has-sets' : ''}"
-          onclick="openLogSheet('${key}');event.stopPropagation()">
+          onclick="openLogSheet('${logKey}');event.stopPropagation()">
           ${hasSets ? `+${sets.length}` : '+ LOG'}
         </button>
       </div>`;
@@ -18359,6 +18564,8 @@ if ('serviceWorker' in navigator) {
 .tc-head-emblem-wm{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:88px;height:88px;object-fit:contain;opacity:.22;pointer-events:none;filter:saturate(1.6) drop-shadow(0 0 6px rgba(var(--accent-rgb),.3))}
 .banner-hero-emblem{position:absolute;top:6px;right:8px;transform:none;width:28px;height:28px;object-fit:contain;opacity:.75;pointer-events:none;filter:grayscale(.55) brightness(1.4) drop-shadow(0 1px 2px rgba(0,0,0,.9)) drop-shadow(0 0 1px rgba(220,210,180,.18))}
 /* First-run tour */
+.section-guide-btn{background:none;border:1px solid rgba(var(--accent-rgb),.25);border-radius:20px;color:rgba(var(--accent-rgb),.75);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;padding:4px 10px;cursor:pointer;flex-shrink:0;transition:all .15s}
+.section-guide-btn:hover{background:rgba(var(--accent-rgb),.08);border-color:rgba(var(--accent-rgb),.5)}
 #hm-tour{position:fixed;left:0;right:0;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:9970;max-width:520px;margin:0 auto;padding:0 14px}
 .hm-tour-card{display:flex;gap:12px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:14px 15px 10px;box-shadow:0 -6px 30px rgba(0,0,0,.5)}
 .hm-tour-emoji{font-size:26px;flex-shrink:0}
@@ -19373,6 +19580,53 @@ function hmLoginTick(){
     hmXP('logins', 10); // daily login bonus (re-loads state internally)
     setTimeout(() => { if (typeof showToast === 'function') showToast('📅 Daily login +10 XP · ' + s.login.streak + '-day streak', 'success'); }, 1600);
   } catch(e) {}
+}
+
+// ── SECTION TOURS — per-tab highlight walkthrough ──
+const HM_SECTION_TOURS = {
+  tracker: [
+    { sel:'#tab-tracker .t-stat-row', emoji:'📊', title:'Your Training Stats', text:'Days trained, sets logged, and XP earned — live totals that update every time you finish a session.' },
+    { sel:'#badge-strip',             emoji:'🏅', title:'Trophy Case',         text:'Tap the badge strip to open your Trophy Case — every medal, title, and your Hero Card live in there.' },
+    { sel:'#tr-week-grid',            emoji:'📅', title:'This Week',           text:'A quick view of your current training week. Green = logged session, grey = rest or skipped.' },
+    { sel:'#weekly-log-btn',          emoji:'📝', title:'Weekly Reviews',      text:'Every Sunday the app saves a week-in-review snapshot. Open it here to track how you\'re improving over time.' },
+    { sel:'#burn-ring-card',          emoji:'🔥', title:'Calorie Burn',        text:'Estimated calories burned from today\'s workout. Pulls directly from the sets you log in the session tracker.' },
+    { sel:'#tr-log-list',             emoji:'📋', title:'Session History',     text:'Every past session is saved here. Tap any entry to see exactly what you lifted, including PRs.' },
+  ],
+  'nutri-tracker': [
+    { sel:'.nt-macro-grid',      emoji:'🎯', title:'Macro Rings',        text:'Your four rings fill up as you log food — calories, protein, carbs, fat. Hit protein first, every day.' },
+    { sel:'.nt-day-type-row',    emoji:'🏋️', title:'Training vs Rest',   text:'Toggle between Training and Rest Day. Rest days auto-cut carbs 40% and calories 20%, keeping protein unchanged.' },
+    { sel:'.ng-cta-row',         emoji:'⚙',  title:'Goals & Calculator', text:'Edit Goals to set custom targets. Calculate Targets uses your stats and the Mifflin-St Jeor formula to personalise your macros.' },
+    { sel:'#nt-meals-container', emoji:'🍽️', title:'Log Your Meals',    text:'Add food under each meal section. Search by name, enter unknowns by macro, or copy yesterday\'s meals in one tap.' },
+    { sel:'#nt-water-cups',      emoji:'💧', title:'Water Tracking',     text:'Tap to log each glass. 8 a day keeps recovery on track — staying hydrated is as important as training.' },
+    { sel:'#nt-journal',         emoji:'📓', title:'Daily Notes',        text:'Jot down how you feel — energy, hunger, sleep quality. These notes are your training journal, saved by date.' },
+  ],
+  recipes: [
+    { sel:'#rb-search',          emoji:'🔍', title:'Search or Generate',  text:'Search your recipes by name or ingredient. No match? Type any dish and the AI generates a full recipe with macros.' },
+    { sel:'.rb-filter-pill',     emoji:'🏷️', title:'Filter by Type',     text:'Filter by High Protein, Pre-Workout, Post-Workout, Bulk, Cut, and more to find exactly what fits your goal today.' },
+    { sel:'#rb-url-input',       emoji:'🔗', title:'Import from a URL',   text:'Paste any recipe link — AllRecipes, Food Network, anywhere — and the app imports the ingredients and calculates your macros.' },
+    { sel:'#rb-recipe-grid',     emoji:'📖', title:'Your Recipe Book',    text:'Every recipe you save, generate, or import lives here. Tap one to view it and log it straight to your Nutrition tracker.' },
+  ],
+  wellness: [
+    { sel:'#ws-bw',       emoji:'⚖️', title:'Body Weight',     text:'Log your weight daily to build a trend chart. Watch how your body responds to different training phases and nutrition targets.' },
+    { sel:'#ws-sleep',    emoji:'😴', title:'Sleep Log',        text:'Log hours and sleep quality. Sleep is where recovery actually happens — the app tracks your streak and flags deficits.' },
+    { sel:'#ws-water',    emoji:'💧', title:'Water Intake',     text:'Log glasses here or in the Nutrition tab — both stay in sync. Hydration directly supports performance and recovery.' },
+    { sel:'#ws-cardio',   emoji:'🏃', title:'Cardio Log',       text:'Log any cardio session — run, bike, row, swim. Tracks your weekly volume and feeds your calorie burn stats in the Log tab.' },
+    { sel:'#ws-soreness', emoji:'💪', title:'Soreness Check-In', text:'Log which muscles are sore after training. The app uses this to highlight flagged exercises in tomorrow\'s session and suggest smart swaps.' },
+  ],
+  charts: [
+    { sel:'#chart-tab-bar',        emoji:'📈', title:'Chart Views',         text:'Switch between Nutrition, Training, Cardio, Body, Week, and Coach views. Every chart builds from your logged data.' },
+    { sel:'#chartview-nutrition',  emoji:'🍏', title:'Nutrition Trends',    text:'7-day bars for calories, protein, carbs, and fat vs your targets. Consistent protein is the metric that moves results.' },
+    { sel:'#chart-activity-grid',  emoji:'🗓️', title:'Activity Grid',       text:'Your training calendar — every logged day shows here. The longer the streak, the more obvious the pattern becomes.' },
+    { sel:'.backup-bar',           emoji:'💾', title:'Data Backup',         text:'Export your full training history as JSON or CSV anytime. Restore from backup if you switch devices — never lose your data.' },
+  ],
+};
+
+function hmStartSectionTour(section) {
+  const steps = HM_SECTION_TOURS[section];
+  if (!steps || !steps.length) return;
+  _hmTourSteps = steps;
+  _hmTourIdx = -1;
+  hmTourNext();
 }
 
 // ── FIRST-RUN TOUR — five quick coach marks after the first plan builds ──
