@@ -18,7 +18,9 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin) return; // let CDN/fonts requests pass through untouched
+  if (url.origin !== location.origin) return;
+  // Stream videos — never cache them (437 MB library would exhaust quota)
+  if (url.pathname.includes('/MoveKit_Videos/')) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {

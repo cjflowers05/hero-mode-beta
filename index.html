@@ -622,6 +622,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hmtut-nav{display:flex;gap:10px;margin-top:18px}
 .hmtut-prev-btn{flex:1;padding:13px;border-radius:11px;border:1px solid rgba(var(--accent-rgb),.28);background:transparent;color:var(--text2);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:background .15s}
 .hmtut-prev-btn:hover{background:var(--bg3)}
+.hmtut-skip-btn{flex:1;padding:13px;border-radius:11px;border:none;background:transparent;color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;cursor:pointer;transition:color .15s}
+.hmtut-skip-btn:hover{color:var(--text2)}
 .hmtut-next-btn{flex:2;padding:13px;border-radius:11px;border:none;background:rgba(var(--accent-rgb),.12);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:background .15s,border-color .15s}
 .hmtut-next-btn:hover{background:rgba(var(--accent-rgb),.2)}
 .ng-edit-bar{display:flex;align-items:center;justify-content:flex-end;margin:-4px 0 10px}
@@ -1494,6 +1496,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="hmtut-slide" id="hmtut-slide"></div>
     <div class="hmtut-nav">
       <button class="hmtut-prev-btn" id="hmtut-prev" onclick="hmTutPrev()">‹ BACK</button>
+      <button class="hmtut-skip-btn" onclick="hmTutClose()">SKIP</button>
       <button class="hmtut-next-btn" id="hmtut-next" onclick="hmTutNext()">NEXT ›</button>
     </div>
   </div>
@@ -5860,6 +5863,8 @@ function openEx(key){
   document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('mpanel-coach').classList.add('active');
   document.querySelectorAll('.modal-tab')[0].classList.add('active');
+  const vtab = document.querySelectorAll('.modal-tab')[1];
+  if (vtab) vtab.textContent = EX_VID[key] ? '▶ Watch' : 'Videos';
   renderSoreWarningModal(key);
   document.getElementById('exModal').classList.add('open');
   lockBodyScroll();
@@ -5868,6 +5873,8 @@ function openEx(key){
 }
 
 function closeModal(){
+  const mkv = document.getElementById('mk-vid');
+  if (mkv) { mkv.pause(); mkv.currentTime = 0; }
   document.getElementById('exModal').classList.remove('open');
   unlockBodyScroll();
 }
@@ -5909,12 +5916,91 @@ function switchMTab(id,btn){
   if(id==='alts'     && mCurrentKey) buildAltsPanel(mCurrentKey);
 }
 
+// ── MOVEKIT VIDEO LIBRARY ── exercise key → local video path
+const EX_VID = {
+  deadlift:       'MoveKit_Videos/barbell-deadlift.mp4',
+  bench:          'MoveKit_Videos/barbell-bench-press.mp4',
+  squat:          'MoveKit_Videos/barbell-squat.mp4',
+  ohp:            'MoveKit_Videos/barbell-overhead-press.mp4',
+  pullup:         'MoveKit_Videos/pull-ups.mp4',
+  row:            'MoveKit_Videos/barbell-bent-over-row.mp4',
+  rdl:            'MoveKit_Videos/barbell-stiff-leg-deadlifts.mp4',
+  lateral:        'MoveKit_Videos/dumbbell-lateral-raise.mp4',
+  clean:          'MoveKit_Videos/barbell-clean-and-press.mp4',
+  bbcurl:         'MoveKit_Videos/barbell-curl.mp4',
+  hammer:         'MoveKit_Videos/dumbbell-hammer-curl.mp4',
+  pushdown:       'MoveKit_Videos/cable-rope-pushdown.mp4',
+  triext:         'MoveKit_Videos/dumbbell-seated-overhead-tricep-extension.mp4',
+  arnold:         'MoveKit_Videos/dumbbell-seated-overhead-press.mp4',
+  facepull:       'MoveKit_Videos/cable-seated-rope-face-pull.mp4',
+  pulldown:       'MoveKit_Videos/machine-pulldown.mp4',
+  incline:        'MoveKit_Videos/barbell-incline-bench-press.mp4',
+  dbpress:        'MoveKit_Videos/dumbbell-bench-press.mp4',
+  cablefly:       'MoveKit_Videos/cable-pec-fly.mp4',
+  dips:           'MoveKit_Videos/parralel-bar-dips.mp4',
+  pushup:         'MoveKit_Videos/push-up.mp4',
+  lunge:          'MoveKit_Videos/bodyweight-alternating-reverse-lunges.mp4',
+  boxjump:        'MoveKit_Videos/box-jump.mp4',
+  plank:          'MoveKit_Videos/hand-plank.mp4',
+  hangingraise:   'MoveKit_Videos/hanging-knee-raises.mp4',
+  superman:       'MoveKit_Videos/supermans.mp4',
+  hipthrust:      'MoveKit_Videos/kettlebell-hip-thrust.mp4',
+  bulgarian:      'MoveKit_Videos/dumbbell-bulgarian-split-squat.mp4',
+  walkinglunge:   'MoveKit_Videos/lunge-walking.mp4',
+  calfraise:      'MoveKit_Videos/kettlebell-calf-raise.mp4',
+  shrug:          'MoveKit_Videos/barbell-shrug.mp4',
+  barshrug:       'MoveKit_Videos/barbell-shrug.mp4',
+  farmercarry:    'MoveKit_Videos/kettlebell-farmers-carry.mp4',
+  farmerwalk:     'MoveKit_Videos/kettlebell-farmers-carry.mp4',
+  thruster:       'MoveKit_Videos/dumbbell-thruster.mp4',
+  swing:          'MoveKit_Videos/kettlebell-swing.mp4',
+  kbswing:        'MoveKit_Videos/kettlebell-swing.mp4',
+  burpee:         'MoveKit_Videos/burpee.mp4',
+  burpeepullup:   'MoveKit_Videos/burpee.mp4',
+  pushpress:      'MoveKit_Videos/kettlebell-push-press.mp4',
+  dbclean:        'MoveKit_Videos/dumbbell-single-arm-clean-and-press.mp4',
+  sarow:          'MoveKit_Videos/dumbbell-single-arm-row.mp4',
+  cablerow:       'MoveKit_Videos/machine-seated-cable-row.mp4',
+  cablecurl:      'MoveKit_Videos/cable-bar-curl.mp4',
+  cablelateral:   'MoveKit_Videos/band-lateral-raise.mp4',
+  reardelt:       'MoveKit_Videos/dumbbell-rear-delt-fly.mp4',
+  deadhang:       'MoveKit_Videos/pull-ups.mp4',
+  jumpsquat:      'MoveKit_Videos/jump-squats.mp4',
+  airsquat:       'MoveKit_Videos/bodyweight-squat.mp4',
+  situp:          'MoveKit_Videos/dumbbell-situp.mp4',
+  frontraise:     'MoveKit_Videos/dumbbell-front-raise.mp4',
+  dbfly:          'MoveKit_Videos/dumbbell-incline-chest-fly.mp4',
+  inclinedbpress: 'MoveKit_Videos/dumbbell-incline-bench-press.mp4',
+  declinedbpress: 'MoveKit_Videos/dumbbell-decline-bench-press.mp4',
+  declinedbfly:   'MoveKit_Videos/dumbbell-decline-chest-fly.mp4',
+  tbrow:          'MoveKit_Videos/landmine-t-bar-rows.mp4',
+  legpress:       'MoveKit_Videos/machine-leg-press.mp4',
+  legcurl:        'MoveKit_Videos/dumbbell-leg-curl.mp4',
+  closegrip:      'MoveKit_Videos/barbell-close-grip-bench-press.mp4',
+  skullcrusher:   'MoveKit_Videos/dumbbell-skullcrusher.mp4',
+  preachercurl:   'MoveKit_Videos/ez-bar-preacher-curl.mp4',
+  goblet:         'MoveKit_Videos/dumbbell-goblet-squat.mp4',
+  stepup:         'MoveKit_Videos/barbell-step-up-knee-drive.mp4',
+  renegade:       'MoveKit_Videos/dumbbell-row-bilateral.mp4',
+};
+
 function buildVideoPanel(ex){
   const vids = ex.videos || [];
+  const localVid = EX_VID[mCurrentKey];
   let html = '';
 
+  // MoveKit technique clip — silent autoplay loop, controls for fullscreen/unmute
+  if (localVid) {
+    html += `<div style="margin-bottom:16px">
+      <video id="mk-vid" src="${localVid}" autoplay muted loop playsinline controls
+        style="width:100%;border-radius:12px;display:block;background:#000;max-height:320px;object-fit:contain"
+        onerror="this.closest('div').style.display='none'"></video>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;text-align:center;margin-top:5px;text-transform:uppercase">Technique clip · Tap controls to unmute or fullscreen</div>
+    </div>`;
+  }
+
   if (vids.length > 0) {
-    // Primary video — big tap target that opens YouTube app
+    if (localVid) html += `<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Coach videos</div>`;
     const first = vids[0];
     html += `<a href="https://www.youtube.com/watch?v=${first.id}" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0a08;border:1px solid var(--border2);border-radius:14px;padding:28px 20px;margin-bottom:14px;text-decoration:none;gap:12px;min-height:160px">
       <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,30,30,.15);border:2px solid rgba(255,30,30,.4);display:flex;align-items:center;justify-content:center;font-size:26px">▶</div>
@@ -5924,7 +6010,6 @@ function buildVideoPanel(ex){
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.08em;border:1px solid var(--border2);padding:6px 16px;border-radius:100px">WATCH ON YOUTUBE ↗</div>
     </a>`;
-
     if (vids.length > 1) {
       html += `<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">More videos</div>`;
       vids.slice(1).forEach(v => {
@@ -5935,7 +6020,7 @@ function buildVideoPanel(ex){
         </a>`;
       });
     }
-  } else {
+  } else if (!localVid) {
     html = `<div style="padding:32px 20px;text-align:center">
       <div style="font-size:32px;margin-bottom:10px;opacity:.3">🎬</div>
       <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Search YouTube for:</div>
@@ -5943,7 +6028,9 @@ function buildVideoPanel(ex){
     </div>`;
   }
 
-  html += `<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:10px 2px;border-top:1px solid var(--border);margin-top:4px">Tap to open in YouTube. Technique shown may vary — cues above are specific to this program.</div>`;
+  if (localVid || vids.length > 0) {
+    html += `<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:10px 2px;border-top:1px solid var(--border);margin-top:4px">Technique shown may vary — cues in the Coach tab are specific to this program.</div>`;
+  }
   document.getElementById('video-panel-content').innerHTML = html;
 }
 
@@ -10800,8 +10887,10 @@ function hmTutRender() {
     '<div class="hmtut-slide-tip">' + st.tip + '</div>';
   const prev = document.getElementById('hmtut-prev');
   const next = document.getElementById('hmtut-next');
+  const skip = document.querySelector('.hmtut-skip-btn');
   if (prev) prev.style.visibility = isFirst ? 'hidden' : 'visible';
   if (next) next.textContent = isLast ? 'DONE' : 'NEXT ›';
+  if (skip) skip.style.visibility = isLast ? 'hidden' : 'visible';
 }
 window.hmTutOpen = hmTutOpen;
 window.hmTutClose = hmTutClose;
