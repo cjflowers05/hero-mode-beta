@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Android build output (keep the android/ project itself committed)
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+android/captures/
+
+# iOS build output (keep the ios/ project itself committed)
+ios/App/Pods/
+ios/App/build/
+ios/App/DerivedData/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Editor / OS cruft
+.DS_Store
+Thumbs.db
+
+# Source art masters — large, not needed to run or build the app
+_brand-source.png
+_icon-source.png
+_ref/
+_archive/
+Characters/

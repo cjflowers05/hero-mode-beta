@@ -1,0 +1,20 @@
+{
+  "appId": "com.heromode.app",
+  "appName": "Hero Mode",
+  "webDir": "www",
+  "backgroundColor": "#0A0A08",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#0A0A08"
+  },
+  "android": {
+    "backgroundColor": "#0A0A08"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "backgroundColor": "#0A0A08",
+      "showSpinner": false,
+      "launchAutoHide": true
+    }
+  }
+}
