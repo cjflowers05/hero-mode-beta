@@ -5058,6 +5058,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="sl-handle"></div>
       <div class="sl-ex-name" id="sl-ex-name">Exercise</div>
       <div class="sl-ex-sub"  id="sl-ex-sub"></div>
+      <div id="sl-vid-wrap" style="display:none;margin-bottom:12px">
+        <video id="sl-vid" autoplay muted loop playsinline controls
+          style="width:100%;border-radius:10px;display:block;background:#000;max-height:180px;object-fit:contain"
+          onerror="this.closest('div').style.display='none'"></video>
+      </div>
       <div id="sl-overload-nudge" style="display:none" class="sl-overload-nudge"></div>
       <div id="sl-warmup-wrap" style="display:none">
         <div class="sl-section-lbl" style="margin-bottom:6px">Warm-up sets</div>
@@ -15122,6 +15127,22 @@ function openLogSheet(key) {
     nudgeEl.className     = 'sl-overload-nudge';
   }
 
+  // MoveKit technique clip
+  const slVidWrap = document.getElementById('sl-vid-wrap');
+  const slVid     = document.getElementById('sl-vid');
+  const slVidSrc  = (typeof EX_VID !== 'undefined') ? EX_VID[key] : null;
+  if (slVidWrap && slVid) {
+    if (slVidSrc) {
+      slVid.src = slVidSrc;
+      slVidWrap.style.display = 'block';
+      slVid.load();
+      slVid.play().catch(()=>{});
+    } else {
+      slVidWrap.style.display = 'none';
+      slVid.src = '';
+    }
+  }
+
   slRenderSheet();
   renderWarmup();
   slRenderFb();
@@ -15130,6 +15151,8 @@ function openLogSheet(key) {
 }
 
 function closeLogSheet() {
+  const v = document.getElementById('sl-vid');
+  if (v) { v.pause(); v.src = ''; }
   document.getElementById('slModal').classList.remove('open');
   unlockBodyScroll();
   slCurrentKey = null;
