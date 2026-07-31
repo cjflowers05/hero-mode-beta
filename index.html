@@ -606,6 +606,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .wn-item-name{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold);letter-spacing:.04em}
 .wn-item-desc{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.45}
 .wn-dismiss{width:100%;margin-top:14px;padding:12px;border-radius:11px;border:none;background:rgba(var(--accent-rgb),.12);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.06em;cursor:pointer}
+/* ── TUTORIAL SHEET ── */
+#hmtut-sheet{position:fixed;inset:0;z-index:9990;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .2s}
+#hmtut-sheet.open{opacity:1;pointer-events:auto}
+#hmtut-body{background:var(--bg2);border-radius:20px 20px 0 0;padding:18px 20px calc(32px + env(safe-area-inset-bottom,0px));max-height:80vh;overflow-y:auto;transform:translateY(40px);transition:transform .25s cubic-bezier(.22,1,.36,1)}
+#hmtut-sheet.open #hmtut-body{transform:none}
+.hmtut-dots{display:flex;justify-content:center;gap:7px;margin-bottom:20px}
+.hmtut-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);transition:background .2s,transform .2s}
+.hmtut-dot.active{background:var(--gold);transform:scale(1.35)}
+.hmtut-slide{text-align:center;padding:0 4px}
+.hmtut-slide-emoji{font-size:44px;margin-bottom:12px}
+.hmtut-slide-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--text);margin-bottom:8px}
+.hmtut-slide-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.hmtut-slide-tip{background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.25);border-radius:10px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.06em;margin-bottom:2px}
+.hmtut-nav{display:flex;gap:10px;margin-top:18px}
+.hmtut-prev-btn{flex:1;padding:13px;border-radius:11px;border:1px solid rgba(var(--accent-rgb),.28);background:transparent;color:var(--text2);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:background .15s}
+.hmtut-prev-btn:hover{background:var(--bg3)}
+.hmtut-next-btn{flex:2;padding:13px;border-radius:11px;border:none;background:rgba(var(--accent-rgb),.12);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:background .15s,border-color .15s}
+.hmtut-next-btn:hover{background:rgba(var(--accent-rgb),.2)}
 .ng-edit-bar{display:flex;align-items:center;justify-content:flex-end;margin:-4px 0 10px}
 .ng-edit-btn{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:5px 12px;cursor:pointer;transition:all .15s;text-transform:uppercase}
 .ng-edit-btn:active{background:var(--bg3);color:var(--text)}
@@ -1465,6 +1483,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="wn-sub">LATEST HERO MODE UPDATES</div>
     <div id="wn-list"></div>
     <button class="wn-dismiss" onclick="hmDismissWhatsNew()">GOT IT</button>
+  </div>
+</div>
+
+<!-- TUTORIAL SHEET -->
+<div id="hmtut-sheet" onclick="if(event.target===this)hmTutClose()">
+  <div id="hmtut-body">
+    <div class="wn-handle"></div>
+    <div class="hmtut-dots" id="hmtut-dots"></div>
+    <div class="hmtut-slide" id="hmtut-slide"></div>
+    <div class="hmtut-nav">
+      <button class="hmtut-prev-btn" id="hmtut-prev" onclick="hmTutPrev()">‹ BACK</button>
+      <button class="hmtut-next-btn" id="hmtut-next" onclick="hmTutNext()">NEXT ›</button>
+    </div>
   </div>
 </div>
 
@@ -10703,7 +10734,7 @@ function hmInitWhatsNew() {
   const btn = document.getElementById('tour-btn');
   if (btn && !btn.dataset.wnWired) {
     btn.dataset.wnWired = '1';
-    btn.addEventListener('click', function() { hmShowWhatsNew(); });
+    btn.addEventListener('click', function() { hmTutOpen(); });
     if (!seen) {
       const dot = document.createElement('span');
       dot.id = 'wn-dot';
@@ -10711,8 +10742,71 @@ function hmInitWhatsNew() {
       btn.appendChild(dot);
     }
   }
-  if (!seen) setTimeout(hmShowWhatsNew, 1800);
+  const tutSeen = !!localStorage.getItem('hero-tut-seen-v1');
+  if (!tutSeen) setTimeout(hmTutOpen, 1800);
+  else if (!seen) setTimeout(hmShowWhatsNew, 1800);
 }
+
+// ── TUTORIAL WALKTHROUGH ──
+const HM_TUT_KEY = 'hero-tut-seen-v1';
+const HM_TUTORIAL_STEPS = [
+  { emoji:'🦸', title:'Welcome to Hero Mode', desc:'Hero Mode is your all-in-one fitness companion. Train, eat, and recover like a hero — every section is built to help you level up.', tip:'Swipe through to learn each section.' },
+  { emoji:'🗡️', title:'Your Dashboard', desc:'Your home base. See today\'s workout, weekly targets, XP progress, and streak at a glance. Everything you need to stay on track lives here.', tip:'Tap TODAY\'S SESSION on the banner to open the workout tracker.' },
+  { emoji:'⚙️', title:'Build Your Plan', desc:'Fill in your goals, equipment, schedule, and experience level — Hero Mode generates a personalized multi-phase training plan built around you.', tip:'Scroll down to the GOALS form. You can rebuild your plan anytime.' },
+  { emoji:'💪', title:'Train', desc:'Log sets and reps from your generated plan. Swap any exercise with ⇄, add custom sessions, and track cardio at the bottom of the plan.', tip:'Every logged session earns XP toward your next level.' },
+  { emoji:'🥗', title:'Nutrition', desc:'Track daily meals against your macro targets. Use the built-in calculator to set calorie and protein goals based on your bodyweight and goals.', tip:'Consistent logging shows your weekly average in Progress.' },
+  { emoji:'🛌', title:'Wellness', desc:'Log sleep, water intake, and muscle soreness to keep tabs on your recovery. The body map shows exactly where you\'re feeling last session.', tip:'Good recovery means better performance next session.' },
+  { emoji:'🏆', title:'Trophy Case', desc:'Earn badges by hitting milestones — streak days, XP totals, nutrition logs, and more. Level up to unlock new hero portraits and titles.', tip:'Tap your hero portrait in the top-left to open your Trophy Case.' },
+];
+let _hmTutIdx = 0;
+
+function hmTutOpen() {
+  _hmTutIdx = 0;
+  hmTutRender();
+  document.getElementById('hmtut-sheet').classList.add('open');
+  if (typeof lockBodyScroll === 'function') lockBodyScroll();
+  const dot = document.getElementById('wn-dot');
+  if (dot) dot.style.display = 'none';
+}
+function hmTutClose() {
+  document.getElementById('hmtut-sheet').classList.remove('open');
+  localStorage.setItem(HM_TUT_KEY, '1');
+  localStorage.setItem(HM_WN_KEY, '1');
+  if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+}
+function hmTutNext() {
+  if (_hmTutIdx >= HM_TUTORIAL_STEPS.length - 1) { hmTutClose(); return; }
+  _hmTutIdx++;
+  hmTutRender();
+}
+function hmTutPrev() {
+  if (_hmTutIdx <= 0) return;
+  _hmTutIdx--;
+  hmTutRender();
+}
+function hmTutRender() {
+  const st = HM_TUTORIAL_STEPS[_hmTutIdx];
+  const isLast = _hmTutIdx === HM_TUTORIAL_STEPS.length - 1;
+  const isFirst = _hmTutIdx === 0;
+  const dots = document.getElementById('hmtut-dots');
+  if (dots) dots.innerHTML = HM_TUTORIAL_STEPS.map((_,i) =>
+    '<div class="hmtut-dot' + (i === _hmTutIdx ? ' active' : '') + '"></div>'
+  ).join('');
+  const slide = document.getElementById('hmtut-slide');
+  if (slide) slide.innerHTML =
+    '<div class="hmtut-slide-emoji">' + st.emoji + '</div>' +
+    '<div class="hmtut-slide-title">' + st.title + '</div>' +
+    '<div class="hmtut-slide-desc">' + st.desc + '</div>' +
+    '<div class="hmtut-slide-tip">' + st.tip + '</div>';
+  const prev = document.getElementById('hmtut-prev');
+  const next = document.getElementById('hmtut-next');
+  if (prev) prev.style.visibility = isFirst ? 'hidden' : 'visible';
+  if (next) next.textContent = isLast ? 'DONE' : 'NEXT ›';
+}
+window.hmTutOpen = hmTutOpen;
+window.hmTutClose = hmTutClose;
+window.hmTutNext = hmTutNext;
+window.hmTutPrev = hmTutPrev;
 
 function mcApplyToTracker() {
   try {
@@ -17694,7 +17788,7 @@ if ('serviceWorker' in navigator) {
 .tc-lvl-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .tc-lvl-item{text-align:center}
 .tc-lvl-item.locked{opacity:.32;filter:grayscale(1)}
-.tc-lvl-img{width:100%;height:auto;object-fit:contain;display:block}
+.tc-lvl-img{width:100%;height:52px;object-fit:contain;display:block}
 .bs-badge-medal{width:22px;height:22px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 0 4px rgba(var(--accent-rgb),.4))}
 .badge-card .b-name{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.04em;color:var(--text2);text-transform:uppercase;line-height:1.25}
 .badge-card.locked{opacity:.35;filter:grayscale(1)}
@@ -17744,7 +17838,7 @@ if ('serviceWorker' in navigator) {
 .np-portrait img{width:100%;height:auto;display:block}
 .np-portrait.sel{border-color:var(--gold);box-shadow:0 0 12px rgba(var(--accent-rgb),.5)}
 .np-portrait.locked{opacity:.28;filter:grayscale(1);pointer-events:none}
-.np-portrait.locked::after{content:'LVL 2';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:9px;color:#fff;background:rgba(0,0,0,.65);padding:2px 6px;border-radius:4px;letter-spacing:.05em}
+.np-portrait.locked::after{content:'LVL 5';position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:9px;color:#fff;background:rgba(0,0,0,.65);padding:2px 6px;border-radius:4px;letter-spacing:.05em}
 .np-cam-row{margin-bottom:10px}
 .np-cam-btn{width:100%;padding:9px 6px;border-radius:8px;background:var(--bg3);border:1px dashed rgba(var(--accent-rgb),.4);color:var(--text2);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;cursor:pointer;text-align:center;display:block}
 .np-create{width:100%;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;
@@ -17921,16 +18015,16 @@ const HM_PROFILES_KEY = 'hero-profiles';
 const HM_HERO_PORTRAITS = [
   {id:'rookie-m', src:'assets/ui/heroes/rookie_hero_male.png',   name:'Rookie',     minLvl:1},
   {id:'rookie-f', src:'assets/ui/heroes/rookie_hero_female.png', name:'Rookie',     minLvl:1},
-  {id:'hero1',    src:'assets/ui/heroes/hero1.png',              name:'Warrior',    minLvl:2},
-  {id:'hero2',    src:'assets/ui/heroes/hero2.png',              name:'Guardian',   minLvl:2},
-  {id:'hero3',    src:'assets/ui/heroes/hero3.png',              name:'Ranger',     minLvl:2},
-  {id:'hero4',    src:'assets/ui/heroes/hero4.png',              name:'Ironworker', minLvl:2},
-  {id:'hero5',    src:'assets/ui/heroes/hero5.png',              name:'Scholar',    minLvl:2},
-  {id:'hero6',    src:'assets/ui/heroes/hero6.png',              name:'Warrior',    minLvl:2},
-  {id:'hero7',    src:'assets/ui/heroes/hero7.png',              name:'Guardian',   minLvl:2},
-  {id:'hero8',    src:'assets/ui/heroes/hero8.png',              name:'Ranger',     minLvl:2},
-  {id:'hero9',    src:'assets/ui/heroes/hero9.png',              name:'Ironworker', minLvl:2},
-  {id:'hero10',   src:'assets/ui/heroes/hero10.png',             name:'Scholar',    minLvl:2},
+  {id:'hero1',    src:'assets/ui/heroes/hero1.png',              name:'Warrior',    minLvl:5},
+  {id:'hero2',    src:'assets/ui/heroes/hero2.png',              name:'Guardian',   minLvl:5},
+  {id:'hero3',    src:'assets/ui/heroes/hero3.png',              name:'Ranger',     minLvl:5},
+  {id:'hero4',    src:'assets/ui/heroes/hero4.png',              name:'Ironworker', minLvl:5},
+  {id:'hero5',    src:'assets/ui/heroes/hero5.png',              name:'Scholar',    minLvl:5},
+  {id:'hero6',    src:'assets/ui/heroes/hero6.png',              name:'Warrior',    minLvl:5},
+  {id:'hero7',    src:'assets/ui/heroes/hero7.png',              name:'Guardian',   minLvl:5},
+  {id:'hero8',    src:'assets/ui/heroes/hero8.png',              name:'Ranger',     minLvl:5},
+  {id:'hero9',    src:'assets/ui/heroes/hero9.png',              name:'Ironworker', minLvl:5},
+  {id:'hero10',   src:'assets/ui/heroes/hero10.png',             name:'Scholar',    minLvl:5},
 ];
 
 function hmProfilesLoad(){
