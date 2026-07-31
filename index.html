@@ -1413,11 +1413,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cl-overlay.open .cl-sheet{transform:translateY(0)}
 .cl-inner{padding:18px 20px calc(28px + var(--safe))}
 .cl-act-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:16px}
-.cl-act-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:11px 4px;border-radius:12px;background:var(--bg3);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;min-height:62px;justify-content:center}
-.cl-act-btn.sel{background:rgba(201,168,76,.1);border-color:var(--gold)}
-.cl-act-icon{font-size:20px;line-height:1}
-.cl-act-name{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--text3);letter-spacing:.03em;text-align:center;text-transform:uppercase;line-height:1.2}
-.cl-act-btn.sel .cl-act-name{color:var(--gold)}
+.cl-act-btn{display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:12px;background:transparent;border:none;cursor:pointer;transition:opacity .15s;overflow:hidden;justify-content:center}
+.cl-act-btn:hover{opacity:.88}
+.cl-act-btn .cl-img-def{display:block;width:100%}
+.cl-act-btn .cl-img-sel{display:none;width:100%}
+.cl-act-btn.sel .cl-img-def{display:none}
+.cl-act-btn.sel .cl-img-sel{display:block}
+.cl-act-icon,.cl-act-name{display:none}
 .cl-intensity-row{display:flex;gap:7px;margin-bottom:14px}
 .cl-intens-btn{flex:1;padding:9px 4px;border-radius:10px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;text-align:center;letter-spacing:.04em;transition:all .15s;text-transform:uppercase}
 .cl-intens-btn.sel{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
@@ -5226,7 +5228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="cl-field-lbl">Actual Calories Burned</div>
         <input class="cl-field" id="cl-manual-cal-input" type="number" placeholder="350" inputmode="numeric">
       </div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Based on <span id="cl-weight-display">185 lb</span> body weight. <button onclick="clEditWeight()" style="background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;text-decoration:underline;padding:0">Edit</button></div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Based on <span id="cl-weight-display">185 lb</span> body weight. <button onclick="clEditWeight()" style="background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;text-decoration:underline;padding:0">Edit</button><span id="cl-weight-edit-row" style="display:none;align-items:center;gap:6px;margin-left:8px"><input id="cl-weight-input" type="number" inputmode="decimal" step="0.1" min="50" max="500" style="width:64px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:3px 6px;color:var(--text1);font-size:11px"> lb <button onclick="clSaveWeight()" style="background:var(--gold);border:none;border-radius:5px;color:#000;font-size:10px;padding:3px 8px;cursor:pointer;font-family:'DM Mono',monospace;font-weight:600">SAVE</button> <button onclick="document.getElementById('cl-weight-edit-row').style.display='none'" style="background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;line-height:1;padding:0">✕</button></span></div>
       <div class="cl-field-lbl">Notes (optional)</div>
       <input class="cl-field" id="cl-notes" type="text" placeholder="e.g. 5K, intervals, incline treadmill…" style="margin-bottom:16px">
       <button class="cl-save-btn" onclick="saveCardioSession()">Log Session</button>
@@ -17687,12 +17689,23 @@ function closeCardioLog() {
   unlockBodyScroll();
 }
 
+const CARDIO_IMG = {
+  run:'running', cycle:'cycling', walk:'walking', ellip:'elliptical',
+  row:'rowing', swim:'swimming', kayak:'kayaking', sup:'paddleboarding',
+  surf:'surfing', hike:'hiking', climb:'climbing', hiit:'HIIT',
+  cross:'crosstraining', rope:'jumprope', stair:'stairs', ski:'skiing',
+  board:'snowboard', skate:'skating', yoga:'yoga', box:'boxing',
+  mma:'martial_arts', bball:'basketball', soccer:'soccer', tennis:'tennis',
+  pickle:'pickleball', volley:'volleyball', golf:'golf', dance:'dancing',
+  sport:'other_sport', other:'other'
+};
+
 function buildClActGrid() {
-  document.getElementById('cl-act-grid').innerHTML = CARDIO_ACTS.map(a => `
-    <button class="cl-act-btn${a.id === clActivity ? ' sel' : ''}" onclick="clSetActivity('${a.id}',this)">
-      <span class="cl-act-icon">${a.icon}</span>
-      <span class="cl-act-name">${a.n}</span>
-    </button>`).join('');
+  document.getElementById('cl-act-grid').innerHTML = CARDIO_ACTS.map(a => {
+    const img = CARDIO_IMG[a.id] || a.id;
+    const sel = a.id === clActivity ? ' sel' : '';
+    return `<button class="cl-act-btn${sel}" onclick="clSetActivity('${a.id}',this)"><img class="cl-img-def" src="assets/ui/cardio/${img}_default.png" alt="${a.n}" loading="lazy"><img class="cl-img-sel" src="assets/ui/cardio/${img}_selected.png" alt="${a.n}" loading="lazy"></button>`;
+  }).join('');
 }
 
 function clSetActivity(id, btn) {
@@ -17722,13 +17735,19 @@ function clToggleManualCal(chk) {
 
 function clEditWeight() {
   const prof = getCardioProfile();
-  const w = prompt('Your body weight (lbs):', prof.weightLb);
-  if (w && !isNaN(w) && parseFloat(w) > 0) {
-    prof.weightLb = parseFloat(w);
+  document.getElementById('cl-weight-input').value = prof.weightLb;
+  document.getElementById('cl-weight-edit-row').style.display = 'inline-flex';
+}
+function clSaveWeight() {
+  const v = parseFloat(document.getElementById('cl-weight-input').value);
+  if (!isNaN(v) && v > 0) {
+    const prof = getCardioProfile();
+    prof.weightLb = v;
     saveCardioProfile(prof);
-    document.getElementById('cl-weight-display').textContent = prof.weightLb + ' lb';
+    document.getElementById('cl-weight-display').textContent = v + ' lb';
     clUpdateCalPreview();
   }
+  document.getElementById('cl-weight-edit-row').style.display = 'none';
 }
 
 // Shared commit path — modal save and one-tap repeat both land here,
