@@ -669,6 +669,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sore-btn.s1 .sore-label{color:#D0A830}
 .sore-btn.s2{border-color:rgba(220,80,80,.5);background:rgba(220,80,80,.08)}
 .sore-btn.s2 .sore-label{color:#E07070}
+.sore-btn.s0{border-color:rgba(91,200,118,.4);background:rgba(91,200,118,.07)}
+.sore-btn.s0 .sore-label{color:#5BC876}
 .sore-checkin-done{font-size:11px;color:var(--gold);text-align:center;padding:8px 0}
 
 /* ── DELOAD BANNER ── */
@@ -12090,6 +12092,7 @@ function renderMuscleRecoveryMap() {
   const groupColor = (id) => {
     if (sore[id] === 2) return '#DC5050';
     if (sore[id] === 1) return '#C9A84C';
+    if (id in sore) return '#5BC876'; // explicitly cycled to 0 → Ready (green)
     if (!lastTrained[id]) return 'rgba(255,255,255,0.18)';
     const daysSince = Math.round((new Date(today) - new Date(lastTrained[id])) / 86400000);
     if (daysSince === 0) return '#E07A5F';
@@ -12175,11 +12178,13 @@ function renderSoreGrid() {
   const hasAny = Object.keys(day).length > 0;
   grid.innerHTML = SORE_GROUPS.map(g => {
     const level = day[g.id] || 0;
-    const cls   = level === 1 ? 's1' : level === 2 ? 's2' : '';
-    const lbl   = level === 0 ? 'Fine' : level === 1 ? 'Sore' : 'Very Sore';
+    const isSet = g.id in day;
+    const cls   = level === 2 ? 's2' : level === 1 ? 's1' : isSet ? 's0' : '';
+    const lbl   = level === 2 ? 'Very Sore' : level === 1 ? 'Sore' : isSet ? 'Ready' : 'Fine';
+    const col   = level === 2 ? '#E07070' : level === 1 ? '#D0A830' : isSet ? '#5BC876' : 'var(--text2)';
     return `<button class="sore-btn ${cls}" onclick="soreCycle('${g.id}')">
       <span class="sore-icon">${g.icon}</span>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:${level===2?'#E07070':level===1?'#D0A830':'var(--text2)'};">${g.label}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:${col};">${g.label}</div>
       <div class="sore-label">${lbl}</div>
     </button>`;
   }).join('');

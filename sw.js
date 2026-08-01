@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v12'; // v12: PR board, interval timer, cardio programs
+const CACHE_VERSION = 'hero-mode-v13'; // v13: soreness cycle fix — Ready state now shows green
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
