@@ -7211,8 +7211,7 @@ function renderTracker() {
   const xpEl = document.getElementById('tr-xp');
   if (xpEl) {
     try {
-      const prof = hmActiveProfile();
-      const xp = parseInt(localStorage.getItem('hero-xp--' + prof.id) || localStorage.getItem('hero-xp') || '0', 10);
+      const xp = hmXPLoad().xp || 0;
       xpEl.textContent = xp >= 1000 ? (xp / 1000).toFixed(1) + 'k' : xp;
     } catch(e) { xpEl.textContent = 0; }
   }
