@@ -1436,6 +1436,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hc-add-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3200;display:none;align-items:flex-end;justify-content:center}
 .hc-add-overlay.open{display:flex}
 .hc-add-sheet{background:var(--bg2);border-radius:18px 18px 0 0;border:1px solid var(--border2);border-bottom:none;width:100%;max-width:600px;padding:18px 20px calc(32px + var(--safe));max-height:78vh;overflow-y:auto}
+/* Thor Mode PIN lock */
+.hc-lock-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:28px 20px;text-align:center}
+.hc-lock-icon{font-size:32px;margin-bottom:10px;opacity:.6}
+.hc-lock-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);letter-spacing:.06em;margin-bottom:4px}
+.hc-lock-sub{font-size:12px;color:var(--text3);margin-bottom:18px}
+.hc-lock-btn{background:rgba(var(--accent-rgb),.1);border:1px solid var(--border2);border-radius:10px;color:var(--gold);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;padding:10px 28px;cursor:pointer;transition:all .15s}
+.hc-lock-btn:hover{background:rgba(var(--accent-rgb),.18)}
+.hc-pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3300;display:none;align-items:center;justify-content:center}
+.hc-pin-overlay.open{display:flex}
+.hc-pin-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center}
+.hc-pin-heading{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--text);letter-spacing:.06em;margin-bottom:4px}
+.hc-pin-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.hc-pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+.hc-pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all .15s}
+.hc-pin-dot.filled{background:var(--gold);border-color:var(--gold)}
+.hc-pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.hc-pin-key{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 0;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);cursor:pointer;transition:all .12s;touch-action:manipulation}
+.hc-pin-key:active{background:rgba(var(--accent-rgb),.15);border-color:var(--border2)}
+.hc-pin-key.del{font-size:16px;font-family:'DM Sans',sans-serif}
+.hc-pin-key.empty{background:transparent;border-color:transparent;pointer-events:none}
+.hc-pin-err{font-size:12px;color:#E07070;min-height:16px;margin-bottom:4px}
+@keyframes hcPinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .hc-add-results{margin-top:8px;max-height:220px;overflow-y:auto}
 .hc-add-res-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .hc-add-res-row:last-child{border-bottom:none}
@@ -5229,6 +5251,36 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <!-- ── CARDIO LOG MODAL ── -->
+<!-- THOR MODE — PIN Lock Modal -->
+<div class="hc-pin-overlay" id="hc-pin-overlay">
+  <div class="hc-pin-modal">
+    <div style="font-size:28px;margin-bottom:8px">🔐</div>
+    <div class="hc-pin-heading" id="hc-pin-heading">Thor Mode</div>
+    <div class="hc-pin-sub" id="hc-pin-sub">Enter your PIN</div>
+    <div class="hc-pin-dots" id="hc-pin-dots">
+      <div class="hc-pin-dot" id="hc-pd-0"></div>
+      <div class="hc-pin-dot" id="hc-pd-1"></div>
+      <div class="hc-pin-dot" id="hc-pd-2"></div>
+      <div class="hc-pin-dot" id="hc-pd-3"></div>
+    </div>
+    <div class="hc-pin-err" id="hc-pin-err"></div>
+    <div class="hc-pin-pad">
+      <button class="hc-pin-key" onclick="hcPinKey('1')">1</button>
+      <button class="hc-pin-key" onclick="hcPinKey('2')">2</button>
+      <button class="hc-pin-key" onclick="hcPinKey('3')">3</button>
+      <button class="hc-pin-key" onclick="hcPinKey('4')">4</button>
+      <button class="hc-pin-key" onclick="hcPinKey('5')">5</button>
+      <button class="hc-pin-key" onclick="hcPinKey('6')">6</button>
+      <button class="hc-pin-key" onclick="hcPinKey('7')">7</button>
+      <button class="hc-pin-key" onclick="hcPinKey('8')">8</button>
+      <button class="hc-pin-key" onclick="hcPinKey('9')">9</button>
+      <button class="hc-pin-key empty"></button>
+      <button class="hc-pin-key" onclick="hcPinKey('0')">0</button>
+      <button class="hc-pin-key del" onclick="hcPinDel()">⌫</button>
+    </div>
+    <button onclick="hcPinCancel()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.06em">CANCEL</button>
+  </div>
+</div>
 <!-- HERO CLASS — Add Exercise Sheet -->
 <div class="hc-add-overlay" id="hc-add-overlay" onclick="if(event.target===this)closeAddHcEx()">
   <div class="hc-add-sheet">
@@ -17810,8 +17862,15 @@ function clSaveWeight() {
   document.getElementById('cl-weight-edit-row').style.display = 'none';
 }
 
-// ── HERO CLASS ────────────────────────────────────────────────────
+// ── HERO CLASS / THOR MODE ────────────────────────────────────────
 const HC_CUSTOM_KEY = 'hero-class-custom';
+const HC_PIN_KEY    = 'hero-class-pin';
+let _thorUnlocked   = false;
+
+async function _hcHash(pin) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin + 'hm-thor'));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 
 const HC_PLAN = [
   {
@@ -17883,10 +17942,21 @@ function saveHcCustom(d) { localStorage.setItem(HC_CUSTOM_KEY, JSON.stringify(d)
 function renderHeroClass() {
   const root = document.getElementById('hero-class-root');
   if (!root) return;
+  const hasPinSet = !!localStorage.getItem(HC_PIN_KEY);
+  if (!_thorUnlocked) {
+    root.innerHTML = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program</div></div></div>
+    <div class="hc-lock-card">
+      <div class="hc-lock-icon">🔐</div>
+      <div class="hc-lock-title">Thor Mode</div>
+      <div class="hc-lock-sub">${hasPinSet ? 'Your private program. Enter your PIN to access.' : 'Set a PIN to protect your personal program.'}</div>
+      <button class="hc-lock-btn" onclick="hcOpenPin(${hasPinSet ? "'unlock'" : "'set'"})">${hasPinSet ? '🔓 UNLOCK' : '🔑 SET PIN'}</button>
+    </div>`;
+    return;
+  }
   const custom = loadHcCustom();
-  let profileName = 'My';
-  try { const p = hmActiveProfile(); if (p && p.name && p.name !== 'Hero') profileName = p.name + "'s"; } catch(e) {}
-  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">${profileName} Class</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div></div>`;
+  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div>
+    <button onclick="hcOpenPin('change')" style="background:none;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;cursor:pointer;padding:2px 0;opacity:.6" title="Change PIN">🔒 LOCK</button>
+  </div>`;
   HC_PLAN.forEach((day, i) => {
     const custExs = custom[i] || [];
     html += `<div class="hc-day-card" id="hc-day-${i}">
@@ -18004,6 +18074,107 @@ function hcSaveEx() {
   closeAddHcEx();
   renderHeroClass();
   setTimeout(() => { const c = document.getElementById('hc-day-' + savedDay); if (c) c.classList.add('hc-open'); }, 0);
+}
+
+// ── THOR MODE PIN ─────────────────────────────────────────────────
+let _hcPinMode   = 'unlock'; // 'unlock' | 'set' | 'set2' | 'change'
+let _hcPinBuf    = '';
+let _hcPinFirst  = '';       // holds first entry during 'set' confirm step
+
+function hcOpenPin(mode) {
+  _hcPinMode = mode;
+  _hcPinBuf  = '';
+  _hcPinFirst = '';
+  document.getElementById('hc-pin-err').textContent = '';
+  document.getElementById('hc-pin-heading').textContent = 'Thor Mode';
+  document.getElementById('hc-pin-sub').textContent =
+    mode === 'set'    ? 'Choose a 4-digit PIN' :
+    mode === 'change' ? 'Enter current PIN to lock' :
+                        'Enter your PIN to unlock';
+  _hcPinUpdateDots();
+  document.getElementById('hc-pin-overlay').classList.add('open');
+  lockBodyScroll();
+}
+
+function hcPinCancel() {
+  document.getElementById('hc-pin-overlay').classList.remove('open');
+  unlockBodyScroll();
+  _hcPinBuf = '';
+}
+
+function hcPinKey(d) {
+  if (_hcPinBuf.length >= 4) return;
+  _hcPinBuf += d;
+  _hcPinUpdateDots();
+  if (_hcPinBuf.length === 4) setTimeout(_hcPinSubmit, 120);
+}
+
+function hcPinDel() {
+  _hcPinBuf = _hcPinBuf.slice(0, -1);
+  _hcPinUpdateDots();
+  document.getElementById('hc-pin-err').textContent = '';
+}
+
+function _hcPinUpdateDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('hc-pd-' + i);
+    if (dot) dot.classList.toggle('filled', i < _hcPinBuf.length);
+  }
+}
+
+async function _hcPinSubmit() {
+  const pin = _hcPinBuf;
+  _hcPinBuf = '';
+  _hcPinUpdateDots();
+  const errEl = document.getElementById('hc-pin-err');
+
+  if (_hcPinMode === 'unlock') {
+    const stored = localStorage.getItem(HC_PIN_KEY);
+    const hash   = await _hcHash(pin);
+    if (hash === stored) {
+      _thorUnlocked = true;
+      hcPinCancel();
+      renderHeroClass();
+    } else {
+      errEl.textContent = 'Incorrect PIN';
+      const modal = document.querySelector('.hc-pin-modal');
+      if (modal) { modal.style.animation = 'hcPinShake .3s ease'; setTimeout(() => { modal.style.animation = ''; }, 350); }
+    }
+
+  } else if (_hcPinMode === 'set') {
+    _hcPinFirst = pin;
+    _hcPinMode  = 'set2';
+    document.getElementById('hc-pin-sub').textContent = 'Confirm your PIN';
+
+  } else if (_hcPinMode === 'set2') {
+    if (pin !== _hcPinFirst) {
+      errEl.textContent = "PINs don't match — try again";
+      _hcPinMode  = 'set';
+      _hcPinFirst = '';
+      document.getElementById('hc-pin-sub').textContent = 'Choose a 4-digit PIN';
+    } else {
+      const hash = await _hcHash(pin);
+      localStorage.setItem(HC_PIN_KEY, hash);
+      _thorUnlocked = true;
+      hcPinCancel();
+      renderHeroClass();
+      if (typeof showToast === 'function') showToast('PIN set — Thor Mode locked', 'success');
+    }
+
+  } else if (_hcPinMode === 'change') {
+    const stored = localStorage.getItem(HC_PIN_KEY);
+    const hash   = await _hcHash(pin);
+    if (hash === stored) {
+      _thorUnlocked = false;
+      hcPinCancel();
+      renderHeroClass();
+      if (typeof showToast === 'function') showToast('Thor Mode locked', 'success');
+    } else {
+      errEl.textContent = 'Incorrect PIN';
+      const modal = document.querySelector('.hc-pin-modal');
+      if (modal) { modal.style.animation = 'hcPinShake .3s ease'; setTimeout(() => { modal.style.animation = ''; }, 350); }
+    }
+  }
 }
 
 // Shared commit path — modal save and one-tap repeat both land here,
