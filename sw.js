@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v14'; // v14: Beau Berry award artwork wired into achievements
+const CACHE_VERSION = 'hero-mode-v15'; // v15: Beau easter egg photos + 8-photo gallery
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
