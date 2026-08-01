@@ -5090,7 +5090,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="sl-ex-name" id="sl-ex-name">Exercise</div>
       <div class="sl-ex-sub"  id="sl-ex-sub"></div>
       <div id="sl-vid-wrap" style="display:none;margin-bottom:12px">
-        <video id="sl-vid" autoplay muted loop playsinline controls
+        <video id="sl-vid" muted loop playsinline controls
           style="width:100%;border-radius:10px;display:block;background:#000;max-height:180px;object-fit:contain"
           onerror="this.closest('div').style.display='none'"></video>
       </div>
@@ -6572,7 +6572,7 @@ function buildVideoPanel(ex){
   // MoveKit technique clip — silent autoplay loop, controls for fullscreen/unmute
   if (localVid) {
     html += `<div style="margin-bottom:16px">
-      <video id="mk-vid" src="${localVid}" autoplay muted loop playsinline controls
+      <video id="mk-vid" src="${localVid}" muted loop playsinline controls
         style="width:100%;border-radius:12px;display:block;background:#000;max-height:320px;object-fit:contain"
         onerror="this.closest('div').style.display='none'"></video>
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;text-align:center;margin-top:5px;text-transform:uppercase">Technique clip · Tap controls to unmute or fullscreen</div>
@@ -6612,6 +6612,10 @@ function buildVideoPanel(ex){
     html += `<div style="font-size:11px;color:var(--text3);line-height:1.5;padding:10px 2px;border-top:1px solid var(--border);margin-top:4px">Technique shown may vary — cues in the Coach tab are specific to this program.</div>`;
   }
   document.getElementById('video-panel-content').innerHTML = html;
+  if (localVid) {
+    const mkv = document.getElementById('mk-vid');
+    if (mkv) { mkv.muted = true; mkv.play().catch(() => {}); }
+  }
 }
 
 // ── MY VIDEOS (per-exercise personal library) ────────────────
@@ -15862,6 +15866,7 @@ function openLogSheet(key) {
     if (slVidSrc) {
       slVid.src = slVidSrc;
       slVidWrap.style.display = 'block';
+      slVid.muted = true;
       slVid.load();
       slVid.play().catch(()=>{});
     } else {
