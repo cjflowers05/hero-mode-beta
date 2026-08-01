@@ -12055,6 +12055,12 @@ const SORE_CHAR_MAP = {
   ronin:       'Generic_ASM',
   ranger:      'Generic_NTM',
   wick:        'Generic_WM',
+  thor:        'Generic_WM2',
+  amazon:      'Generic_ASF',
+  alpha:       'Generic_MEM',
+  nomad:       'Generic_NTM',
+  sentinel:    'Generic_WM',
+  apex:        'Generic_ASM',
 };
 
 const SORE_PORTRAIT_SPRITES = [
@@ -20185,6 +20191,24 @@ const HERO_THEMES = [
   { id:'wick', name:'Wick', sub:'Shadow & Neon Purple', emblem:'🔫', pat:'dots', tone:'mystic', lock:0,
     swatch:['#9D4EDD','#1A0A2E'],
     vars:{'--gold':'#9D4EDD','--gold-dim':'#5A1F8A','--bg':'#08060D','--bg2':'#0E0A16','--bg3':'#150F1F','--bg4':'#1C1428','--text':'#EDE8F5','--text2':'#9B8DB0','--text3':'#6D5F82','--border':'rgba(157,78,221,0.14)','--border2':'rgba(157,78,221,0.30)','--accent-rgb':'157,78,221'} },
+  { id:'thor', name:'Thor', sub:'Storm & Lightning', emblem:'⚡', pat:'rays', tone:'power',
+    swatch:['#72C8F0','#1B4FD8'],
+    vars:{'--gold':'#72C8F0','--gold-dim':'#2B6CB0','--bg':'#06080E','--bg2':'#0C1018','--bg3':'#121822','--bg4':'#18202C','--text':'#EBF4FA','--text2':'#8AAABB','--text3':'#5E7E8C','--border':'rgba(114,200,240,0.13)','--border2':'rgba(114,200,240,0.30)','--accent-rgb':'114,200,240'} },
+  { id:'amazon', name:'Amazon', sub:'Jade & Ancient Gold', emblem:'🌿', pat:'scales', tone:'light',
+    swatch:['#D4AC0D','#2D6A4F'],
+    vars:{'--gold':'#D4AC0D','--gold-dim':'#8B7000','--bg':'#0A0900','--bg2':'#120F00','--bg3':'#1A1700','--bg4':'#231F00','--text':'#F5F0D8','--text2':'#A09A62','--text3':'#747044','--border':'rgba(212,172,13,0.14)','--border2':'rgba(212,172,13,0.30)','--accent-rgb':'212,172,13'} },
+  { id:'alpha', name:'Alpha', sub:'Onyx & Ember', emblem:'🦁', pat:'rays', tone:'power', lock:5,
+    swatch:['#FF6B00','#CC3300'],
+    vars:{'--gold':'#FF6B00','--gold-dim':'#CC3300','--bg':'#060504','--bg2':'#0D0907','--bg3':'#150E0A','--bg4':'#1C130D','--text':'#F5EEE5','--text2':'#A08A70','--text3':'#74604A','--border':'rgba(255,107,0,0.14)','--border2':'rgba(255,107,0,0.32)','--accent-rgb':'255,107,0'} },
+  { id:'nomad', name:'Nomad', sub:'Desert Sand & Sienna', emblem:'🗺️', pat:'dots', tone:'power', lock:8,
+    swatch:['#C8935A','#8B4E2A'],
+    vars:{'--gold':'#C8935A','--gold-dim':'#8B4E2A','--bg':'#0C0904','--bg2':'#140E07','--bg3':'#1D140A','--bg4':'#261A0E','--text':'#F4EDDE','--text2':'#9E8C6E','--text3':'#73624A','--border':'rgba(200,147,90,0.14)','--border2':'rgba(200,147,90,0.30)','--accent-rgb':'200,147,90'} },
+  { id:'sentinel', name:'Sentinel', sub:'Olive & Steel', emblem:'🎖️', pat:'grid', tone:'power', lock:10,
+    swatch:['#7B9B4A','#4A5E2A'],
+    vars:{'--gold':'#7B9B4A','--gold-dim':'#3A4A2A','--bg':'#080A07','--bg2':'#0E120D','--bg3':'#141A12','--bg4':'#1B2218','--text':'#EDF2E8','--text2':'#8CA080','--text3':'#617259','--border':'rgba(123,155,74,0.14)','--border2':'rgba(123,155,74,0.30)','--accent-rgb':'123,155,74'} },
+  { id:'apex', name:'Apex', sub:'Platinum & Void', emblem:'🔱', pat:'stars', tone:'mystic', lock:15,
+    swatch:['#C0CCE8','#8090B0'],
+    vars:{'--gold':'#B0C0E0','--gold-dim':'#7080A8','--bg':'#08090E','--bg2':'#0F1016','--bg3':'#16181F','--bg4':'#1E2028','--text':'#F2F4F8','--text2':'#9AA0B2','--text3':'#6C7285','--border':'rgba(176,192,224,0.14)','--border2':'rgba(176,192,224,0.30)','--accent-rgb':'176,192,224'} },
 ];
 
 // ── PROFILES — each hero owns their theme, XP, badges, and plan ──
