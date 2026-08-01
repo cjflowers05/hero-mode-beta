@@ -4518,7 +4518,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
     <div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);letter-spacing:.04em;line-height:1">Wellness</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:3px">Sleep · Cardio · Alcohol · Vitamins & Prescriptions</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:3px">Sleep · Cardio · Alcohol · Vitamins · Dog Walk</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
       <button class="section-guide-btn" onclick="hmStartSectionTour('wellness')">✨ GUIDE</button>
@@ -14071,6 +14071,9 @@ const BEAU_QUOTES = [
   "You showed up. That's everything.",
   "I knew you'd come.",
 ];
+function _beauQuote() {
+  return BEAU_QUOTES[Math.floor(Math.random() * BEAU_QUOTES.length)];
+}
 
 const BEAU_MEDALS_KEY = 'hero-beau-medals';
 
@@ -14168,13 +14171,12 @@ function walkStats(walks) {
   streak = run;
   // Full longest-streak pass
   const sortedDays = [...daySet].sort();
-  let sRun = 0;
-  for (let i = 0; i < sortedDays.length; i++) {
-    if (i === 0) { sRun = 1; continue; }
+  let sRun = sortedDays.length > 0 ? 1 : 0;
+  longestStreak = sRun;
+  for (let i = 1; i < sortedDays.length; i++) {
     const prev = new Date(sortedDays[i-1] + 'T12:00:00');
     prev.setDate(prev.getDate() + 1);
-    if (prev.toISOString().slice(0,10) === sortedDays[i]) { sRun++; }
-    else { sRun = 1; }
+    sRun = prev.toISOString().slice(0,10) === sortedDays[i] ? sRun + 1 : 1;
     if (sRun > longestStreak) longestStreak = sRun;
   }
   if (streak > longestStreak) longestStreak = streak;
@@ -14192,6 +14194,14 @@ function walkStats(walks) {
   return { total, streak, longestStreak, totalMiles, totalElevFt,
     morningWalks, eveningWalks, nightWalks, rainWalks, winterWalks,
     summerWalks, weekendWalks, returnAfterBreak, bigWalkDone };
+}
+
+function _beauNextTarget(stats) {
+  const unlocked = new Set(JSON.parse(localStorage.getItem(BEAU_MEDALS_KEY) || '[]'));
+  for (const a of BEAU_ACHIEVEMENTS) {
+    if (!unlocked.has(a.id) && !a.check(stats)) return a;
+  }
+  return null;
 }
 
 let walkWeather = 'sunny';
@@ -14328,10 +14338,12 @@ function walkElevGainFt() {
   return Math.round(gain * 3.28084);
 }
 function walkCalories(secs, km) {
-  const hr = (secs != null ? secs : walkSecs) / 3600;
+  const hr  = (secs != null ? secs : walkSecs) / 3600;
   const mph = walkSpeedMph(secs, km);
   const met = mph > 5.5 ? 8.3 : mph > 4.5 ? 6.0 : mph > 3.5 ? 4.5 : mph > 2.5 ? 3.8 : 3.0;
-  return Math.round(met * 82 * hr); // 82 kg ≈ 180 lbs
+  const lbs = (typeof getCardioProfile === 'function' && getCardioProfile().weight) || 180;
+  const kg  = lbs * 0.453592;
+  return Math.round(met * kg * hr);
 }
 function paceColor(minPerMile) {
   if (!minPerMile || !isFinite(minPerMile)) return '#5AAEE0';
@@ -14521,7 +14533,14 @@ function renderWalkLive() {
     destroyWalkMap();
     const _bwAlks = loadWalks();
     const _bwSt   = walkStats(_bwAlks);
-    const _bwQ    = BEAU_QUOTES[Math.floor(Math.random() * BEAU_QUOTES.length)];
+    const _bwQ    = _beauQuote();
+    const _bwNext = _beauNextTarget(_bwSt);
+    const _milesDisplay = _bwSt.totalMiles > 0 ? _bwSt.totalMiles.toFixed(1) : '--';
+    const _nextHtml = _bwNext
+      ? `<div style="display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(201,168,76,.6);letter-spacing:.08em;margin-bottom:14px">
+           <span>${_bwNext.icon}</span><span>NEXT: ${_bwNext.name.toUpperCase()}</span>
+         </div>`
+      : `<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(91,200,118,.6);text-align:center;letter-spacing:.08em;margin-bottom:14px">🏆 ALL BADGES EARNED</div>`;
     el.innerHTML = `
       <div class="beau-card">
         <div class="beau-avatar">🐾</div>
@@ -14531,8 +14550,9 @@ function renderWalkLive() {
       <div class="beau-stats-row">
         <div class="beau-stat-pill"><div class="beau-stat-val">${_bwSt.total}</div><div class="beau-stat-lbl">WALKS</div></div>
         <div class="beau-stat-pill"><div class="beau-stat-val">${_bwSt.streak}</div><div class="beau-stat-lbl">STREAK</div></div>
-        <div class="beau-stat-pill"><div class="beau-stat-val">${_bwSt.totalMiles.toFixed(1)}</div><div class="beau-stat-lbl">MILES</div></div>
+        <div class="beau-stat-pill"><div class="beau-stat-val">${_milesDisplay}</div><div class="beau-stat-lbl">MILES</div></div>
       </div>
+      ${_nextHtml}
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Conditions</div>
       <div class="walk-wx-row">
         <button class="walk-wx-btn${walkWeather==='sunny'?' sel':''}" onclick="walkSetWeather('sunny',this)"><span class="wx-icon">☀️</span>SUNNY</button>
