@@ -1407,6 +1407,42 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hc-close{width:100%;padding:11px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.06em;cursor:pointer}
 .tc-hero-card-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:11px;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.28);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;cursor:pointer;transition:background .15s,border-color .15s}
 .tc-hero-card-btn:hover{background:rgba(var(--accent-rgb),.14);border-color:rgba(var(--accent-rgb),.45)}
+/* ── HERO CLASS ─────────────────────────────────────────────── */
+.hc-section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hc-section-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);letter-spacing:.04em}
+.hc-section-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+.hc-day-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;margin-bottom:8px;overflow:hidden;transition:border-color .15s}
+.hc-day-card.hc-open{border-color:var(--border2)}
+.hc-day-hd{display:flex;align-items:center;gap:11px;padding:12px 14px;cursor:pointer;-webkit-tap-highlight-color:rgba(201,168,76,.08)}
+.hc-day-num{width:34px;height:34px;border-radius:9px;background:rgba(var(--accent-rgb),.1);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);flex-shrink:0}
+.hc-day-info{flex:1;min-width:0}
+.hc-day-dow{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.hc-day-name{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--text);letter-spacing:.03em;line-height:1.1;margin-bottom:1px}
+.hc-day-focus{font-size:11px;color:var(--text3);line-height:1.4}
+.hc-day-chev{color:var(--text3);font-size:15px;transition:transform .2s;flex-shrink:0}
+.hc-day-card.hc-open .hc-day-chev{transform:rotate(180deg)}
+.hc-day-body{display:none;padding:0 14px 12px}
+.hc-day-card.hc-open .hc-day-body{display:block}
+.hc-ex-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:rgba(201,168,76,.08)}
+.hc-ex-row:last-child{border-bottom:none}
+.hc-ex-info{flex:1;min-width:0}
+.hc-ex-name{font-size:13px;color:var(--text)}
+.hc-ex-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px}
+.hc-ex-sets{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);white-space:nowrap;flex-shrink:0}
+.hc-del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 6px;opacity:.45;transition:opacity .15s;flex-shrink:0}
+.hc-del-btn:hover{opacity:1;color:#E07070}
+.hc-add-row{display:flex;align-items:center;gap:6px;padding:9px 0 0;border:none;background:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:rgba(var(--accent-rgb),.5);letter-spacing:.06em;transition:color .15s;width:100%}
+.hc-add-row:hover{color:var(--gold)}
+.hc-add-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3200;display:none;align-items:flex-end;justify-content:center}
+.hc-add-overlay.open{display:flex}
+.hc-add-sheet{background:var(--bg2);border-radius:18px 18px 0 0;border:1px solid var(--border2);border-bottom:none;width:100%;max-width:600px;padding:18px 20px calc(32px + var(--safe));max-height:78vh;overflow-y:auto}
+.hc-add-results{margin-top:8px;max-height:220px;overflow-y:auto}
+.hc-add-res-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.hc-add-res-row:last-child{border-bottom:none}
+.hc-add-res-name{font-size:13px;color:var(--text)}
+.hc-add-res-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px}
+.hc-add-config{background:var(--bg3);border:1px solid var(--border2);border-radius:11px;padding:12px;margin-top:12px;display:none}
+/* ─────────────────────────────────────────────────────────────── */
 .cl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1060;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
 .cl-overlay.open{opacity:1;pointer-events:all}
 .cl-sheet{background:var(--bg2);border-radius:22px 22px 0 0;width:100%;max-width:680px;margin:0 auto;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
@@ -1625,6 +1661,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="daily-quests"></div>
   <!-- CARDIO TRACKER WIDGET -->
   <div id="train-cardio-widget"></div>
+  <!-- HERO CLASS — personal curated program -->
+  <div id="hero-class-root" style="margin-bottom:16px"></div>
   <!-- GENERATED TRAINING PLAN -->
   <div id="train-plan-root"></div>
 </div>
@@ -3133,7 +3171,7 @@ function hmApplyNutrition(){
 
 // Re-run all row-level integrations after (re)rendering the plan
 function hmRefreshIntegrations(){
-  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget'];
+  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass'];
   fns.forEach(fn => { try { if (typeof window[fn] === 'function') window[fn](); } catch(e) { console.warn('hm refresh', fn, e); } });
 }
 
@@ -5191,6 +5229,22 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <!-- ── CARDIO LOG MODAL ── -->
+<!-- HERO CLASS — Add Exercise Sheet -->
+<div class="hc-add-overlay" id="hc-add-overlay" onclick="if(event.target===this)closeAddHcEx()">
+  <div class="hc-add-sheet">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);letter-spacing:.04em;margin-bottom:12px" id="hc-add-title">Add Exercise</div>
+    <input class="cl-field" id="hc-add-search" type="text" placeholder="Search exercises…" oninput="hcSearchEx(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="hc-add-results" id="hc-add-results"></div>
+    <div class="hc-add-config" id="hc-add-config">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px" id="hc-add-config-name"></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <div style="flex:1"><div class="cl-field-lbl">Sets</div><input class="cl-field" id="hc-sets-inp" type="number" min="1" max="10" inputmode="numeric"></div>
+        <div style="flex:1"><div class="cl-field-lbl">Reps</div><input class="cl-field" id="hc-reps-inp" type="text" placeholder="10" inputmode="numeric"></div>
+      </div>
+      <button class="cl-save-btn" onclick="hcSaveEx()">Add to Day</button>
+    </div>
+  </div>
+</div>
 <div class="cl-overlay" id="clModal" onclick="if(event.target===this)closeCardioLog()">
   <div class="cl-sheet">
     <div class="cl-inner">
@@ -13904,6 +13958,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCheckIns();
   initExerciseRowHandlers();   // make exercise rows tappable → Coach tab
   checkAndRunWeeklyReport();   // load/generate Sunday weekly coaching report
+  renderHeroClass();
 });
 </script>
 <!-- ══ SMART CHECK-IN OVERLAY ══ -->
@@ -17753,6 +17808,202 @@ function clSaveWeight() {
     clUpdateCalPreview();
   }
   document.getElementById('cl-weight-edit-row').style.display = 'none';
+}
+
+// ── HERO CLASS ────────────────────────────────────────────────────
+const HC_CUSTOM_KEY = 'hero-class-custom';
+
+const HC_PLAN = [
+  {
+    dow:'Monday', name:'Push — Chest & Triceps',
+    focus:'Build pressing strength and upper body mass',
+    exs:[
+      {key:'bench',    sets:4, reps:'6'},
+      {key:'incline',  sets:3, reps:'8'},
+      {key:'dbpress',  sets:3, reps:'10'},
+      {key:'ohp',      sets:3, reps:'8'},
+      {key:'pushdown', sets:3, reps:'12'},
+      {key:'triext',   sets:3, reps:'12'},
+    ]
+  },
+  {
+    dow:'Tuesday', name:'Pull — Back & Biceps',
+    focus:'Build a thick wide back with peak bicep strength',
+    exs:[
+      {key:'deadlift', sets:4, reps:'5'},
+      {key:'pullup',   sets:4, reps:'8'},
+      {key:'row',      sets:4, reps:'8'},
+      {key:'pulldown', sets:3, reps:'12'},
+      {key:'bbcurl',   sets:3, reps:'10'},
+      {key:'hammer',   sets:3, reps:'12'},
+    ]
+  },
+  {
+    dow:'Wednesday', name:'Legs — Strength & Power',
+    focus:'Squat and hinge dominance, full leg development',
+    exs:[
+      {key:'squat',        sets:4, reps:'6'},
+      {key:'rdl',          sets:3, reps:'10'},
+      {key:'bulgarian',    sets:3, reps:'10'},
+      {key:'hipthrust',    sets:3, reps:'12'},
+      {key:'walkinglunge', sets:3, reps:'12'},
+      {key:'calfraise',    sets:4, reps:'15'},
+    ]
+  },
+  {
+    dow:'Thursday', name:'Shoulders & Arms',
+    focus:'Build shoulder width, peak biceps, and horseshoe triceps',
+    exs:[
+      {key:'ohp',      sets:4, reps:'6'},
+      {key:'arnold',   sets:3, reps:'10'},
+      {key:'lateral',  sets:4, reps:'15'},
+      {key:'facepull', sets:3, reps:'15'},
+      {key:'bbcurl',   sets:3, reps:'10'},
+      {key:'hammer',   sets:3, reps:'10'},
+      {key:'pushdown', sets:3, reps:'12'},
+    ]
+  },
+  {
+    dow:'Friday', name:'Power & Conditioning',
+    focus:'Athletic strength, full-body power output and core',
+    exs:[
+      {key:'clean',        sets:3, reps:'5'},
+      {key:'pullup',       sets:3, reps:'max'},
+      {key:'swing',        sets:4, reps:'15'},
+      {key:'boxjump',      sets:3, reps:'10'},
+      {key:'farmercarry',  sets:3, reps:'40yd'},
+      {key:'hangingraise', sets:3, reps:'15'},
+    ]
+  },
+];
+
+function loadHcCustom()  { try { return JSON.parse(localStorage.getItem(HC_CUSTOM_KEY) || '{}'); } catch(e) { return {}; } }
+function saveHcCustom(d) { localStorage.setItem(HC_CUSTOM_KEY, JSON.stringify(d)); }
+
+function renderHeroClass() {
+  const root = document.getElementById('hero-class-root');
+  if (!root) return;
+  const custom = loadHcCustom();
+  let profileName = 'My';
+  try { const p = hmActiveProfile(); if (p && p.name && p.name !== 'Hero') profileName = p.name + "'s"; } catch(e) {}
+  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">${profileName} Class</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div></div>`;
+  HC_PLAN.forEach((day, i) => {
+    const custExs = custom[i] || [];
+    html += `<div class="hc-day-card" id="hc-day-${i}">
+      <div class="hc-day-hd" onclick="hcToggleDay(${i})">
+        <div class="hc-day-num">${i + 1}</div>
+        <div class="hc-day-info">
+          <div class="hc-day-dow">${day.dow}</div>
+          <div class="hc-day-name">${day.name}</div>
+          <div class="hc-day-focus">${day.focus}</div>
+        </div>
+        <div class="hc-day-chev">▾</div>
+      </div>
+      <div class="hc-day-body">`;
+    day.exs.forEach(ex => {
+      const e = EX[ex.key] || {};
+      const tagParts = (e.tag || '').split('·').map(s => s.trim()).filter(Boolean);
+      html += `<div class="hc-ex-row" onclick="openLogSheet('${ex.key}');event.stopPropagation()">
+        <div class="hc-ex-info"><div class="hc-ex-name">${e.name || ex.key}</div><div class="hc-ex-tag">${tagParts.slice(0,2).join(' · ')}</div></div>
+        <div class="hc-ex-sets">${ex.sets} × ${ex.reps}</div>
+      </div>`;
+    });
+    custExs.forEach((cx, ci) => {
+      const ce = EX[cx.key] || {};
+      const name = ce.name || cx.name || cx.key;
+      const tagParts = (ce.tag || '').split('·').map(s => s.trim()).filter(Boolean);
+      const logCall = EX[cx.key] ? `openLogSheet('${cx.key}')` : '';
+      html += `<div class="hc-ex-row" onclick="${logCall};event.stopPropagation()">
+        <div class="hc-ex-info"><div class="hc-ex-name">${name}</div><div class="hc-ex-tag">${tagParts.slice(0,2).join(' · ') || 'Custom'}</div></div>
+        <div class="hc-ex-sets">${cx.sets} × ${cx.reps}</div>
+        <button class="hc-del-btn" onclick="hcRemoveEx(${i},${ci});event.stopPropagation()" title="Remove">✕</button>
+      </div>`;
+    });
+    html += `<button class="hc-add-row" onclick="openAddHcEx(${i});event.stopPropagation()">＋ ADD EXERCISE</button>`;
+    html += `</div></div>`;
+  });
+  root.innerHTML = html;
+}
+
+function hcToggleDay(idx) {
+  const card = document.getElementById('hc-day-' + idx);
+  if (card) card.classList.toggle('hc-open');
+}
+
+function hcRemoveEx(dayIdx, custIdx) {
+  const d = loadHcCustom();
+  if (d[dayIdx]) { d[dayIdx].splice(custIdx, 1); saveHcCustom(d); }
+  renderHeroClass();
+  setTimeout(() => { const c = document.getElementById('hc-day-' + dayIdx); if (c) c.classList.add('hc-open'); }, 0);
+}
+
+let _hcAddDay = -1;
+let _hcPickedKey = null;
+
+function openAddHcEx(dayIdx) {
+  _hcAddDay = dayIdx;
+  _hcPickedKey = null;
+  const ov = document.getElementById('hc-add-overlay');
+  if (!ov) return;
+  document.getElementById('hc-add-title').textContent = 'Add to ' + HC_PLAN[dayIdx].dow;
+  document.getElementById('hc-add-search').value = '';
+  document.getElementById('hc-add-results').innerHTML = '';
+  document.getElementById('hc-add-config').style.display = 'none';
+  ov.classList.add('open');
+  lockBodyScroll();
+  setTimeout(() => document.getElementById('hc-add-search').focus(), 300);
+}
+
+function closeAddHcEx() {
+  const ov = document.getElementById('hc-add-overlay');
+  if (ov) ov.classList.remove('open');
+  unlockBodyScroll();
+  _hcAddDay = -1;
+  _hcPickedKey = null;
+}
+
+function hcSearchEx(q) {
+  const res = document.getElementById('hc-add-results');
+  document.getElementById('hc-add-config').style.display = 'none';
+  _hcPickedKey = null;
+  if (!q || q.length < 2) { res.innerHTML = ''; return; }
+  const lq = q.toLowerCase();
+  const matches = Object.entries(EX).filter(([k, e]) => e.name && e.name.toLowerCase().includes(lq)).slice(0, 20);
+  if (!matches.length) { res.innerHTML = '<div style="padding:12px 0;color:var(--text3);font-size:13px">No matches</div>'; return; }
+  res.innerHTML = matches.map(([k, e]) =>
+    `<div class="hc-add-res-row" onclick="hcPickEx('${k}')">
+      <div><div class="hc-add-res-name">${e.name}</div><div class="hc-add-res-tag">${e.tag || ''}</div></div>
+      <div style="color:var(--gold);font-size:13px">＋</div>
+    </div>`
+  ).join('');
+}
+
+function hcPickEx(key) {
+  _hcPickedKey = key;
+  const e = EX[key] || {};
+  const m = (e.sets || '').match(/(\d+)\s*[×x]\s*(\d+)/);
+  const defaultSets = m ? parseInt(m[1]) : 3;
+  const defaultReps = m ? m[2] : '10';
+  document.getElementById('hc-add-config-name').textContent = e.name || key;
+  document.getElementById('hc-sets-inp').value = defaultSets;
+  document.getElementById('hc-reps-inp').value = defaultReps;
+  document.getElementById('hc-add-config').style.display = 'block';
+  document.getElementById('hc-add-results').innerHTML = '';
+  document.getElementById('hc-add-search').value = e.name || key;
+}
+
+function hcSaveEx() {
+  if (_hcAddDay < 0 || !_hcPickedKey) return;
+  const sets = parseInt(document.getElementById('hc-sets-inp').value) || 3;
+  const reps = document.getElementById('hc-reps-inp').value.trim() || '10';
+  const d = loadHcCustom();
+  if (!d[_hcAddDay]) d[_hcAddDay] = [];
+  d[_hcAddDay].push({key:_hcPickedKey, sets, reps});
+  saveHcCustom(d);
+  const savedDay = _hcAddDay;
+  closeAddHcEx();
+  renderHeroClass();
+  setTimeout(() => { const c = document.getElementById('hc-day-' + savedDay); if (c) c.classList.add('hc-open'); }, 0);
 }
 
 // Shared commit path — modal save and one-tap repeat both land here,
