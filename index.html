@@ -1403,6 +1403,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .it-prg-track{height:4px;background:var(--border);margin:0 16px 20px;border-radius:2px;overflow:hidden}
 .it-prg-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .15s linear}
 .it-ctrl{display:flex;gap:10px;padding:0 16px;margin-top:auto;padding-bottom:32px}
+.it-exit{flex:1;padding:14px;border:1px solid var(--border);border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;background:var(--bg3);color:var(--text3)}
 .it-stop{flex:1;padding:14px;border:1px solid rgba(220,80,80,.25);border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;background:rgba(220,80,80,.1);color:#CC4444}
 .it-pause{flex:2;padding:14px;border:1px solid var(--border2);border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;background:var(--bg3);color:var(--text)}
 .it-done-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
@@ -18806,7 +18807,7 @@ function _itRenderActive() {
   const t = _itTmpl;
   document.getElementById('it-screen').innerHTML = `
     <div class="it-hdr">
-      <button class="it-back-btn" onclick="_itHalt();_itRenderSetup()">✕</button>
+      <button class="it-back-btn" onclick="_itHalt();closeIntervalTimer()">✕ EXIT</button>
       <div class="it-hdr-ttl">${t.name}</div>
     </div>
     <div id="it-phase-lbl" class="it-phase-lbl it-ph-work">WORK</div>
@@ -18814,6 +18815,7 @@ function _itRenderActive() {
     <div id="it-rnd" class="it-rnd">ROUND 1 / ${t.rounds}</div>
     <div class="it-prg-track"><div class="it-prg-fill" id="it-prg-fill" style="width:0%"></div></div>
     <div class="it-ctrl">
+      <button class="it-exit" onclick="_itHalt();closeIntervalTimer()">EXIT</button>
       <button class="it-stop" onclick="_itHalt();_itRenderSetup()">STOP</button>
       <button class="it-pause" id="it-pause-btn" onclick="_itTogglePause()">PAUSE</button>
     </div>`;
