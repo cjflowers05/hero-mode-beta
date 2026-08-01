@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v19'; // v19: Thor, Amazon, Alpha, Nomad, Sentinel, Apex themes
+const CACHE_VERSION = 'hero-mode-v20'; // v20: Thor/Amazon/Apex locked, Alpha/Nomad/Sentinel unlocked
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
