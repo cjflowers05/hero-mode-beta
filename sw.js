@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v9'; // v9: walk calorie uses body weight, next-badge teaser, streak bug fix
+const CACHE_VERSION = 'hero-mode-v10'; // v10: time-of-day Beau quotes
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

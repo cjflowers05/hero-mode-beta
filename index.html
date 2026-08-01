@@ -14059,20 +14059,41 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Walk Tracker v2 — GPS map, pace, speed, elevation, calories ──
 
 // ── Beau Berry CMO ───────────────────────────────────────────
-const BEAU_QUOTES = [
-  "Good human. I've been waiting.",
-  "Let's go outside.",
-  "Adventure awaits.",
-  "Fresh air fixes a lot.",
-  "One walk at a time.",
-  "I'll go anywhere with you.",
-  "I don't care how far we go. I just like going with you.",
-  "Every walk is a good walk.",
-  "You showed up. That's everything.",
-  "I knew you'd come.",
-];
+const BEAU_QUOTES = {
+  morning: [
+    "Good human. I've been waiting.",
+    "Best part of the morning.",
+    "Adventure awaits.",
+    "I knew you'd come.",
+    "Morning walks fix everything.",
+  ],
+  afternoon: [
+    "Let's go outside.",
+    "Fresh air fixes a lot.",
+    "One walk at a time.",
+    "Best decision you'll make today.",
+    "I'll go anywhere with you.",
+  ],
+  evening: [
+    "Sunset walks are the best walks.",
+    "You showed up. That's everything.",
+    "I don't care how far we go. I just like going with you.",
+    "End the day right.",
+    "I've been thinking about this all day.",
+  ],
+  night: [
+    "Night walks with you are something else.",
+    "I don't care how far we go. I just like going with you.",
+    "Every walk is a good walk.",
+    "The world is quieter at night. I like it.",
+    "Still showing up. That's the hero in you.",
+  ],
+};
 function _beauQuote() {
-  return BEAU_QUOTES[Math.floor(Math.random() * BEAU_QUOTES.length)];
+  const h   = new Date().getHours();
+  const key = h >= 5 && h < 12 ? 'morning' : h < 17 ? 'afternoon' : h < 21 ? 'evening' : 'night';
+  const arr = BEAU_QUOTES[key];
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 const BEAU_MEDALS_KEY = 'hero-beau-medals';
