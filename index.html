@@ -14454,11 +14454,14 @@ function loadWalks() {
 function saveWalks(w) { try { localStorage.setItem(WALK_KEY_V2, JSON.stringify(w)); } catch(e) {} }
 
 // ── State ────────────────────────────────────────────────────
-let walkState     = 'idle'; // 'idle' | 'walking' | 'paused' | 'summary'
-let walkSecs      = 0;
-let walkTimer     = null;
-let walkWatchId   = null;
-let walkPositions = []; // [{lat,lng,alt,ts}]
+let walkState      = 'idle'; // 'idle' | 'walking' | 'paused' | 'summary'
+let walkSecs       = 0;
+let walkTimer      = null;
+let walkWatchId    = null;
+let walkPositions  = []; // [{lat,lng,alt,ts}]
+let _walkStartMs   = 0;  // wall-clock time when current active segment started
+let _walkPausedMs  = 0;  // total milliseconds spent paused
+let _walkPauseAt   = 0;  // wall-clock time when last pause began
 let walkMap       = null;
 let walkPolyline  = null;
 let walkDotMarker = null;
@@ -14599,8 +14602,9 @@ function startWalk() {
   if (!navigator.geolocation) { showToast('GPS not available on this device', 'error'); return; }
   if (typeof L === 'undefined') { showToast('Map still loading — try again in a moment', 'error'); return; }
   walkState = 'walking'; walkSecs = 0; walkPositions = [];
+  _walkStartMs = Date.now(); _walkPausedMs = 0; _walkPauseAt = 0;
   renderWalkLive();
-  walkTimer = setInterval(() => { walkSecs++; updateWalkStats(); }, 1000);
+  walkTimer = setInterval(() => { walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000); updateWalkStats(); }, 1000);
   walkWatchId = navigator.geolocation.watchPosition(
     pos => {
       walkPositions.push({ lat: pos.coords.latitude, lng: pos.coords.longitude, alt: pos.coords.altitude, ts: Date.now() });
@@ -14616,6 +14620,8 @@ function startWalk() {
 function pauseWalk() {
   if (walkState !== 'walking') return;
   walkState = 'paused';
+  _walkPauseAt = Date.now();
+  walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000);
   clearInterval(walkTimer); walkTimer = null;
   navigator.geolocation.clearWatch(walkWatchId); walkWatchId = null;
   updateWalkStats();
@@ -14629,7 +14635,8 @@ function pauseWalk() {
 function resumeWalk() {
   if (walkState !== 'paused') return;
   walkState = 'walking';
-  walkTimer = setInterval(() => { walkSecs++; updateWalkStats(); }, 1000);
+  if (_walkPauseAt) { _walkPausedMs += Date.now() - _walkPauseAt; _walkPauseAt = 0; }
+  walkTimer = setInterval(() => { walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000); updateWalkStats(); }, 1000);
   walkWatchId = navigator.geolocation.watchPosition(
     pos => {
       walkPositions.push({ lat: pos.coords.latitude, lng: pos.coords.longitude, alt: pos.coords.altitude, ts: Date.now() });
@@ -20426,8 +20433,8 @@ function _hmTone(ctx, freq, start, dur, type, vol, glideTo){
 // buffer (the classic iOS unlock), so all later timer-driven sounds work.
 function hmAudioUnlock(){
   try {
-    // iOS 17+ Audio Session API: let SFX play even with the silent switch on
-    if (navigator.audioSession) { try { navigator.audioSession.type = 'playback'; } catch(e) {} }
+    // iOS 17+ Audio Session API: 'ambient' mixes with music instead of interrupting it
+    if (navigator.audioSession) { try { navigator.audioSession.type = 'ambient'; } catch(e) {} }
     _hmAudioCtx = _hmAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
     if (_hmAudioCtx.state === 'suspended') _hmAudioCtx.resume();
     const buf = _hmAudioCtx.createBuffer(1, 1, 22050);
@@ -20439,6 +20446,14 @@ function hmAudioUnlock(){
 }
 ['touchend','pointerdown','click'].forEach(ev =>
   document.addEventListener(ev, hmAudioUnlock, { once:true, capture:true, passive:true }));
+
+// When the user returns from another app mid-walk, snap the timer to real elapsed time immediately
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && walkState === 'walking' && _walkStartMs) {
+    walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000);
+    updateWalkStats();
+  }
+});
 
 function hmSfx(name, tone){
   if (!hmSoundOn()) return;
