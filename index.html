@@ -14242,59 +14242,59 @@ function _closeBeauEgg() {
 
 const BEAU_ACHIEVEMENTS = [
   // Walking
-  { id:'first_walk',      name:'First Walk',        col:'Walking',      icon:'🐾', check: s => s.total >= 1 },
-  { id:'walks_10',        name:'10 Walks',           col:'Walking',      icon:'🐾', check: s => s.total >= 10 },
-  { id:'walks_25',        name:'25 Walks',           col:'Walking',      icon:'🐾', check: s => s.total >= 25 },
-  { id:'walks_50',        name:'50 Walks',           col:'Walking',      icon:'🐾', check: s => s.total >= 50 },
-  { id:'walks_100',       name:'100 Walks',          col:'Walking',      icon:'🐾', check: s => s.total >= 100 },
-  { id:'walks_365',       name:'365 Walks',          col:'Walking',      icon:'🐾', check: s => s.total >= 365 },
-  { id:'daily_dog',       name:'Daily Dog',          col:'Walking',      icon:'📅', check: s => s.streak >= 7 },
-  { id:'walk_streak',     name:'Walk Streak',        col:'Walking',      icon:'🔥', check: s => s.streak >= 30 },
-  { id:'weekend_wanderer',name:'Weekend Wanderer',   col:'Walking',      icon:'🗺️', check: s => s.weekendWalks >= 20 },
+  { id:'first_walk',      name:'First Walk',        col:'Walking',      icon:'🐾', img:'beau/first_walk.png',      check: s => s.total >= 1 },
+  { id:'walks_10',        name:'10 Walks',           col:'Walking',      icon:'🐾', img:'beau/walks_10.png',         check: s => s.total >= 10 },
+  { id:'walks_25',        name:'25 Walks',           col:'Walking',      icon:'🐾', img:'beau/walks_25.png',         check: s => s.total >= 25 },
+  { id:'walks_50',        name:'50 Walks',           col:'Walking',      icon:'🐾', img:'beau/walks_50.png',         check: s => s.total >= 50 },
+  { id:'walks_100',       name:'100 Walks',          col:'Walking',      icon:'🐾', img:'beau/walks_100.png',        check: s => s.total >= 100 },
+  { id:'walks_365',       name:'365 Walks',          col:'Walking',      icon:'🐾', img:'beau/walks_365.png',        check: s => s.total >= 365 },
+  { id:'daily_dog',       name:'Daily Dog',          col:'Walking',      icon:'📅', img:'beau/daily_dog.png',        check: s => s.streak >= 7 },
+  { id:'walk_streak',     name:'Walk Streak',        col:'Walking',      icon:'🔥', img:'beau/walk_streak.png',      check: s => s.streak >= 30 },
+  { id:'weekend_wanderer',name:'Weekend Wanderer',   col:'Walking',      icon:'🗺️', img:'beau/weekend_wanderer.png', check: s => s.weekendWalks >= 20 },
   // Adventure
-  { id:'trail_blazer',    name:'Trail Blazer',       col:'Adventure',    icon:'🌲', check: s => s.total >= 5 },
-  { id:'mountain_exp',    name:'Mountain Explorer',  col:'Adventure',    icon:'⛰️', check: s => s.totalElevFt >= 5000 },
-  { id:'park_ranger',     name:'Park Ranger',        col:'Adventure',    icon:'🌿', check: s => s.total >= 20 },
-  { id:'natl_park',       name:'National Park',      col:'Adventure',    icon:'🏞️', check: s => s.totalMiles >= 50 },
-  { id:'hiking_hero',     name:'Hiking Hero',        col:'Adventure',    icon:'🥾', check: s => s.totalMiles >= 100 },
-  { id:'backpack_beau',   name:'Backpack Beau',      col:'Adventure',    icon:'🎒', check: s => s.totalMiles >= 200 },
-  { id:'summit_seeker',   name:'Summit Seeker',      col:'Adventure',    icon:'🏔️', check: s => s.totalElevFt >= 25000 },
-  { id:'adventure_legend',name:'Adventure Legend',   col:'Adventure',    icon:'🌟', check: s => s.total >= 250 },
+  { id:'trail_blazer',    name:'Trail Blazer',       col:'Adventure',    icon:'🌲', img:'beau/trail_blazer.png',     check: s => s.total >= 5 },
+  { id:'mountain_exp',    name:'Mountain Explorer',  col:'Adventure',    icon:'⛰️', img:'beau/mountain_exp.png',     check: s => s.totalElevFt >= 5000 },
+  { id:'park_ranger',     name:'Park Ranger',        col:'Adventure',    icon:'🌿', img:'beau/park_ranger.png',      check: s => s.total >= 20 },
+  { id:'natl_park',       name:'National Park',      col:'Adventure',    icon:'🏞️',                                  check: s => s.totalMiles >= 50 },
+  { id:'hiking_hero',     name:'Hiking Hero',        col:'Adventure',    icon:'🥾', img:'beau/hiking_hero.png',      check: s => s.totalMiles >= 100 },
+  { id:'backpack_beau',   name:'Backpack Beau',      col:'Adventure',    icon:'🎒',                                  check: s => s.totalMiles >= 200 },
+  { id:'summit_seeker',   name:'Summit Seeker',      col:'Adventure',    icon:'🏔️',                                  check: s => s.totalElevFt >= 25000 },
+  { id:'adventure_legend',name:'Adventure Legend',   col:'Adventure',    icon:'🌟',                                  check: s => s.total >= 250 },
   // Time & Weather
-  { id:'sunrise_walker',  name:'Sunrise Walker',     col:'Time & Weather', icon:'🌅', check: s => s.morningWalks >= 10 },
-  { id:'sunset_stroller', name:'Sunset Stroller',    col:'Time & Weather', icon:'🌇', check: s => s.eveningWalks >= 10 },
-  { id:'night_explorer',  name:'Night Explorer',     col:'Time & Weather', icon:'🌙', check: s => s.nightWalks >= 5 },
-  { id:'rain_or_shine',   name:'Rain or Shine',      col:'Time & Weather', icon:'🌧️', check: s => s.rainWalks >= 5 },
-  { id:'winter_warrior',  name:'Winter Warrior',     col:'Time & Weather', icon:'❄️', check: s => s.winterWalks >= 10 },
-  { id:'summer_scout',    name:'Summer Scout',       col:'Time & Weather', icon:'☀️', check: s => s.summerWalks >= 10 },
+  { id:'sunrise_walker',  name:'Sunrise Walker',     col:'Time & Weather', icon:'🌅', img:'beau/sunrise_walker.png',  check: s => s.morningWalks >= 10 },
+  { id:'sunset_stroller', name:'Sunset Stroller',    col:'Time & Weather', icon:'🌇', img:'beau/sunset_stroller.png', check: s => s.eveningWalks >= 10 },
+  { id:'night_explorer',  name:'Night Explorer',     col:'Time & Weather', icon:'🌙', img:'beau/night_explorer.png',  check: s => s.nightWalks >= 5 },
+  { id:'rain_or_shine',   name:'Rain or Shine',      col:'Time & Weather', icon:'🌧️', img:'beau/rain_or_shine.png',   check: s => s.rainWalks >= 5 },
+  { id:'winter_warrior',  name:'Winter Warrior',     col:'Time & Weather', icon:'❄️', img:'beau/winter_warrior.png',  check: s => s.winterWalks >= 10 },
+  { id:'summer_scout',    name:'Summer Scout',       col:'Time & Weather', icon:'☀️', img:'beau/summer_scout.png',    check: s => s.summerWalks >= 10 },
   // Companion
-  { id:'loyal_companion', name:'Loyal Companion',    col:'Companion',    icon:'🤝', check: s => s.streak >= 3 },
-  { id:'best_friend',     name:'Best Friend',        col:'Companion',    icon:'💛', check: s => s.total >= 15 },
-  { id:'pack_leader',     name:'Pack Leader',        col:'Companion',    icon:'🦁', check: s => s.streak >= 14 },
-  { id:'heros_companion', name:"Hero's Companion",   col:'Companion',    icon:'🦸', check: s => s.total >= 50 },
-  { id:'walking_buddy',   name:'Walking Buddy',      col:'Companion',    icon:'🐶', check: s => s.total >= 30 },
-  { id:'never_misses',    name:'Never Misses a Walk',col:'Companion',    icon:'✅', check: s => s.streak >= 21 },
-  { id:'always_by_side',  name:'Always By Your Side',col:'Companion',    icon:'❤️', check: s => s.streak >= 60 },
-  { id:'forever_loyal',   name:'Forever Loyal',      col:'Companion',    icon:'♾️', check: s => s.total >= 200 },
+  { id:'loyal_companion', name:'Loyal Companion',    col:'Companion',    icon:'🤝', img:'beau/loyal_companion.png',  check: s => s.streak >= 3 },
+  { id:'best_friend',     name:'Best Friend',        col:'Companion',    icon:'💛', img:'beau/best_friend.png',      check: s => s.total >= 15 },
+  { id:'pack_leader',     name:'Pack Leader',        col:'Companion',    icon:'🦁',                                  check: s => s.streak >= 14 },
+  { id:'heros_companion', name:"Hero's Companion",   col:'Companion',    icon:'🦸',                                  check: s => s.total >= 50 },
+  { id:'walking_buddy',   name:'Walking Buddy',      col:'Companion',    icon:'🐶',                                  check: s => s.total >= 30 },
+  { id:'never_misses',    name:'Never Misses a Walk',col:'Companion',    icon:'✅',                                  check: s => s.streak >= 21 },
+  { id:'always_by_side',  name:'Always By Your Side',col:'Companion',    icon:'❤️',                                  check: s => s.streak >= 60 },
+  { id:'forever_loyal',   name:'Forever Loyal',      col:'Companion',    icon:'♾️',                                  check: s => s.total >= 200 },
   // Legendary
-  { id:'cmo',             name:'Chief Motivation Officer', col:'Legendary', icon:'👑', check: s => s.total >= 100 && s.longestStreak >= 30 },
-  { id:'hero_dog',        name:'Hero Dog',           col:'Legendary',    icon:'🏅', check: s => s.totalMiles >= 500 },
-  { id:'legendary_cmo',   name:'Legendary CMO',      col:'Legendary',    icon:'🌠', check: s => s.total >= 365 && s.longestStreak >= 30 },
-  { id:'beaus_choice',    name:"Beau's Choice",      col:'Legendary',    icon:'⭐', check: s => s.total >= 150 },
-  { id:'hall_of_paws',    name:'Hall of Paws',       col:'Legendary',    icon:'🏆', check: s => s.total >= 500 },
-  { id:'guardian',        name:'Guardian of the Trail',col:'Legendary',  icon:'🛡️', check: s => s.totalMiles >= 1000 },
-  { id:'adventure_icon',  name:'Adventure Icon',     col:'Legendary',    icon:'🗺️', check: s => s.totalElevFt >= 100000 },
-  { id:'ultimate_comp',   name:'Ultimate Companion', col:'Legendary',    icon:'💫', check: s => s.longestStreak >= 100 },
+  { id:'cmo',             name:'Chief Motivation Officer', col:'Legendary', icon:'👑', img:'beau/cmo.png',           check: s => s.total >= 100 && s.longestStreak >= 30 },
+  { id:'hero_dog',        name:'Hero Dog',           col:'Legendary',    icon:'🏅', img:'beau/hero_dog.png',         check: s => s.totalMiles >= 500 },
+  { id:'legendary_cmo',   name:'Legendary CMO',      col:'Legendary',    icon:'🌠',                                  check: s => s.total >= 365 && s.longestStreak >= 30 },
+  { id:'beaus_choice',    name:"Beau's Choice",      col:'Legendary',    icon:'⭐', img:'beau/beaus_choice.png',     check: s => s.total >= 150 },
+  { id:'hall_of_paws',    name:'Hall of Paws',       col:'Legendary',    icon:'🏆',                                  check: s => s.total >= 500 },
+  { id:'guardian',        name:'Guardian of the Trail',col:'Legendary',  icon:'🛡️',                                  check: s => s.totalMiles >= 1000 },
+  { id:'adventure_icon',  name:'Adventure Icon',     col:'Legendary',    icon:'🗺️',                                  check: s => s.totalElevFt >= 100000 },
+  { id:'ultimate_comp',   name:'Ultimate Companion', col:'Legendary',    icon:'💫',                                  check: s => s.longestStreak >= 100 },
   // Beau Medals
-  { id:'couch_peek',      name:'Couch Peek',         col:'Beau Medals',  icon:'🛋️', check: s => s.returnAfterBreak },
-  { id:'curl_recover',    name:'Curl Up & Recover',  col:'Beau Medals',  icon:'😴', check: s => s.bigWalkDone },
-  { id:'soaked',          name:'Soaked But Showed Up',col:'Beau Medals', icon:'🌧️', check: s => s.rainWalks >= 1 },
-  { id:'captain_beau',    name:'Captain Beau',       col:'Beau Medals',  icon:'🦸', check: s => s.total >= 25 },
-  { id:'pawsitive',       name:'Pawsitive Attitude', col:'Beau Medals',  icon:'😊', check: s => s.streak >= 7 },
-  { id:'pawsome',         name:"Feelin' Pawsome",    col:'Beau Medals',  icon:'😎', check: s => s.summerWalks >= 5 },
-  { id:'good_human',      name:'Good Human',         col:'Beau Medals',  icon:'🙌', check: s => s.total >= 100 && s.longestStreak >= 30 },
-  { id:'undercover_beau', name:'Undercover Beau',    col:'Beau Medals',  icon:'🕵️', check: s => s._undercover || false },
-  { id:'boop',            name:'Boop!',              col:'Beau Medals',  icon:'👃', check: s => s._boop || false },
+  { id:'couch_peek',      name:'Couch Peek',         col:'Beau Medals',  icon:'🛋️', img:'beau/couch_peek.png',       check: s => s.returnAfterBreak },
+  { id:'curl_recover',    name:'Curl Up & Recover',  col:'Beau Medals',  icon:'😴', img:'beau/curl_recover.png',     check: s => s.bigWalkDone },
+  { id:'soaked',          name:'Soaked But Showed Up',col:'Beau Medals', icon:'🌧️', img:'beau/soaked.png',           check: s => s.rainWalks >= 1 },
+  { id:'captain_beau',    name:'Captain Beau',       col:'Beau Medals',  icon:'🦸', img:'beau/captain_beau.png',     check: s => s.total >= 25 },
+  { id:'pawsitive',       name:'Pawsitive Attitude', col:'Beau Medals',  icon:'😊', img:'beau/pawsitive.png',        check: s => s.streak >= 7 },
+  { id:'pawsome',         name:"Feelin' Pawsome",    col:'Beau Medals',  icon:'😎', img:'beau/pawsome.png',          check: s => s.summerWalks >= 5 },
+  { id:'good_human',      name:'Good Human',         col:'Beau Medals',  icon:'🙌', img:'beau/good_human.png',       check: s => s.total >= 100 && s.longestStreak >= 30 },
+  { id:'undercover_beau', name:'Undercover Beau',    col:'Beau Medals',  icon:'🕵️', img:'beau/undercover_beau.png',  check: s => s._undercover || false },
+  { id:'boop',            name:'Boop!',              col:'Beau Medals',  icon:'👃', img:'beau/boop.png',             check: s => s._boop || false },
 ];
 
 function walkStats(walks) {
@@ -14419,8 +14419,11 @@ function renderBeauAchievements(newIds) {
     achs.forEach(a => {
       const earned = unlocked.has(a.id);
       const isNew  = justUnlocked.some(x => x.id === a.id);
+      const badgeInner = a.img
+        ? `<img src="assets/ui/${a.img}" alt="${a.name}" style="width:52px;height:52px;object-fit:contain;display:block;margin:0 auto${earned?'':';filter:grayscale(1);opacity:.35'}">`
+        : `<div class="beau-badge-ring"${earned?'':' style="opacity:.35"'}>${a.icon}</div>`;
       html += `<div class="beau-badge${earned?' earned':''}${isNew?' new-unlock':''}">
-        <div class="beau-badge-ring">${a.icon}</div>
+        ${badgeInner}
         <div class="beau-badge-name">${a.name}</div>
       </div>`;
     });
@@ -14706,7 +14709,7 @@ function renderWalkLive() {
       : `<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(91,200,118,.6);text-align:center;letter-spacing:.08em;margin-bottom:14px">🏆 ALL BADGES EARNED</div>`;
     el.innerHTML = `
       <div class="beau-card" onclick="_beauCardTap()" style="cursor:pointer">
-        <div class="beau-avatar">🐾</div>
+        <div class="beau-avatar"><img src="assets/ui/beau/hey.png" alt="Beau" style="width:72px;height:72px;object-fit:contain;display:block;margin:0 auto" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'🐾'}))"></div>
         <div class="beau-quote">"${_bwQ}"</div>
         <div class="beau-byline">— Beau Berry, Chief Motivation Officer</div>
       </div>
