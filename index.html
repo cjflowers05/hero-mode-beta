@@ -1376,6 +1376,72 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cardio-session-name{font-size:14px;font-weight:500;color:var(--text)}
 .cardio-session-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.03em}
 .cardio-del-btn{width:28px;height:28px;border-radius:8px;background:none;border:none;cursor:pointer;color:rgba(200,80,80,.6);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* ── CARDIO PR BOARD ──────────────────────────────── */
+.cpr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:6px 0 10px}
+.cpr-card{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:9px 10px 7px}
+.cpr-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);line-height:1}
+.cpr-name{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-top:1px}
+.cpr-date{font-family:'DM Mono',monospace;font-size:7.5px;color:var(--text3);opacity:.5;margin-top:2px}
+/* ── INTERVAL TIMER OVERLAY ──────────────────────── */
+.it-overlay{position:fixed;inset:0;background:var(--bg);z-index:3200;display:none;flex-direction:column}
+.it-overlay.open{display:flex}
+.it-inner{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.it-hdr{display:flex;align-items:center;padding:14px 16px 8px;gap:10px}
+.it-back-btn{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:4px 8px;font-family:'DM Mono',monospace;letter-spacing:.06em}
+.it-hdr-ttl{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);letter-spacing:.06em}
+.it-tmpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-bottom:14px}
+.it-tmpl{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:11px 10px;cursor:pointer;transition:all .12s;text-align:left}
+.it-tmpl.sel{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.it-tmpl-n{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text);letter-spacing:.04em}
+.it-tmpl-m{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--text3);letter-spacing:.04em;margin-top:2px}
+.it-phase-lbl{text-align:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;padding:10px;margin:0 16px 4px;border-radius:10px;transition:background .25s,color .25s}
+.it-ph-work{background:rgba(201,168,76,.12);color:var(--gold)}
+.it-ph-rest{background:rgba(91,200,118,.09);color:#5BC876}
+.it-ph-warm{background:rgba(80,160,220,.09);color:#50A0DC}
+.it-big-t{font-family:'Bebas Neue',sans-serif;font-size:96px;color:var(--text);text-align:center;line-height:1;letter-spacing:.04em;margin:6px 0 4px}
+.it-rnd{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);text-align:center;letter-spacing:.1em;margin-bottom:16px}
+.it-prg-track{height:4px;background:var(--border);margin:0 16px 20px;border-radius:2px;overflow:hidden}
+.it-prg-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .15s linear}
+.it-ctrl{display:flex;gap:10px;padding:0 16px;margin-top:auto;padding-bottom:32px}
+.it-stop{flex:1;padding:14px;border:1px solid rgba(220,80,80,.25);border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;background:rgba(220,80,80,.1);color:#CC4444}
+.it-pause{flex:2;padding:14px;border:1px solid var(--border2);border-radius:13px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.05em;cursor:pointer;background:var(--bg3);color:var(--text)}
+.it-done-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.it-done-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;margin-bottom:20px}
+/* ── CARDIO PROGRAM ──────────────────────────────── */
+.cp-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.cp-hdr{display:flex;align-items:center;padding:14px 14px 12px;gap:10px}
+.cp-icon{width:42px;height:42px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cp-ttl{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);letter-spacing:.04em}
+.cp-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.05em;margin-top:1px}
+.cp-del{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;margin-left:auto;padding:4px 6px;opacity:.6}
+.cp-week{border-top:1px solid var(--border)}
+.cp-week-hd{display:flex;align-items:center;padding:10px 14px;cursor:pointer;gap:8px;user-select:none}
+.cp-week-n{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;min-width:50px}
+.cp-week-lbl{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.04em}
+.cp-wk-cur .cp-week-lbl{color:var(--gold)}
+.cp-wk-past .cp-week-lbl{color:var(--text3);opacity:.45}
+.cp-wk-future .cp-week-lbl{color:var(--text2)}
+.cp-week-chev{font-size:10px;color:var(--text3);margin-left:auto;transition:transform .18s}
+.cp-week-chev.open{transform:rotate(180deg)}
+.cp-sessions{padding:0 14px 10px;display:none}
+.cp-sessions.open{display:block}
+.cp-session{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;border-radius:10px;margin-bottom:4px}
+.cp-session.cur-wk{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15)}
+.cp-s-day{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);min-width:28px;letter-spacing:.05em;padding-top:2px;text-transform:uppercase}
+.cp-s-body{flex:1}
+.cp-s-name{font-size:13px;font-weight:500;color:var(--text)}
+.cp-s-desc{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px;line-height:1.5;letter-spacing:.02em}
+.cp-s-dur{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);padding-top:1px;white-space:nowrap}
+.cp-setup{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px}
+.cp-goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.cp-goal-btn{background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:10px 10px 8px;cursor:pointer;transition:all .12s;text-align:left}
+.cp-goal-btn.sel{border-color:var(--gold);background:rgba(201,168,76,.06)}
+.cp-goal-icon{font-size:20px;margin-bottom:3px}
+.cp-goal-n{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text);letter-spacing:.04em}
+.cp-goal-d{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.04em;margin-top:1px}
+.cp-pick-row{display:flex;gap:6px;margin-bottom:12px}
+.cp-pick{flex:1;background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:8px 4px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);cursor:pointer;text-align:center;letter-spacing:.04em;transition:all .12s}
+.cp-pick.sel{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
 /* ── TRAIN CARDIO WIDGET ──────────────────────────── */
 #train-cardio-widget{margin-top:14px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
 .tcw-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
@@ -1472,6 +1538,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hc-lock-btn:hover{background:rgba(var(--accent-rgb),.18)}
 .hc-pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3300;display:none;align-items:center;justify-content:center}
 .hc-pin-overlay.open{display:flex}
+.beau-egg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:3500;display:none;align-items:center;justify-content:center}
+.beau-egg-overlay.open{display:flex}
+.beau-egg-modal{background:var(--bg2);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:22px 18px;width:calc(100% - 32px);max-width:380px;max-height:88vh;overflow-y:auto;position:relative}
+.beau-egg-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1;padding:4px 8px}
+.beau-egg-close:hover{color:var(--text)}
+.beau-egg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.beau-egg-grid-item{border-radius:12px;overflow:hidden;aspect-ratio:1;background:var(--bg3)}
+.beau-egg-grid-item img{width:100%;height:100%;object-fit:cover;display:block}
+.beau-egg-empty{text-align:center;padding:32px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.06em;line-height:1.6}
 .hc-pin-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:calc(100% - 48px);max-width:320px;text-align:center}
 .hc-pin-heading{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--text);letter-spacing:.06em;margin-bottom:4px}
 .hc-pin-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
@@ -1710,6 +1785,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="daily-quests"></div>
   <!-- CARDIO TRACKER WIDGET -->
   <div id="train-cardio-widget"></div>
+  <!-- CARDIO PROGRAM -->
+  <div id="cardio-prog-root" style="margin-bottom:16px"></div>
   <!-- HERO CLASS — personal curated program -->
   <div id="hero-class-root" style="margin-bottom:16px"></div>
   <!-- GENERATED TRAINING PLAN -->
@@ -4905,8 +4982,12 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div class="well-body">
       <div class="cardio-weekly-strip" id="cardio-weekly-strip"></div>
+      <div id="cardio-pr-board"></div>
       <div id="cardio-today-list"></div>
-      <button class="connect-log-btn" style="margin-top:4px" onclick="openCardioLog()">＋ Log Cardio Session</button>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:4px">
+        <button class="connect-log-btn" onclick="openCardioLog()">＋ Log Session</button>
+        <button class="connect-log-btn" title="Interval Timer" style="background:rgba(var(--accent-rgb),.04);white-space:nowrap;padding:0 16px" onclick="openIntervalTimer()">⏱ Intervals</button>
+      </div>
     </div>
   </div>
 
@@ -5306,6 +5387,17 @@ document.addEventListener('DOMContentLoaded', () => {
       <button class="hc-pin-key del" onclick="hcPinDel()">⌫</button>
     </div>
     <button onclick="hcPinCancel()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.06em">CANCEL</button>
+  </div>
+</div>
+<!-- INTERVAL TIMER -->
+<div class="it-overlay" id="it-overlay">
+  <div class="it-inner" id="it-screen"></div>
+</div>
+<!-- BEAU EGG — tap-quote-5 photo gallery -->
+<div class="beau-egg-overlay" id="beau-egg-overlay" onclick="if(event.target===this)_closeBeauEgg()">
+  <div class="beau-egg-modal">
+    <button class="beau-egg-close" onclick="_closeBeauEgg()">✕</button>
+    <div id="beau-egg-photos"></div>
   </div>
 </div>
 <!-- HERO CLASS — Add Exercise Sheet -->
@@ -14098,6 +14190,50 @@ function _beauQuote() {
 
 const BEAU_MEDALS_KEY = 'hero-beau-medals';
 
+// Drop photos into assets/ui/beau/photos/ — add or remove paths freely
+const BEAU_EGG_PHOTOS = [
+  'assets/ui/beau/photos/beau-1.jpg',
+  'assets/ui/beau/photos/beau-2.jpg',
+  'assets/ui/beau/photos/beau-3.jpg',
+  'assets/ui/beau/photos/beau-4.jpg',
+  'assets/ui/beau/photos/beau-5.jpg',
+  'assets/ui/beau/photos/beau-6.jpg',
+];
+let _beauEggTaps = [];
+function _beauCardTap() {
+  const now = Date.now();
+  _beauEggTaps = _beauEggTaps.filter(t => now - t < 3000);
+  _beauEggTaps.push(now);
+  if (_beauEggTaps.length >= 5) {
+    _beauEggTaps = [];
+    _showBeauEgg();
+  }
+}
+function _showBeauEgg() {
+  const stored = JSON.parse(localStorage.getItem(BEAU_MEDALS_KEY) || '[]');
+  const toUnlock = ['boop', 'undercover_beau'].filter(id => !stored.includes(id));
+  if (toUnlock.length) {
+    toUnlock.forEach(id => stored.push(id));
+    localStorage.setItem(BEAU_MEDALS_KEY, JSON.stringify(stored));
+    setTimeout(() => showToast('👃 Boop! — Achievement unlocked', 'success'), 500);
+    if (toUnlock.includes('undercover_beau'))
+      setTimeout(() => showToast('🕵️ Undercover Beau — Achievement unlocked', 'success'), 1500);
+    renderBeauAchievements();
+  }
+  const ph = document.getElementById('beau-egg-photos');
+  if (ph) {
+    ph.innerHTML = `<div class="beau-egg-grid">${BEAU_EGG_PHOTOS.map(src =>
+      `<div class="beau-egg-grid-item"><img src="${src}" alt="Beau" onerror="this.closest('.beau-egg-grid-item').style.display='none'"></div>`
+    ).join('')}</div>`;
+  }
+  document.getElementById('beau-egg-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function _closeBeauEgg() {
+  document.getElementById('beau-egg-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 const BEAU_ACHIEVEMENTS = [
   // Walking
   { id:'first_walk',      name:'First Walk',        col:'Walking',      icon:'🐾', check: s => s.total >= 1 },
@@ -14563,7 +14699,7 @@ function renderWalkLive() {
          </div>`
       : `<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(91,200,118,.6);text-align:center;letter-spacing:.08em;margin-bottom:14px">🏆 ALL BADGES EARNED</div>`;
     el.innerHTML = `
-      <div class="beau-card">
+      <div class="beau-card" onclick="_beauCardTap()" style="cursor:pointer">
         <div class="beau-avatar">🐾</div>
         <div class="beau-quote">"${_bwQ}"</div>
         <div class="beau-byline">— Beau Berry, Chief Motivation Officer</div>
@@ -18011,6 +18147,7 @@ function renderCardioSection() {
     const s  = data[dk] || [];
     if (s.length) { days++; s.forEach(x => { mins += x.duration || 0; cals += x.calories || 0; }); }
   }
+  renderCardioPRBoard();
   const strip = document.getElementById('cardio-weekly-strip');
   if (strip) strip.innerHTML = `
     <div class="cardio-weekly-stat"><div class="cardio-weekly-val">${days}</div><div class="cardio-weekly-lbl">Days</div></div>
@@ -18507,6 +18644,449 @@ function cardioRepeatLast() {
 // ══════════════════════════════════════════════════════════════
 // INIT — Features 5–10
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// CARDIO UPGRADES — PR Board · Interval Timer · Programs
+// ══════════════════════════════════════════════════════════════
+
+// ── PR Board ──────────────────────────────────────────────────
+function renderCardioPRBoard() {
+  const el = document.getElementById('cardio-pr-board');
+  if (!el) return;
+  const data  = loadCardioData();
+  const walks = loadWalks ? loadWalks() : [];
+
+  let longSess = 0, longSessDate = null;
+  let topCal = 0, topCalDate = null;
+  let bestWeekMins = 0, bestWeekDate = null;
+
+  const allDates = Object.keys(data).sort();
+  allDates.forEach(dk => {
+    (data[dk] || []).forEach(s => {
+      if ((s.duration || 0) > longSess)  { longSess = s.duration; longSessDate = dk; }
+      if ((s.calories || 0) > topCal)    { topCal = s.calories;   topCalDate = dk; }
+    });
+  });
+  allDates.forEach(dk => {
+    let wMins = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(dk + 'T12:00:00'); d.setDate(d.getDate() - i);
+      (data[d.toISOString().slice(0,10)] || []).forEach(s => wMins += s.duration || 0);
+    }
+    if (wMins > bestWeekMins) { bestWeekMins = wMins; bestWeekDate = dk; }
+  });
+
+  let fastestPace = Infinity, fastestPaceDate = null;
+  let longestWalk = 0, longestWalkDate = null;
+  walks.forEach(w => {
+    if (w.paceMinMile && w.paceMinMile > 0 && w.paceMinMile < fastestPace && (w.miles || 0) >= 0.5) {
+      fastestPace = w.paceMinMile; fastestPaceDate = w.date;
+    }
+    if ((w.miles || 0) > longestWalk) { longestWalk = w.miles; longestWalkDate = w.date; }
+  });
+
+  const hasSome = longSess > 0 || topCal > 0 || longestWalk > 0;
+  if (!hasSome) { el.innerHTML = ''; return; }
+
+  const fmtD = dk => dk ? new Date(dk + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+  const fmtP = p => {
+    if (!p || !isFinite(p)) return '--';
+    const m = Math.floor(p); const s = Math.round((p - m) * 60);
+    return m + ':' + (s < 10 ? '0' : '') + s + '/mi';
+  };
+
+  const cards = [];
+  if (longSess > 0)            cards.push({ val: longSess + ' min',            name: 'Longest Session',  date: fmtD(longSessDate) });
+  if (topCal > 0)              cards.push({ val: topCal,                        name: 'Best Cal Burn',    date: fmtD(topCalDate) });
+  if (bestWeekMins > 0)        cards.push({ val: bestWeekMins + ' min',         name: 'Best Week',        date: fmtD(bestWeekDate) });
+  if (fastestPace < Infinity)  cards.push({ val: fmtP(fastestPace),             name: 'Fastest Pace',     date: fmtD(fastestPaceDate) });
+  if (longestWalk > 0)         cards.push({ val: longestWalk.toFixed(1) + ' mi',name: 'Longest Walk',     date: fmtD(longestWalkDate) });
+
+  el.innerHTML = `<div class="t-section-label" style="margin-top:10px;margin-bottom:8px">Personal records</div>
+    <div class="cpr-grid">${cards.map(c =>
+      `<div class="cpr-card">
+        <div class="cpr-val">${c.val}</div>
+        <div class="cpr-name">${c.name}</div>
+        ${c.date ? `<div class="cpr-date">${c.date}</div>` : ''}
+      </div>`).join('')}
+    </div>`;
+}
+
+// ── Interval Timer ────────────────────────────────────────────
+const IT_TEMPLATES = [
+  { id:'tabata',  name:'Tabata',        work:20,  rest:10,  rounds:8,  warmup:0,   desc:'20s on / 10s off' },
+  { id:'hiit30',  name:'HIIT 30/30',    work:30,  rest:30,  rounds:10, warmup:0,   desc:'30s on / 30s off' },
+  { id:'tempo',   name:'Tempo Runs',    work:180, rest:90,  rounds:6,  warmup:120, desc:'3 min push / 90s recovery' },
+  { id:'endure',  name:'Endurance',     work:300, rest:120, rounds:4,  warmup:0,   desc:'5 min push / 2 min recovery' },
+  { id:'sprint',  name:'Sprint Drills', work:15,  rest:45,  rounds:12, warmup:0,   desc:'15s sprint / 45s walk' },
+];
+let _itTmpl  = IT_TEMPLATES[0];
+let _itPhase = 'idle';
+let _itRound = 0;
+let _itLeft  = 0;
+let _itSecs  = 0;
+let _itPause = false;
+let _itTmrId = null;
+
+function openIntervalTimer() {
+  _itTmpl = IT_TEMPLATES[0]; _itPhase = 'idle';
+  _itRenderSetup();
+  document.getElementById('it-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeIntervalTimer() {
+  _itHalt();
+  document.getElementById('it-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function _itHalt() { clearInterval(_itTmrId); _itTmrId = null; }
+
+function _itRenderSetup() {
+  const fmtS = s => s >= 60 ? Math.floor(s/60) + 'm' + (s % 60 ? (s%60)+'s' : '') : s + 's';
+  document.getElementById('it-screen').innerHTML = `
+    <div class="it-hdr">
+      <button class="it-back-btn" onclick="closeIntervalTimer()">✕ CLOSE</button>
+      <div class="it-hdr-ttl">Interval Timer</div>
+    </div>
+    <div style="padding:0 16px">
+      <div class="t-section-label" style="margin-bottom:8px">Choose a template</div>
+    </div>
+    <div class="it-tmpl-grid">
+      ${IT_TEMPLATES.map(t => `
+        <button class="it-tmpl${t.id===_itTmpl.id?' sel':''}" onclick="_itPickTmpl('${t.id}',this)">
+          <div class="it-tmpl-n">${t.name}</div>
+          <div class="it-tmpl-m">${t.desc}</div>
+          <div class="it-tmpl-m" style="margin-top:3px;opacity:.6">${t.rounds} rounds</div>
+        </button>`).join('')}
+    </div>
+    <div style="padding:0 16px">
+      <div class="t-section-label" style="margin-bottom:8px">Session preview</div>
+      <div id="it-preview" style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);line-height:1.9;margin-bottom:16px">
+        ${_itTmpl.warmup ? `<div style="color:#50A0DC">Warmup: ${fmtS(_itTmpl.warmup)}</div>` : ''}
+        <div>${_itTmpl.rounds} rounds × (${fmtS(_itTmpl.work)} work / ${fmtS(_itTmpl.rest)} rest)</div>
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;color:var(--gold)">
+          Total: ${fmtS(_itTmpl.warmup + _itTmpl.work * _itTmpl.rounds + _itTmpl.rest * (_itTmpl.rounds - 1))}
+        </div>
+      </div>
+      <button class="connect-log-btn" style="margin-bottom:28px" onclick="_itStart()">START TIMER</button>
+    </div>`;
+}
+
+function _itPickTmpl(id, el) {
+  _itTmpl = IT_TEMPLATES.find(t => t.id === id);
+  document.querySelectorAll('.it-tmpl').forEach(b => b.classList.toggle('sel', b === el));
+  const fmtS = s => s >= 60 ? Math.floor(s/60) + 'm' + (s % 60 ? (s%60)+'s' : '') : s + 's';
+  const p = document.getElementById('it-preview');
+  if (p) p.innerHTML = (_itTmpl.warmup ? `<div style="color:#50A0DC">Warmup: ${fmtS(_itTmpl.warmup)}</div>` : '') +
+    `<div>${_itTmpl.rounds} rounds × (${fmtS(_itTmpl.work)} work / ${fmtS(_itTmpl.rest)} rest)</div>
+    <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px;color:var(--gold)">
+      Total: ${fmtS(_itTmpl.warmup + _itTmpl.work * _itTmpl.rounds + _itTmpl.rest * (_itTmpl.rounds - 1))}</div>`;
+}
+
+function _itStart() {
+  _itRound = 1; _itSecs = 0; _itPause = false;
+  _itPhase = _itTmpl.warmup > 0 ? 'warmup' : 'work';
+  _itLeft  = _itPhase === 'warmup' ? _itTmpl.warmup : _itTmpl.work;
+  _itRenderActive();
+  _itTmrId = setInterval(() => {
+    if (_itPause) return;
+    _itLeft--; _itSecs++;
+    if (_itLeft <= 0) {
+      const t = _itTmpl;
+      if (_itPhase === 'warmup')    { _itPhase = 'work'; _itLeft = t.work; }
+      else if (_itPhase === 'work') {
+        if (_itRound >= t.rounds)   { _itHalt(); _itRenderDone(); return; }
+        _itPhase = 'rest'; _itLeft = t.rest;
+      } else if (_itPhase === 'rest') { _itRound++; _itPhase = 'work'; _itLeft = t.work; }
+    }
+    _itRefresh();
+  }, 1000);
+}
+
+function _itRenderActive() {
+  const t = _itTmpl;
+  document.getElementById('it-screen').innerHTML = `
+    <div class="it-hdr">
+      <button class="it-back-btn" onclick="_itHalt();_itRenderSetup()">✕</button>
+      <div class="it-hdr-ttl">${t.name}</div>
+    </div>
+    <div id="it-phase-lbl" class="it-phase-lbl it-ph-work">WORK</div>
+    <div id="it-big-t" class="it-big-t">0:${t.work < 10 ? '0' : ''}${t.work}</div>
+    <div id="it-rnd" class="it-rnd">ROUND 1 / ${t.rounds}</div>
+    <div class="it-prg-track"><div class="it-prg-fill" id="it-prg-fill" style="width:0%"></div></div>
+    <div class="it-ctrl">
+      <button class="it-stop" onclick="_itHalt();_itRenderSetup()">STOP</button>
+      <button class="it-pause" id="it-pause-btn" onclick="_itTogglePause()">PAUSE</button>
+    </div>`;
+}
+
+function _itTogglePause() {
+  _itPause = !_itPause;
+  const b = document.getElementById('it-pause-btn');
+  if (b) b.textContent = _itPause ? 'RESUME' : 'PAUSE';
+}
+
+function _itRefresh() {
+  const lbl = document.getElementById('it-phase-lbl');
+  const tim = document.getElementById('it-big-t');
+  const rnd = document.getElementById('it-rnd');
+  const bar = document.getElementById('it-prg-fill');
+  if (!lbl || !tim) return;
+  const phaseMap = { warmup:['WARMUP','it-ph-warm'], work:['WORK','it-ph-work'], rest:['REST','it-ph-rest'] };
+  const [label, cls] = phaseMap[_itPhase] || ['WORK','it-ph-work'];
+  lbl.textContent = label;
+  lbl.className = 'it-phase-lbl ' + cls;
+  const m = Math.floor(_itLeft / 60), s = _itLeft % 60;
+  tim.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  if (rnd) rnd.textContent = 'ROUND ' + _itRound + ' / ' + _itTmpl.rounds;
+  const t = _itTmpl;
+  const total = t.warmup + t.work * t.rounds + t.rest * (t.rounds - 1);
+  if (bar && total > 0) bar.style.width = Math.min(100, (_itSecs / total) * 100) + '%';
+}
+
+function _itRenderDone() {
+  const t = _itTmpl;
+  const totalMin = Math.max(1, Math.round(_itSecs / 60));
+  const prof = getCardioProfile ? getCardioProfile() : { weightLb: 180 };
+  const cal  = cardioCalories ? cardioCalories('hiit', 'vigorous', totalMin, prof.weightLb) : 0;
+  const m = Math.floor(_itSecs / 60), s = _itSecs % 60;
+  document.getElementById('it-screen').innerHTML = `
+    <div class="it-hdr">
+      <button class="it-back-btn" onclick="closeIntervalTimer()">✕</button>
+      <div class="it-hdr-ttl">Done</div>
+    </div>
+    <div class="it-done-wrap">
+      <div style="font-size:52px;margin-bottom:14px">🔥</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:.06em;margin-bottom:2px">${t.name} Complete</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:18px">${t.rounds} ROUNDS · ${m}m ${s < 10 ? '0' : ''}${s}s</div>
+      <div class="it-done-stats">
+        <div class="cpr-card" style="text-align:center"><div class="cpr-val">${t.rounds}</div><div class="cpr-name">Rounds</div></div>
+        <div class="cpr-card" style="text-align:center"><div class="cpr-val">${totalMin}</div><div class="cpr-name">Minutes</div></div>
+        <div class="cpr-card" style="text-align:center"><div class="cpr-val">${cal}</div><div class="cpr-name">Est. Cal</div></div>
+      </div>
+      <button class="connect-log-btn" style="width:100%;margin-bottom:10px" onclick="_itLogSession(${totalMin},${cal})">LOG THIS SESSION</button>
+      <button onclick="closeIntervalTimer()" style="background:none;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.06em">DONE WITHOUT LOGGING</button>
+    </div>`;
+}
+
+function _itLogSession(totalMin, cal) {
+  closeIntervalTimer();
+  if (typeof clActivity !== 'undefined') clActivity = 'hiit';
+  if (typeof clIntensity !== 'undefined') clIntensity = 'vigorous';
+  setTimeout(() => {
+    if (typeof openCardioLog === 'function') openCardioLog();
+    setTimeout(() => {
+      const dur = document.getElementById('cl-duration');
+      const chk = document.getElementById('cl-manual-cal-chk');
+      const cIn = document.getElementById('cl-manual-cal-input');
+      const row = document.getElementById('cl-manual-cal-row');
+      if (dur) dur.value = totalMin;
+      if (chk && cIn && row) { chk.checked = true; cIn.value = cal; row.style.display = ''; }
+    }, 120);
+  }, 300);
+}
+
+// ── Cardio Programs ───────────────────────────────────────────
+const CARDIO_PROG_KEY = 'hero-cardio-prog';
+let _cpGoal     = 'run5k';
+let _cpWeeks    = 6;
+let _cpDays     = 3;
+let _cpBodyOpen = true;
+const _cpOpen   = new Set();
+
+const _CP_GOALS = {
+  run5k:     { name:'5K Ready',       icon:'🏃', desc:'Build to race pace',
+    sessions: [
+      ['Easy Run',    (w,t) => 15 + Math.round(w/t*25), 'Conversational pace — build your aerobic base.'],
+      ['Walk / Run',  (w,t) => 18 + Math.round(w/t*22), 'Alternate running and walking. Extend run segments each week.'],
+      ['Speed Work',  (w,t) => 14 + Math.round(w/t*16), '6–10 × 200m at 5K effort with full recovery between.'],
+      ['Tempo Run',   (w,t) => 12 + Math.round(w/t*18), 'Comfortably hard — you can speak in short sentences.'],
+      ['Long Run',    (w,t) => 22 + Math.round(w/t*28), 'Slowest pace — cover the distance, not the speed.'],
+    ],
+    phases: ['Foundation','Foundation','Build','Build','Peak','Peak','Peak','Taper'],
+  },
+  run10k:    { name:'10K Ready',      icon:'🏃', desc:'Double your distance',
+    sessions: [
+      ['Easy Run',    (w,t) => 25 + Math.round(w/t*35), 'Comfortable pace — keep your effort low.'],
+      ['Tempo Run',   (w,t) => 20 + Math.round(w/t*25), 'Comfortably hard, sustained pace for the full block.'],
+      ['Speed Work',  (w,t) => 20 + Math.round(w/t*15), '400m–800m intervals at 10K pace, rest between.'],
+      ['Strides',     (w,t) => 25 + Math.round(w/t*20), 'Easy run ending with 4 × 20s accelerations.'],
+      ['Long Run',    (w,t) => 35 + Math.round(w/t*45), 'The most important session — slow and very long.'],
+    ],
+    phases: ['Base','Base','Build','Build','Build','Develop','Peak','Taper'],
+  },
+  endurance: { name:'Endurance Base', icon:'🔋', desc:'Aerobic engine builder',
+    sessions: [
+      ['Zone 2 Run',  (w,t) => 30 + Math.round(w/t*30), 'Very easy effort — nose-breathing pace the whole time.'],
+      ['Bike / Cross',(w,t) => 40 + Math.round(w/t*50), 'Low-impact steady-state cardio at moderate effort.'],
+      ['Long Run',    (w,t) => 40 + Math.round(w/t*50), 'Slowest pace — stay in Zone 2 the whole way.'],
+      ['Easy Run',    (w,t) => 30 + Math.round(w/t*30), 'Recovery run — keep heart rate low and legs fresh.'],
+      ['Tempo',       (w,t) => 25 + Math.round(w/t*20), 'Moderate-hard sustained effort — raise your threshold.'],
+    ],
+    phases: ['Aerobic Base','Aerobic Base','Build','Build','Volume','Volume','High Volume','Peak'],
+  },
+  hiit:      { name:'HIIT Shred',     icon:'🔥', desc:'Maximum intensity',
+    sessions: [
+      ['HIIT Circuit', (w,t) => 18 + Math.round(w/t*15), 'Full-body high-intensity circuit. Every second counts.'],
+      ['Sprint Work',  (w,t) => 14 + Math.round(w/t*14), '10–15s all-out sprints with complete recovery between.'],
+      ['Tabata',       (w,t) => 12 + Math.round(w/t*8),  '20s on / 10s off × 8. Four exercises back-to-back.'],
+      ['Active Recovery',(w,t)=> 20,                      'Easy movement only — walk, light stretch, foam roll.'],
+      ['Jump Rope',    (w,t) => 14 + Math.round(w/t*10), 'Jump rope intervals — great cardio with low equipment.'],
+    ],
+    phases: ['Intro','Intro','Intensity','Intensity','Peak','Peak','Max','Taper'],
+  },
+  fatburn:   { name:'Fat Burn',       icon:'💧', desc:'Low-intensity steady state',
+    sessions: [
+      ['LISS Run',      (w,t) => 30 + Math.round(w/t*30), 'Low-intensity — 60–65% max heart rate the whole session.'],
+      ['Incline Walk',  (w,t) => 30 + Math.round(w/t*30), 'Brisk walk with hills or treadmill incline for resistance.'],
+      ['Moderate Run',  (w,t) => 25 + Math.round(w/t*25), 'Comfortable run — conversational pace.'],
+      ['Bike / Swim',   (w,t) => 35 + Math.round(w/t*25), 'Low-impact cardio to maximize fat oxidation.'],
+      ['Active Day',    (w,t) => 25,                       'Hike, swim, or long walk. Move in a way you enjoy.'],
+    ],
+    phases: ['Foundation','Foundation','Build','Build','Sustain','Sustain','Habit','Lifestyle'],
+  },
+};
+
+function _cpGenerate(goal, totalWeeks, daysPerWeek) {
+  const tmpl = _CP_GOALS[goal];
+  const dayNames = daysPerWeek === 3 ? ['Mon','Wed','Sat']
+                 : daysPerWeek === 4 ? ['Mon','Tue','Thu','Sat']
+                 :                     ['Mon','Tue','Thu','Fri','Sat'];
+  const plan = [];
+  for (let w = 1; w <= totalWeeks; w++) {
+    const isTaper = w === totalWeeks;
+    plan.push({
+      weekNum: w,
+      label: tmpl.phases[w - 1] || ('Week ' + w),
+      sessions: dayNames.map((day, di) => {
+        const [name, durFn, desc] = tmpl.sessions[(di + w - 1) % tmpl.sessions.length];
+        const dur = isTaper ? Math.max(15, Math.round(durFn(w, totalWeeks) * 0.65)) : durFn(w, totalWeeks);
+        return { day, name: isTaper ? name + ' (Taper)' : name, duration: dur, desc };
+      }),
+    });
+  }
+  return { goal, weeks: totalWeeks, daysPerWeek, startDate: new Date().toISOString().slice(0,10), plan, name: tmpl.name, icon: tmpl.icon };
+}
+
+function _cpCurrentWeek(prog) {
+  const start = new Date(prog.startDate + 'T12:00:00');
+  const diff  = Math.floor((new Date() - start) / 86400000);
+  return Math.min(prog.weeks, Math.max(1, Math.ceil((diff + 1) / 7)));
+}
+
+function cpToggleMain() {
+  _cpBodyOpen = !_cpBodyOpen;
+  renderCardioProgram();
+}
+
+function renderCardioProgram() {
+  const el = document.getElementById('cardio-prog-root');
+  if (!el) return;
+  const saved = (() => { try { return JSON.parse(localStorage.getItem(CARDIO_PROG_KEY)); } catch(e) { return null; } })();
+  const hasProg = !!saved;
+  const icon  = hasProg ? saved.icon : '🏃';
+  const title = hasProg ? saved.name : 'Cardio Program';
+  const sub   = hasProg
+    ? `WEEK ${_cpCurrentWeek(saved)} OF ${saved.weeks} · ${saved.daysPerWeek}×/WEEK`
+    : 'Build your training schedule';
+  el.innerHTML = `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:2px">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;user-select:none">
+      <div onclick="cpToggleMain()" style="display:flex;align-items:center;gap:12px;flex:1;cursor:pointer">
+        <div class="cp-icon">${icon}</div>
+        <div>
+          <div class="cp-ttl">${title}</div>
+          <div class="cp-sub">${sub}</div>
+        </div>
+        <div class="cp-week-chev${_cpBodyOpen ? ' open' : ''}">▾</div>
+      </div>
+      ${hasProg ? `<button class="cp-del" onclick="_cpDeleteProg()" title="Remove program">✕</button>` : ''}
+    </div>
+    ${_cpBodyOpen ? `<div style="border-top:1px solid var(--border)">${hasProg ? _cpPlanHtml(saved) : _cpSetupHtml()}</div>` : ''}
+  </div>`;
+}
+
+function _cpSetupHtml() {
+  return `<div style="padding:14px">
+    <div class="t-section-label" style="margin-bottom:8px">Goal</div>
+    <div class="cp-goal-grid">
+      ${Object.entries(_CP_GOALS).map(([id, g]) =>
+        `<button class="cp-goal-btn${id===_cpGoal?' sel':''}" onclick="_cpPickGoal('${id}',this)">
+          <div class="cp-goal-icon">${g.icon}</div>
+          <div class="cp-goal-n">${g.name}</div>
+          <div class="cp-goal-d">${g.desc}</div>
+        </button>`).join('')}
+    </div>
+    <div class="t-section-label" style="margin-bottom:8px">Duration</div>
+    <div class="cp-pick-row">
+      ${[4,6,8].map(n => `<button class="cp-pick${n===_cpWeeks?' sel':''}" onclick="_cpPickWeeks(${n},this)">${n} Weeks</button>`).join('')}
+    </div>
+    <div class="t-section-label" style="margin-bottom:8px">Days / Week</div>
+    <div class="cp-pick-row">
+      ${[3,4,5].map(n => `<button class="cp-pick${n===_cpDays?' sel':''}" onclick="_cpPickDays(${n},this)">${n} Days</button>`).join('')}
+    </div>
+    <button class="connect-log-btn" style="margin-top:4px;margin-bottom:4px" onclick="_cpGenAndSave()">GENERATE PLAN</button>
+  </div>`;
+}
+
+function _cpPickGoal(id, el) {
+  _cpGoal = id;
+  document.querySelectorAll('.cp-goal-btn').forEach(b => b.classList.toggle('sel', b === el));
+}
+function _cpPickWeeks(n, el) {
+  _cpWeeks = n;
+  document.querySelectorAll('.cp-pick-row:nth-of-type(1) .cp-pick').forEach(b => b.classList.toggle('sel', b === el));
+}
+function _cpPickDays(n, el) {
+  _cpDays = n;
+  document.querySelectorAll('.cp-pick-row:nth-of-type(2) .cp-pick').forEach(b => b.classList.toggle('sel', b === el));
+}
+function _cpGenAndSave() {
+  const prog = _cpGenerate(_cpGoal, _cpWeeks, _cpDays);
+  localStorage.setItem(CARDIO_PROG_KEY, JSON.stringify(prog));
+  _cpOpen.clear();
+  const cur = _cpCurrentWeek(prog);
+  _cpOpen.add(cur);
+  renderCardioProgram();
+}
+function _cpDeleteProg() {
+  if (!confirm('Remove this cardio program?')) return;
+  localStorage.removeItem(CARDIO_PROG_KEY);
+  _cpOpen.clear();
+  renderCardioProgram();
+}
+function cpToggleWeek(wk) {
+  _cpOpen.has(wk) ? _cpOpen.delete(wk) : _cpOpen.add(wk);
+  renderCardioProgram();
+}
+
+function _cpPlanHtml(prog) {
+  const cur = _cpCurrentWeek(prog);
+  if (!_cpOpen.size) _cpOpen.add(cur);
+  return prog.plan.map(wk => {
+    const isCur  = wk.weekNum === cur;
+    const isPast = wk.weekNum < cur;
+    const stateClass = isCur ? 'cp-wk-cur' : isPast ? 'cp-wk-past' : 'cp-wk-future';
+    const open = _cpOpen.has(wk.weekNum);
+    return `<div class="cp-week">
+      <div class="cp-week-hd ${stateClass}" onclick="cpToggleWeek(${wk.weekNum})">
+        <div class="cp-week-n">WK ${wk.weekNum}</div>
+        <div class="cp-week-lbl">${wk.label}${isCur ? ' ◀' : isPast ? ' ✓' : ''}</div>
+        <div class="cp-week-chev${open?' open':''}">▾</div>
+      </div>
+      <div class="cp-sessions${open?' open':''}">
+        ${wk.sessions.map(s => `
+          <div class="cp-session${isCur?' cur-wk':''}">
+            <div class="cp-s-day">${s.day}</div>
+            <div class="cp-s-body">
+              <div class="cp-s-name">${s.name}</div>
+              <div class="cp-s-desc">${s.desc}</div>
+            </div>
+            <div class="cp-s-dur">${s.duration} <span style="font-size:9px;opacity:.6">MIN</span></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Restore active phase before anything else renders
   const savedPhase = localStorage.getItem(ACTIVE_PHASE_KEY);
@@ -18535,6 +19115,9 @@ document.addEventListener('DOMContentLoaded', () => {
   waterUpdateHeader();    // Water intake header
   photoUpdateHeader();    // Progress photos header
   cwRenderTodayAddon();   // Custom workout add-ons for today
+  renderCardioProgram();  // Cardio program (Train tab)
+  const _cpSaved = (() => { try { return JSON.parse(localStorage.getItem(CARDIO_PROG_KEY)); } catch(e) { return null; } })();
+  if (_cpSaved) { _cpOpen.clear(); _cpOpen.add(_cpCurrentWeek(_cpSaved)); }
 });
 
 </script>
