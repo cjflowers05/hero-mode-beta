@@ -5263,7 +5263,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="hc-pin-dot" id="hc-pd-2"></div>
       <div class="hc-pin-dot" id="hc-pd-3"></div>
     </div>
-    <div class="hc-pin-err" id="hc-pin-err"></div>
     <div class="hc-pin-pad">
       <button class="hc-pin-key" onclick="hcPinKey('1')">1</button>
       <button class="hc-pin-key" onclick="hcPinKey('2')">2</button>
@@ -14011,6 +14010,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initExerciseRowHandlers();   // make exercise rows tappable → Coach tab
   checkAndRunWeeklyReport();   // load/generate Sunday weekly coaching report
   renderHeroClass();
+  // Hidden triple-tap on HERO MODE title unlocks Thor Mode
+  const _thorTitleEl = document.querySelector('.hero-title');
+  if (_thorTitleEl) _thorTitleEl.addEventListener('click', _thorTitleTap);
 });
 </script>
 <!-- ══ SMART CHECK-IN OVERLAY ══ -->
@@ -17942,21 +17944,9 @@ function saveHcCustom(d) { localStorage.setItem(HC_CUSTOM_KEY, JSON.stringify(d)
 function renderHeroClass() {
   const root = document.getElementById('hero-class-root');
   if (!root) return;
-  const hasPinSet = !!localStorage.getItem(HC_PIN_KEY);
-  if (!_thorUnlocked) {
-    root.innerHTML = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program</div></div></div>
-    <div class="hc-lock-card">
-      <div class="hc-lock-icon">🔐</div>
-      <div class="hc-lock-title">Thor Mode</div>
-      <div class="hc-lock-sub">${hasPinSet ? 'Your private program. Enter your PIN to access.' : 'Set a PIN to protect your personal program.'}</div>
-      <button class="hc-lock-btn" onclick="hcOpenPin(${hasPinSet ? "'unlock'" : "'set'"})">${hasPinSet ? '🔓 UNLOCK' : '🔑 SET PIN'}</button>
-    </div>`;
-    return;
-  }
+  if (!_thorUnlocked) { root.innerHTML = ''; return; }
   const custom = loadHcCustom();
-  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div>
-    <button onclick="hcOpenPin('change')" style="background:none;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;cursor:pointer;padding:2px 0;opacity:.6" title="Change PIN">🔒 LOCK</button>
-  </div>`;
+  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div></div>`;
   HC_PLAN.forEach((day, i) => {
     const custExs = custom[i] || [];
     html += `<div class="hc-day-card" id="hc-day-${i}">
@@ -18085,7 +18075,6 @@ function hcOpenPin(mode) {
   _hcPinMode = mode;
   _hcPinBuf  = '';
   _hcPinFirst = '';
-  document.getElementById('hc-pin-err').textContent = '';
   document.getElementById('hc-pin-heading').textContent = 'Thor Mode';
   document.getElementById('hc-pin-sub').textContent =
     mode === 'set'    ? 'Choose a 4-digit PIN' :
@@ -18112,7 +18101,6 @@ function hcPinKey(d) {
 function hcPinDel() {
   _hcPinBuf = _hcPinBuf.slice(0, -1);
   _hcPinUpdateDots();
-  document.getElementById('hc-pin-err').textContent = '';
 }
 
 function _hcPinUpdateDots() {
@@ -18126,7 +18114,11 @@ async function _hcPinSubmit() {
   const pin = _hcPinBuf;
   _hcPinBuf = '';
   _hcPinUpdateDots();
-  const errEl = document.getElementById('hc-pin-err');
+
+  const _shake = () => {
+    const modal = document.querySelector('.hc-pin-modal');
+    if (modal) { modal.style.animation = 'hcPinShake .3s ease'; setTimeout(() => { modal.style.animation = ''; }, 350); }
+  };
 
   if (_hcPinMode === 'unlock') {
     const stored = localStorage.getItem(HC_PIN_KEY);
@@ -18136,9 +18128,7 @@ async function _hcPinSubmit() {
       hcPinCancel();
       renderHeroClass();
     } else {
-      errEl.textContent = 'Incorrect PIN';
-      const modal = document.querySelector('.hc-pin-modal');
-      if (modal) { modal.style.animation = 'hcPinShake .3s ease'; setTimeout(() => { modal.style.animation = ''; }, 350); }
+      _shake();
     }
 
   } else if (_hcPinMode === 'set') {
@@ -18148,7 +18138,7 @@ async function _hcPinSubmit() {
 
   } else if (_hcPinMode === 'set2') {
     if (pin !== _hcPinFirst) {
-      errEl.textContent = "PINs don't match — try again";
+      _shake();
       _hcPinMode  = 'set';
       _hcPinFirst = '';
       document.getElementById('hc-pin-sub').textContent = 'Choose a 4-digit PIN';
@@ -18158,21 +18148,23 @@ async function _hcPinSubmit() {
       _thorUnlocked = true;
       hcPinCancel();
       renderHeroClass();
-      if (typeof showToast === 'function') showToast('PIN set — Thor Mode locked', 'success');
     }
+  }
+}
 
-  } else if (_hcPinMode === 'change') {
-    const stored = localStorage.getItem(HC_PIN_KEY);
-    const hash   = await _hcHash(pin);
-    if (hash === stored) {
+// Triple-tap the HERO MODE title to toggle Thor Mode
+let _thorTapTimes = [];
+function _thorTitleTap() {
+  const now = Date.now();
+  _thorTapTimes = _thorTapTimes.filter(t => now - t < 800);
+  _thorTapTimes.push(now);
+  if (_thorTapTimes.length >= 3) {
+    _thorTapTimes = [];
+    if (_thorUnlocked) {
       _thorUnlocked = false;
-      hcPinCancel();
       renderHeroClass();
-      if (typeof showToast === 'function') showToast('Thor Mode locked', 'success');
     } else {
-      errEl.textContent = 'Incorrect PIN';
-      const modal = document.querySelector('.hc-pin-modal');
-      if (modal) { modal.style.animation = 'hcPinShake .3s ease'; setTimeout(() => { modal.style.animation = ''; }, 350); }
+      hcOpenPin(localStorage.getItem(HC_PIN_KEY) ? 'unlock' : 'set');
     }
   }
 }
