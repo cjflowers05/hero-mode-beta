@@ -18768,7 +18768,8 @@ function _itRenderSetup() {
           Total: ${fmtS(_itTmpl.warmup + _itTmpl.work * _itTmpl.rounds + _itTmpl.rest * (_itTmpl.rounds - 1))}
         </div>
       </div>
-      <button class="connect-log-btn" style="margin-bottom:28px" onclick="_itStart()">START TIMER</button>
+      <button class="connect-log-btn" style="margin-bottom:10px" onclick="_itStart()">START TIMER</button>
+      <button onclick="closeIntervalTimer()" style="display:block;width:100%;background:none;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.06em;padding-bottom:28px">CLOSE</button>
     </div>`;
 }
 
