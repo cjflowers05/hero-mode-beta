@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v22'; // v22: wire remaining 12 Beau badge images
+const CACHE_VERSION = 'hero-mode-v23'; // v23: Thor/Amazon lock:25, Apex lock:30
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
