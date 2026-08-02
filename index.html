@@ -44,8 +44,8 @@
 #theme-picker-overlay{
   position:fixed;top:0;left:0;right:0;bottom:0;
   background:#060606;z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:32px 20px calc(32px + env(safe-area-inset-bottom,0px));
   font-family:'DM Sans',sans-serif;overflow-y:auto;
 }
 #theme-picker-overlay.hidden{display:none}
@@ -523,7 +523,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .strength-line-svg{width:100%;height:90px;overflow:visible}
 .strength-line-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px}
 
-.connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;opacity:0.55}
 .connect-card.connected{border-color:rgba(91,200,118,.35)}
 .connect-card-header{display:flex;align-items:center;gap:12px;padding:14px 15px;cursor:pointer}
 .connect-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -537,7 +537,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .connect-status{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .connect-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:100px;border:1px solid}
 .connect-badge.linked{color:#5BC876;border-color:rgba(91,200,118,.4);background:rgba(91,200,118,.08)}
-.connect-badge.manual{color:var(--gold);border-color:var(--border2);background:rgba(201,168,76,.08)}
+.connect-badge.manual{color:var(--text3);border-color:var(--border);background:transparent}
 .connect-badge.unlinked{color:var(--text3);border-color:var(--border);background:transparent}
 .connect-body{display:none;border-top:1px solid var(--border);padding:14px 15px}
 .connect-card.open .connect-body{display:block}
@@ -1769,7 +1769,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<div id="tab-workout" class="tab-content active">
+<div id="tab-today" class="tab-content active">
+  <div id="today-dashboard"></div>
+</div>
+
+<div id="tab-workout" class="tab-content">
+  <!-- Train layout customizer trigger — pinned at top so it's always reachable -->
+  <div id="train-customize-bar" style="display:flex;justify-content:flex-end;margin-bottom:4px">
+    <button onclick="hmTrainCustomizeOpen()" style="background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text3);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;padding:5px 10px;transition:color .15s,border-color .15s" onmouseenter="this.style.color='var(--gold)';this.style.borderColor='var(--gold)'" onmouseleave="this.style.color='var(--text3)';this.style.borderColor='var(--border)'">⚙ CUSTOMIZE</button>
+  </div>
   <!-- TODAY'S WORKOUT BANNER -->
   <div id="today-workout-banner"></div>
   <div id="deload-banner" style="display:none"></div>
@@ -3300,7 +3308,7 @@ function hmApplyNutrition(){
 
 // Re-run all row-level integrations after (re)rendering the plan
 function hmRefreshIntegrations(){
-  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass'];
+  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass','renderTodayDashboard','hmInitPetSettings','hmTrainLayoutApply','hmWellnessLayoutApply'];
   fns.forEach(fn => { try { if (typeof window[fn] === 'function') window[fn](); } catch(e) { console.warn('hm refresh', fn, e); } });
 }
 
@@ -4117,6 +4125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--text);letter-spacing:.04em;line-height:1">Connect</div>
     <div style="font-size:12px;color:var(--text3);margin-top:3px">Log workouts from your machines. All data stays local on your device.</div>
   </div>
+  <!-- Coming soon banner -->
+  <div style="display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:16px;opacity:0.75">
+    <span style="font-size:22px;flex-shrink:0">🔗</span>
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:3px">COMING SOON</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.5">Direct device connections are in development. For now, log your stats manually using the forms below.</div>
+    </div>
+  </div>
 
   <!-- summary stats -->
   <div class="t-stat-row" style="margin-bottom:16px">
@@ -4329,7 +4345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
       <button class="section-guide-btn" onclick="hmStartSectionTour('charts')">✨ GUIDE</button>
-      <button onclick="showTab('connect',document.querySelector('[onclick*=\"connect\"]'))" style="flex-shrink:0;padding:8px 12px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid var(--border2);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:pointer">⚡ CONNECT</button>
+      <button disabled title="Device connections coming soon" style="flex-shrink:0;padding:8px 12px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:not-allowed;opacity:0.5">⚡ CONNECT</button>
     </div>
   </div>
 
@@ -4602,6 +4618,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
       <button class="section-guide-btn" onclick="hmStartSectionTour('wellness')">✨ GUIDE</button>
+      <button onclick="hmWellnessCustomizeOpen()" style="background:none;border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text3);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;padding:5px 10px;transition:color .15s,border-color .15s" onmouseenter="this.style.color='var(--gold)';this.style.borderColor='var(--gold)'" onmouseleave="this.style.color='var(--text3)';this.style.borderColor='var(--border)'">⚙ CUSTOMIZE</button>
       <div id="well-date-label" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;text-align:right"></div>
     </div>
   </div>
@@ -4869,10 +4886,29 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
     <div class="well-body">
+      <!-- Pet customisation -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:12px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <label style="cursor:pointer;position:relative;flex-shrink:0" title="Tap to change photo">
+          <img id="pet-photo-preview" src="assets/ui/beau/hey.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block">
+          <input type="file" accept="image/*" onchange="hmSetPetPhoto(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+        </label>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;margin-bottom:5px">YOUR PET</div>
+          <input id="pet-name-input" type="text" placeholder="Pet's name" maxlength="20" style="width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-size:14px;font-family:inherit;box-sizing:border-box" oninput="hmSetPetName(this.value)">
+        </div>
+      </div>
       <div id="walk-live-area"></div>
       <div class="t-section-label" style="margin-top:2px">Walk history</div>
       <div id="walk-history"></div>
-      <div id="beau-achievements"></div>
+      <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:4px">
+        <div onclick="var b=document.getElementById('beau-awards-body');var open=b.style.display!=='none';b.style.display=open?'none':'block';this.querySelector('.beau-awd-chev').textContent=open?'&#9662;':'&#9652;'" style="display:flex;align-items:center;justify-content:space-between;padding:10px 2px;cursor:pointer">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase">Beau's Awards</div>
+          <span class="beau-awd-chev" style="font-size:11px;color:var(--text3)">&#9662;</span>
+        </div>
+        <div id="beau-awards-body" style="display:none">
+          <div id="beau-achievements"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -5465,7 +5501,11 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="showTab('workout',this)">
+  <button class="nav-btn active" onclick="showTab('today',this)">
+    <img src="assets/ui/anvil_icon.png" class="nav-btn-img" alt="">
+    Today
+  </button>
+  <button class="nav-btn" onclick="showTab('workout',this)">
     <img src="assets/ui/nav-workouts.png" class="nav-btn-img" alt="">
     Train
   </button>
@@ -5498,7 +5538,21 @@ function showTab(id,btn){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   if(btn)btn.classList.add('active');
+  if(id==='today'&&typeof renderTodayDashboard==='function')renderTodayDashboard();
   if(id==='workout'&&typeof renderTodayBanner==='function')renderTodayBanner();
+  if(id==='workout'&&typeof hmTrainLayoutApply==='function')hmTrainLayoutApply();
+  if(id==='wellness'&&typeof hmWellnessLayoutApply==='function')hmWellnessLayoutApply();
+  // First-time CUSTOMIZE hint pulse
+  if(id==='workout'||id==='wellness'){
+    const hintKey='hm-cust-hinted-'+id;
+    if(!localStorage.getItem(hintKey)){
+      localStorage.setItem(hintKey,'1');
+      setTimeout(()=>{
+        const btn=document.querySelector('#tab-'+id+' [onclick*="Customize"]');
+        if(btn){btn.classList.add('hm-customize-hint');setTimeout(()=>btn.classList.remove('hm-customize-hint'),5000);}
+      },800);
+    }
+  }
   if(HM_SECTION_TOURS&&HM_SECTION_TOURS[id]){
     try{
       const visited=JSON.parse(localStorage.getItem('hero-tab-toured')||'[]');
@@ -5510,6 +5564,34 @@ function showTab(id,btn){
     }catch(e){}
   }
 }
+// ── TAB SWIPE GESTURES ───────────────────────────────────────
+(function(){
+  const TAB_ORDER = ['today','workout','tracker','nutri-tracker','recipes','wellness','charts'];
+  let _swX = null, _swY = null;
+  const wrap = document.querySelector('.tab-wrapper') || document.getElementById('app') || document.body;
+  wrap.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) return;
+    _swX = e.touches[0].clientX;
+    _swY = e.touches[0].clientY;
+  }, { passive: true });
+  wrap.addEventListener('touchend', e => {
+    if (_swX === null) return;
+    const dx = e.changedTouches[0].clientX - _swX;
+    const dy = e.changedTouches[0].clientY - _swY;
+    _swX = null; _swY = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const activeTab = document.querySelector('.tab-content.active');
+    if (!activeTab) return;
+    const curId = activeTab.id.replace('tab-', '');
+    const idx = TAB_ORDER.indexOf(curId);
+    if (idx === -1) return;
+    const next = dx < 0 ? TAB_ORDER[idx + 1] : TAB_ORDER[idx - 1];
+    if (!next) return;
+    const nextBtn = document.querySelector('[onclick*="showTab(\'' + next + '\'"]');
+    showTab(next, nextBtn);
+  }, { passive: true });
+})();
+
 const ACTIVE_PHASE_KEY='hero-active-phase';
 function showPhase(id,btn){document.querySelectorAll('.phase-section').forEach(s=>s.style.display='none');document.querySelectorAll('.phase-pill').forEach(b=>b.classList.remove('active'));document.getElementById(id).style.display='block';btn.classList.add('active');localStorage.setItem(ACTIVE_PHASE_KEY,id);localStorage.removeItem(SES_DOW_KEY);_sessionOpen=true;if(typeof renderTodayBanner==='function')renderTodayBanner();}
 function toggleDay(el){el.classList.toggle('open')}
@@ -11021,7 +11103,7 @@ function renderBarChart(containerId, data, colorClass, targetVal, targetLabel) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (!data.length || data.every(d => !d.val)) {
-    el.innerHTML = `<div class="chart-empty">No data yet — start logging to see your chart.</div>`;
+    el.innerHTML = `<div class="chart-empty">No data yet — <button onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))" style="background:none;border:none;color:var(--gold);font-family:'DM Mono',monospace;font-size:inherit;cursor:pointer;padding:0;text-decoration:underline">start logging</button> to see your chart.</div>`;
     return;
   }
   const maxVal = Math.max(...data.map(d => d.val || 0), targetVal || 0, 1);
@@ -11600,15 +11682,15 @@ function ntMcApply() {
 }
 
 // ── WHAT'S NEW ──
-const HM_WN_KEY = 'hero-wn-seen-v5';
+const HM_WN_KEY = 'hero-wn-seen-v6';
 const HM_WHATS_NEW = [
-  { icon:'▶️', name:'206 Technique Videos', desc:'Every exercise now has a technique clip in the ▶ Watch tab — tap any exercise to see proper form before you lift.' },
-  { icon:'🃏', name:'Hero Card', desc:'Open your Trophy Case and tap HERO CARD to see your stats, medals, and hero art on a collectible trading card.' },
-  { icon:'🏃', name:'Cardio in Train', desc:'A Cardio tracker now lives at the bottom of your training plan — 7-day streak dots, weekly burn stats, and one-tap logging.' },
-  { icon:'🧮', name:'Nutrition Calculator', desc:'Calculate personalised macro targets using Mifflin-St Jeor BMR — right inside the Nutrition tab.' },
-  { icon:'🦸', name:'Hero Emblems', desc:'Your hero emblem now appears on the profile chip, workout banner, trophy case watermark, and the theme-switch flash.' },
-  { icon:'🔥', name:'Streak + Freeze Tokens', desc:'Workout streak lives in the hero header. Earn freeze tokens at 7-day milestones to protect your streak.' },
-  { icon:'🌙', name:'Light / Dark Mode', desc:'Toggle between dark and light mode using the ☀️ button in the top-right corner.' },
+  { icon:'🌸', name:'Signature Themes', desc:'Three new personal themes — Mom Mode, Dad Mode, and Forge — sit at the top of the theme picker with their own icons, colors, and activation flash.' },
+  { icon:'⚙️', name:'Customize Your Tabs', desc:'Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide any section. Your layout is saved per device.' },
+  { icon:'👆', name:'Swipe Between Tabs', desc:'Swipe left or right anywhere in the app to move between tabs — Today, Train, Log, Nutrition, Recipes, Wellness, and Progress.' },
+  { icon:'🎁', name:'Chest Opening Moment', desc:'Completing all 3 daily quests now triggers a full-screen animated chest opening with confetti, a bonus XP callout, and a motivational message.' },
+  { icon:'🏅', name:'Badge Unlock Card', desc:'Earning a badge now slides up a styled card notification — icon, name, and category — instead of a plain text toast.' },
+  { icon:'✏️', name:'Rename Your Hero', desc:'Tap the ✏️ pencil next to your hero name in the profile chip to rename your hero at any time.' },
+  { icon:'🦸', name:'Signature Icons Everywhere', desc:'Mom Mode, Dad Mode, and Forge icons now appear in the Trophy Case, rank pill, training banner, hero card, and level-up flash.' },
 ];
 
 function hmShowWhatsNew() {
@@ -11656,6 +11738,7 @@ const HM_TUTORIAL_STEPS = [
   { emoji:'🥗', title:'Nutrition', desc:'Track daily meals against your macro targets. Use the built-in calculator to set calorie and protein goals based on your bodyweight and goals.', tip:'Consistent logging shows your weekly average in Progress.' },
   { emoji:'🛌', title:'Wellness', desc:'Log sleep, water intake, and muscle soreness to keep tabs on your recovery. The body map shows exactly where you\'re feeling last session.', tip:'Good recovery means better performance next session.' },
   { emoji:'🏆', title:'Trophy Case', desc:'Earn badges by hitting milestones — streak days, XP totals, nutrition logs, and more. Level up to unlock new hero portraits and titles.', tip:'Tap your hero portrait in the top-left to open your Trophy Case.' },
+  { emoji:'🎨', title:'Make It Yours', desc:'Choose a hero theme — including Mom Mode, Dad Mode, and Forge — from the 🎨 button in the top-right. Tap ⚙ CUSTOMIZE on the Train or Wellness tab to show only the sections you use.', tip:'Swipe left or right anywhere to switch tabs.' },
 ];
 let _hmTutIdx = 0;
 
@@ -12877,6 +12960,7 @@ function waterSetFor(dateKey, n) {
   // First glass of TODAY earns points (day-capped; counter tracks hydration days)
   if (dateKey === waterToday() && prev === 0 && n > 0 && window.hmXP) hmXP('water', 5);
   if (n > prev && window.hmSfx) hmSfx('tap');
+  if (n > prev && typeof showToast === 'function') showToast('💧 ' + n + ' cup' + (n === 1 ? '' : 's') + ' today ✓', 'success');
   waterRender();
   waterUpdateHeader();
   if (typeof renderNtWater === 'function') renderNtWater();
@@ -14447,6 +14531,34 @@ function renderBeauAchievements(newIds) {
 
 const WALK_KEY_V2 = 'heromode_walks_v2';
 const WALK_KEY_V1 = 'heromode_walks_v1'; // legacy
+const PET_NAME_KEY  = 'hm-pet-name';
+const PET_PHOTO_KEY = 'hm-pet-photo';
+
+function hmInitPetSettings() {
+  const name  = localStorage.getItem(PET_NAME_KEY)  || '';
+  const photo = localStorage.getItem(PET_PHOTO_KEY) || 'assets/ui/beau/hey.png';
+  const nameEl  = document.getElementById('pet-name-input');
+  const photoEl = document.getElementById('pet-photo-preview');
+  if (nameEl)  nameEl.value = name;
+  if (photoEl) photoEl.src  = photo;
+}
+function hmSetPetName(val) {
+  const v = val.trim();
+  if (v) localStorage.setItem(PET_NAME_KEY, v); else localStorage.removeItem(PET_NAME_KEY);
+  try { renderTodayDashboard(); } catch(e) {}
+}
+function hmSetPetPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    localStorage.setItem(PET_PHOTO_KEY, e.target.result);
+    const el = document.getElementById('pet-photo-preview');
+    if (el) el.src = e.target.result;
+    try { renderTodayDashboard(); } catch(e) {}
+  };
+  reader.readAsDataURL(file);
+}
 
 function loadWalks() {
   try {
@@ -17526,7 +17638,7 @@ function renderTodayBanner() {
 
   banner.innerHTML = `
     <div class="today-banner" onclick="toggleSessionTracker()">
-      <img class="banner-hero-emblem" src="assets/ui/emblem-${_bnAid}.png" alt="" onerror="this.style.display='none'">
+      <img class="banner-hero-emblem" src="${hmEmblSrc(_bnTheme)}" alt="" onerror="this.style.display='none'">
       <div class="today-banner-icon">${_dayIconHtml}</div>
       <div style="flex:1;min-width:0">
         <div class="today-banner-label">${isOverride ? `SELECTED · ${dayNames[sessionDow]}` : `TODAY · ${dayNames[todayDow]}`}</div>
@@ -19886,6 +19998,9 @@ if ('serviceWorker' in navigator) {
 #xp-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(var(--accent-rgb),1) 45%,rgba(var(--accent-rgb),.8));transition:width .6s cubic-bezier(.22,1,.36,1);box-shadow:0 0 8px rgba(var(--accent-rgb),.6);overflow:hidden}
 .xp-pop{position:absolute;right:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold);animation:hm-xp-pop 1.1s ease forwards;pointer-events:none;z-index:5}
 @keyframes hm-xp-pop{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+@keyframes hmChestBounce{0%{transform:scale(0.5) rotate(-8deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}80%{transform:scale(0.95) rotate(-2deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes hmCustomizePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5);border-color:var(--border)}50%{box-shadow:0 0 0 4px rgba(var(--accent-rgb),.2);border-color:var(--gold)}}
+.hm-customize-hint{animation:hmCustomizePulse 1.6s ease-in-out 3}
 /* Profile chip */
 #profile-chip{display:flex;align-items:center;gap:10px;margin-top:12px;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s}
 #profile-chip:active{border-color:var(--border2)}
@@ -19928,6 +20043,21 @@ if ('serviceWorker' in navigator) {
 .dq-claim.done{color:#5BC876;font-size:14px}
 .dq-chest{display:block;width:100%;margin-top:10px;padding:12px;border-radius:11px;border:1px solid var(--border2);background:rgba(var(--accent-rgb),.1);color:var(--gold);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;text-align:center}
 .dq-chest.opened{background:rgba(91,200,118,.07);border-color:rgba(91,200,118,.25);color:#5BC876;cursor:default}
+.td-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;transition:border-color .15s}
+.td-card-tap{cursor:pointer;-webkit-tap-highlight-color:rgba(var(--accent-rgb),.1)}
+.td-card-tap:active{border-color:var(--border2);background:rgba(var(--accent-rgb),.04)}
+.td-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.td-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);letter-spacing:.03em;line-height:1.1}
+.td-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.td-chevron{margin-left:auto;color:var(--text3);font-size:18px;flex-shrink:0;padding-left:8px}
+.td-row{display:flex;align-items:center;gap:12px}
+.td-stats{display:flex;gap:8px;margin-bottom:10px}
+.td-stat{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center}
+.td-stat-val{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--text);letter-spacing:.02em;line-height:1}
+.td-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.08em;margin-top:3px}
+.td-qdots{display:flex;gap:7px;margin-top:8px}
+.td-qdot{width:11px;height:11px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:background .3s}
+.td-qdot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--accent-rgb),.4)}
 /* Badge strip (Progress tab) */
 #badge-strip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:11px 13px;margin-bottom:14px;cursor:pointer}
 .bs-medallion{width:34px;height:34px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 5px rgba(var(--accent-rgb),.4))}
@@ -20129,6 +20259,17 @@ const HM_PATTERNS = {
 };
 
 const HERO_THEMES = [
+  // ── SIGNATURE MODES ──────────────────────────────────────────────────────
+  { id:'mommode', name:'Mom Mode', sub:'Blush & Teal', emblem:'🌸', emblSrc:'assets/ui/mom_mode_icon.png', pat:'dots', tone:'mystic', lock:0,
+    swatch:['#D4A5AF','#4ECDC4'],
+    vars:{'--gold':'#D4A5AF','--gold-dim':'#A06878','--bg':'#0E0A0B','--bg2':'#160D0F','--bg3':'#1E1114','--bg4':'#261518','--text':'#F0E8EA','--text2':'#B09099','--text3':'#7A6068','--border':'rgba(212,165,175,0.11)','--border2':'rgba(212,165,175,0.25)','--accent-rgb':'212,165,175'} },
+  { id:'dadmode', name:'Dad Mode', sub:'Teal & Steel', emblem:'🛡️', emblSrc:'assets/ui/dad_mode_icon.png', pat:'scales', tone:'power', lock:0,
+    swatch:['#4ECDC4','#1B4F8A'],
+    vars:{'--gold':'#4ECDC4','--gold-dim':'#2BAAAA','--bg':'#060A10','--bg2':'#0C1420','--bg3':'#111D2E','--bg4':'#17253C','--text':'#EBF0F8','--text2':'#8090B0','--text3':'#507090','--border':'rgba(78,205,196,0.13)','--border2':'rgba(78,205,196,0.30)','--accent-rgb':'78,205,196'} },
+  { id:'forge', name:'Forge', sub:'Electric & Void', emblem:'⚒️', emblSrc:'assets/ui/anvil_icon.png', pat:'rays', tone:'power', lock:0,
+    swatch:['#29B6F6','#050A12'],
+    vars:{'--gold':'#29B6F6','--gold-dim':'#0277BD','--bg':'#050A12','--bg2':'#09121E','--bg3':'#0E1A2A','--bg4':'#122135','--text':'#E8F2FF','--text2':'#7090B8','--text3':'#4A6080','--border':'rgba(41,182,246,0.13)','--border2':'rgba(41,182,246,0.30)','--accent-rgb':'41,182,246'} },
+  // ── STANDARD THEMES ──────────────────────────────────────────────────────
   { id:'warrior', name:'Warrior', sub:'Crimson & Steel', emblem:'⚔️', pat:'rays', tone:'power',
     swatch:['#E53935','#B71C1C'],
     vars:{'--gold':'#E53935','--gold-dim':'#B71C1C','--bg':'#0A0808','--bg2':'#110D0D','--bg3':'#1A1010','--bg4':'#221414','--text':'#F2EEEE','--text2':'#9A8E8E','--text3':'#6D6060','--border':'rgba(229,57,53,0.12)','--border2':'rgba(229,57,53,0.28)','--accent-rgb':'229,57,53'} },
@@ -20189,7 +20330,7 @@ const HERO_THEMES = [
   { id:'ranger', name:'Ranger', sub:'Forest & Ember', emblem:'🎯', pat:'scales', tone:'aqua', lock:0,
     swatch:['#E8892E','#5D8A3C'],
     vars:{'--gold':'#E8892E','--gold-dim':'#9A4B18','--bg':'#0A0805','--bg2':'#120F08','--bg3':'#1A150B','--bg4':'#221C10','--text':'#F5EEE2','--text2':'#A09075','--text3':'#746852','--border':'rgba(232,137,46,0.13)','--border2':'rgba(232,137,46,0.30)','--accent-rgb':'232,137,46'} },
-  { id:'wick', name:'Wick', sub:'Shadow & Neon Purple', emblem:'🔫', pat:'dots', tone:'mystic', lock:0,
+  { id:'wick', name:'Wick', sub:'Shadow & Neon Purple', emblem:'🔫', pat:'dots', tone:'mystic', lock:50,
     swatch:['#9D4EDD','#1A0A2E'],
     vars:{'--gold':'#9D4EDD','--gold-dim':'#5A1F8A','--bg':'#08060D','--bg2':'#0E0A16','--bg3':'#150F1F','--bg4':'#1C1428','--text':'#EDE8F5','--text2':'#9B8DB0','--text3':'#6D5F82','--border':'rgba(157,78,221,0.14)','--border2':'rgba(157,78,221,0.30)','--accent-rgb':'157,78,221'} },
   { id:'thor', name:'Thor', sub:'Storm & Lightning', emblem:'⚡', pat:'rays', tone:'power', lock:25,
@@ -20260,6 +20401,11 @@ function hmActiveProfile(){
 function hmActiveTheme(){
   const prof = hmActiveProfile();
   return HERO_THEMES.find(t => t.id === (prof && prof.theme)) || HERO_THEMES[0];
+}
+// Returns the correct emblem image src for any theme — uses emblSrc for signature themes
+function hmEmblSrc(theme){
+  const _eid = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  return theme.emblSrc || ('assets/ui/emblem-' + (_eid[theme.id] || theme.id) + '.png');
 }
 function hmProfileSyncGoals(){
   // Called after gpBuild saves goals — snapshot them onto the active profile
@@ -20529,7 +20675,9 @@ function hmHeroFX(title, sub, emblem){
     particles += '<div class="fx-p" style="--dx:' + Math.round(Math.cos(a)*d) + 'px;--dy:' + Math.round(Math.sin(a)*d) + 'px;animation-delay:' + (0.42 + Math.random()*.1).toFixed(2) + 's"></div>';
   }
   const _fxEmbHtml = emblem
-    ? '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">'
+    ? (emblem.includes('/')
+        ? '<img src="' + emblem + '" alt="" style="max-width:180px;max-height:180px;object-fit:contain" onerror="this.style.opacity=\'0\'">'
+        : '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">')
     : '<span style="font-size:120px">⚡</span>';
   fx.innerHTML = (noMotion ? '' : '<div class="fx-ring"></div><div class="fx-ring r2"></div>') + particles +
     '<div class="fx-emblem">' + _fxEmbHtml + '</div>' +
@@ -20807,7 +20955,8 @@ function hmXP(kind, pts, meta){
   if (after.lvl > before) {
     const theme = hmActiveTheme();
     const _lvEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
-    setTimeout(() => { hmHeroFX('LEVEL ' + after.lvl, hmRankFor(after.lvl), _lvEID[theme.id] || theme.id); hmSfx('level'); }, 350);
+    setTimeout(() => { hmHeroFX('LEVEL ' + after.lvl, hmRankFor(after.lvl), theme.emblSrc || _lvEID[theme.id] || theme.id); hmSfx('level'); }, 350);
+    setTimeout(() => { if (typeof showToast === 'function') showToast('⬆️ Level ' + after.lvl + ' — ' + hmRankFor(after.lvl) + '!', 'success'); }, 1800);
     // Story chapters — comic cut-scene unlocks at level milestones
     const chapter = HM_STORY.find(ch => after.lvl >= ch.lvl && !s.story[ch.id]);
     if (chapter) {
@@ -20824,7 +20973,7 @@ function hmXP(kind, pts, meta){
       hmHeroFX(b.name.toUpperCase(), 'Trophy Earned', b.ico);
       hmSfx('trophy');
     } else {
-      if (typeof showToast === 'function') showToast(b.ico + ' Badge unlocked: ' + b.name, 'success');
+      hmBadgePop(b);
       hmSfx('badge');
     }
     hmRenderBadges();
@@ -20832,6 +20981,28 @@ function hmXP(kind, pts, meta){
   }, awardDelayBase + i * 1400));
 }
 window.hmXP = hmXP;
+
+function hmBadgePop(b) {
+  const existing = document.getElementById('hm-badge-pop');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'hm-badge-pop';
+  el.style.cssText = 'position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(30px);z-index:11000;background:var(--bg3);border:1px solid var(--gold);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:88vw';
+  el.innerHTML = '<div style="font-size:36px;flex-shrink:0">' + b.ico + '</div>' +
+    '<div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:11px;letter-spacing:.12em;color:var(--gold);margin-bottom:2px">BADGE UNLOCKED</div>' +
+    '<div style="font-size:15px;font-weight:700;color:var(--text)">' + b.name + '</div>' +
+    (b.col ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:\'DM Mono\',monospace">' + b.col + '</div>' : '') + '</div>';
+  document.body.appendChild(el);
+  requestAnimationFrame(() => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateX(-50%) translateY(0)';
+  });
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(20px)';
+    setTimeout(() => el.remove(), 350);
+  }, 3200);
+}
 
 // ── STORY CAMPAIGN — comic cut-scenes at level milestones ──
 // Panels: art tokens 'emblem' (theme) / 'avatar' (profile emoji); {name} = hero name
@@ -21008,7 +21179,7 @@ const HM_TOUR_STEPS = [
   { sel:'#custom-workout-entry', emoji:'⚡', title:'Custom Sessions',    text:'Off-plan day? Build your own session from scratch or add extra exercises to today\'s workout.' },
   { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Theme',      text:'Toggle sound here, and tap the 🎨 next to it to change your hero theme — colors, emblem, and even the sound effects.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
-  { sel:'.tab-bar',              emoji:'🧭', title:'Get Around',         text:'Train, Log, Nutrition, Recipes, Wellness, and Progress live along the bottom. Your awards, charts, and weekly reviews are under Progress. Tap any exercise and open the ▶ Watch tab to see its technique video. Go be a hero. 💪' },
+  { sel:'.tab-bar',              emoji:'🧭', title:'Get Around',         text:'Train, Log, Nutrition, Recipes, Wellness, and Progress live along the bottom. Swipe left or right anywhere to switch tabs. Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide sections. Your awards and charts are under Progress. Go be a hero. 💪' },
 ];
 const HM_TOUR_REFRESHER = { sel:null, emoji:'✨', title:'What\'s New — a Quick Refresher', text:'Here\'s a fresh walkthrough of Hero Mode — including anything new since you last looked. Skip anytime.' };
 let _hmTourIdx = -1;
@@ -21150,9 +21321,357 @@ function hmOpenChest(){
   q.chest = true;
   hmXPSave(s);
   hmXP('quests', 50);
-  hmHeroFX('QUEST CHEST', '+50 Bonus XP', '🎁');
   hmSfx('trophy');
   hmRenderQuests();
+
+  // Full chest opening overlay
+  const msgs = [
+    'You showed up. That\'s the whole game.',
+    'Three for three. Heroes don\'t negotiate with rest days.',
+    'Quests crushed. Legend status loading…',
+    'Another day, another victory. Beau is proud.',
+    'Full clear. The iron remembers.',
+    'All three down. Your streak thanks you.',
+  ];
+  const msg = msgs[Math.floor(Math.random() * msgs.length)];
+
+  const ov = document.createElement('div');
+  ov.id = 'hm-chest-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0';
+  ov.innerHTML = `
+    <div id="hm-chest-inner" style="text-align:center;padding:32px 24px;max-width:360px;opacity:0;transform:scale(.85);transition:opacity .4s,transform .4s">
+      <div id="hm-chest-icon" style="font-size:88px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 0 32px rgba(201,168,76,.6));animation:hmChestBounce .55s ease-out forwards">🎁</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:.06em;color:var(--gold);line-height:1;margin-bottom:6px">CHEST OPENED</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#5BC876;letter-spacing:.04em;margin-bottom:18px">+50 BONUS XP</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.6;font-style:italic;margin-bottom:28px">"${msg}"</div>
+      <div id="hm-chest-particles" style="position:relative;height:40px;overflow:visible;margin-bottom:20px"></div>
+      <button onclick="document.getElementById('hm-chest-overlay').remove()" style="background:var(--gold);border:none;border-radius:12px;padding:14px 40px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:#000;cursor:pointer">CLAIM IT</button>
+    </div>`;
+
+  document.body.appendChild(ov);
+
+  // Particle burst
+  setTimeout(() => {
+    const inner = document.getElementById('hm-chest-inner');
+    if (inner) { inner.style.opacity = '1'; inner.style.transform = 'scale(1)'; }
+    const pc = document.getElementById('hm-chest-particles');
+    if (pc) {
+      const colors = ['var(--gold)','#5BC876','#29B6F6','#FF6B6B','#FFD93D'];
+      for (let i = 0; i < 28; i++) {
+        const p = document.createElement('div');
+        const angle = (i / 28) * 360;
+        const dist = 60 + Math.random() * 80;
+        const size = 5 + Math.random() * 7;
+        p.style.cssText = `position:absolute;left:50%;top:50%;width:${size}px;height:${size}px;border-radius:50%;background:${colors[i%colors.length]};transform:translate(-50%,-50%);animation:hmParticle${i%4} 0.9s ease-out forwards;--dx:${Math.cos(angle*Math.PI/180)*dist}px;--dy:${Math.sin(angle*Math.PI/180)*dist}px;opacity:1`;
+        pc.appendChild(p);
+        p.animate([
+          { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${Math.cos(angle*Math.PI/180)*dist}px), calc(-50% + ${Math.sin(angle*Math.PI/180)*dist}px)) scale(0)`, opacity: 0 }
+        ], { duration: 900, easing: 'ease-out', fill: 'forwards', delay: i * 12 });
+      }
+    }
+  }, 60);
+
+  // Auto-close after 6s
+  setTimeout(() => { const o = document.getElementById('hm-chest-overlay'); if (o) o.remove(); }, 6000);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+}
+
+// ── TRAIN TAB CUSTOMIZER ─────────────────────────────────────────────────────
+const TRAIN_LAYOUT_KEY = 'hm-train-layout';
+const TRAIN_SECTIONS = [
+  { id: 'custom-workout-entry', label: 'Custom Session', icon: '⚡', desc: 'Build from scratch or add to today\'s plan' },
+  { id: 'daily-quests',         label: 'Daily Quests',   icon: '🎯', desc: 'Your 3 daily challenges' },
+  { id: 'train-cardio-widget',  label: 'Cardio Tracker', icon: '🏃', desc: 'Quick cardio log widget' },
+  { id: 'cardio-prog-root',     label: 'Cardio Program', icon: '📈', desc: 'Structured cardio plan (5K, etc.)' },
+  { id: 'train-plan-root',      label: 'Training Plan',  icon: '💪', desc: 'Your full phase-based program' },
+];
+
+function hmTrainLayoutLoad() {
+  try { return JSON.parse(localStorage.getItem(TRAIN_LAYOUT_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function hmTrainLayoutApply() {
+  const saved = hmTrainLayoutLoad();
+  TRAIN_SECTIONS.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (!el) return;
+    const visible = saved[s.id] !== false;
+    el.style.display = visible ? '' : 'none';
+  });
+}
+
+function hmTrainToggleSection(cb) {
+  const sid = cb.dataset.section;
+  const saved = hmTrainLayoutLoad();
+  saved[sid] = cb.checked;
+  localStorage.setItem(TRAIN_LAYOUT_KEY, JSON.stringify(saved));
+  hmTrainLayoutApply();
+  const track = document.querySelector('.hm-toggle-track[data-for="' + sid + '"]');
+  const knob  = document.querySelector('.hm-toggle-knob[data-for="' + sid + '"]');
+  if (track) track.style.background = cb.checked ? 'var(--gold)' : 'var(--bg4)';
+  if (knob)  knob.style.left        = cb.checked ? '23px' : '3px';
+}
+
+function hmTrainCustomizeOpen() {
+  const saved = hmTrainLayoutLoad();
+  const rows = TRAIN_SECTIONS.map(s => {
+    const on = saved[s.id] !== false;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${s.label}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">${s.desc}</div>
+      </div>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;cursor:pointer">
+        <input type="checkbox" data-section="${s.id}" ${on?'checked':''} onchange="hmTrainToggleSection(this)" style="opacity:0;width:0;height:0;position:absolute">
+        <span class="hm-toggle-track" data-for="${s.id}" style="position:absolute;inset:0;border-radius:12px;background:${on?'var(--gold)':'var(--bg4)'};transition:background .2s;pointer-events:none">
+          <span class="hm-toggle-knob" data-for="${s.id}" style="position:absolute;top:3px;left:${on?'23px':'3px'};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;pointer-events:none"></span>
+        </span>
+      </label>
+    </div>`;
+  }).join('');
+
+  const ov = document.createElement('div');
+  ov.id = 'train-customize-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML = `<div style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:0 20px 32px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0 4px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text)">CUSTOMIZE TRAIN</div>
+      <button onclick="document.getElementById('train-customize-overlay').remove()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;line-height:1;padding:4px 0">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.06em">SHOW OR HIDE SECTIONS</div>
+    ${rows}
+    <button onclick="document.getElementById('train-customize-overlay').remove()" style="margin-top:18px;width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;color:#000;cursor:pointer">DONE</button>
+  </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+// ── WELLNESS TAB CUSTOMIZER ──────────────────────────────────────────────────
+const WELLNESS_LAYOUT_KEY = 'hm-wellness-layout';
+const WELLNESS_SECTIONS = [
+  { id:'ws-bw',       label:'Body Weight',       icon:'⚖️',  desc:'Daily weight log & trend' },
+  { id:'ws-water',    label:'Water Intake',       icon:'💧',  desc:'Hydration tracker' },
+  { id:'ws-photos',   label:'Progress Photos',    icon:'📸',  desc:'Visual progress check-ins' },
+  { id:'ws-sleep',    label:'Sleep',              icon:'🛏️',  desc:'Sleep log & quality tracking' },
+  { id:'ws-alcohol',  label:'Alcohol Log',        icon:'🥂',  desc:'Drink tracking' },
+  { id:'ws-vitamins', label:'Vitamins',           icon:'💊',  desc:'Supplement & prescription log' },
+  { id:'ws-walk',     label:'Dog Walk',           icon:'🐕',  desc:'Pet walk tracker & awards' },
+  { id:'ws-cardio',   label:'Cardio',             icon:'🏃',  desc:'Cardio sessions log' },
+  { id:'ws-soreness', label:'Soreness Check-In',  icon:'🩹',  desc:'Muscle soreness tracker' },
+  { id:'ws-timer',    label:'Workout Timer',      icon:'⏱️',  desc:'Interval & rest timer' },
+  { id:'ws-macros',   label:'Macro Calculator',   icon:'🧮',  desc:'TDEE & macro estimator' },
+];
+
+function hmWellnessLayoutLoad() {
+  try { return JSON.parse(localStorage.getItem(WELLNESS_LAYOUT_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function hmWellnessLayoutApply() {
+  const saved = hmWellnessLayoutLoad();
+  WELLNESS_SECTIONS.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (!el) return;
+    el.style.display = saved[s.id] !== false ? '' : 'none';
+  });
+}
+
+function hmWellnessToggleSection(cb) {
+  const sid = cb.dataset.section;
+  const saved = hmWellnessLayoutLoad();
+  saved[sid] = cb.checked;
+  localStorage.setItem(WELLNESS_LAYOUT_KEY, JSON.stringify(saved));
+  hmWellnessLayoutApply();
+  const track = document.querySelector('.hm-toggle-track[data-for="' + sid + '"]');
+  const knob  = document.querySelector('.hm-toggle-knob[data-for="' + sid + '"]');
+  if (track) track.style.background = cb.checked ? 'var(--gold)' : 'var(--bg4)';
+  if (knob)  knob.style.left        = cb.checked ? '23px' : '3px';
+}
+
+function hmWellnessCustomizeOpen() {
+  const saved = hmWellnessLayoutLoad();
+  const rows = WELLNESS_SECTIONS.map(s => {
+    const on = saved[s.id] !== false;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${s.label}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">${s.desc}</div>
+      </div>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;cursor:pointer">
+        <input type="checkbox" data-section="${s.id}" ${on?'checked':''} onchange="hmWellnessToggleSection(this)" style="opacity:0;width:0;height:0;position:absolute">
+        <span class="hm-toggle-track" data-for="${s.id}" style="position:absolute;inset:0;border-radius:12px;background:${on?'var(--gold)':'var(--bg4)'};transition:background .2s;pointer-events:none">
+          <span class="hm-toggle-knob" data-for="${s.id}" style="position:absolute;top:3px;left:${on?'23px':'3px'};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;pointer-events:none"></span>
+        </span>
+      </label>
+    </div>`;
+  }).join('');
+
+  const ov = document.createElement('div');
+  ov.id = 'wellness-customize-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML = `<div style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:0 20px 32px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0 4px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text)">CUSTOMIZE WELLNESS</div>
+      <button onclick="document.getElementById('wellness-customize-overlay').remove()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;line-height:1;padding:4px 0">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.06em">SHOW OR HIDE SECTIONS</div>
+    ${rows}
+    <button onclick="document.getElementById('wellness-customize-overlay').remove()" style="margin-top:18px;width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;color:#000;cursor:pointer">DONE</button>
+  </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+// ── TODAY DASHBOARD ─────────────────────────────────────────────────────────
+function renderTodayDashboard() {
+  const root = document.getElementById('today-dashboard');
+  if (!root) return;
+
+  // Date
+  const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  const dateStr = DAY_NAMES[now.getDay()] + ', ' + MONTH_NAMES[now.getMonth()] + ' ' + now.getDate();
+
+  // Hero info
+  const xpData  = hmXPLoad();
+  const lvlInfo = hmLevelInfo(xpData.xp);
+  const prof     = hmActiveProfile();
+  const heroName = (prof && prof.name) ? prof.name : 'Hero';
+  const streak   = Math.max((typeof calcStreak === 'function') ? calcStreak() : 0, (xpData.login && xpData.login.streak) ? xpData.login.streak : 0);
+  const theme    = hmActiveTheme();
+  const _eid     = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const themeId  = _eid[theme.id] || theme.id;
+  const xpToday  = (xpData.xpDay && xpData.xpDay.earned) ? xpData.xpDay.earned : 0;
+
+  // Today's workout
+  const todayDow   = now.getDay();
+  const sessionDow = (typeof getSessionDow === 'function') ? getSessionDow() : todayDow;
+  let activePhaseId = 'ph1';
+  const activePill = document.querySelector('.phase-pill.active');
+  if (activePill) { const m = (activePill.getAttribute('onclick')||'').match(/showPhase\('(\w+)'/); if (m) activePhaseId = m[1]; }
+  const phDays = (typeof TODAY_PHASE_DAYS !== 'undefined') ? TODAY_PHASE_DAYS[activePhaseId] : null;
+  const _SD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const _offset = window._tdDayOffset || 0;
+  const displayDow = (todayDow + _offset + 7) % 7;
+  const day = phDays ? phDays[displayDow] : null;
+  const yestDow = (todayDow + 6) % 7;
+  const tomrDow = (todayDow + 1) % 7;
+  const yestDay = phDays ? phDays[yestDow] : null;
+  const tomrDay = phDays ? phDays[tomrDow] : null;
+  const missionLabel = _offset === 0 ? "TODAY'S MISSION" : _offset === -1 ? 'YESTERDAY' : 'TOMORROW';
+  const _navBtn = (label, offset, active) =>
+    `<button onclick="window._tdDayOffset=${offset};renderTodayDashboard()" style="flex:1;padding:8px 4px;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;transition:background .15s;${active?'background:rgba(var(--accent-rgb),.18);color:var(--gold);':'background:transparent;color:var(--text3);'}">${label}</button>`;
+  const navStrip = `<div style="display:flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:12px">
+    ${_navBtn('← '+_SD[yestDow].toUpperCase(), -1, _offset===-1)}
+    <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+    ${_navBtn('TODAY', 0, _offset===0)}
+    <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+    ${_navBtn(_SD[tomrDow].toUpperCase()+' →', 1, _offset===1)}
+  </div>`;
+  const missionHtml = day
+    ? `${navStrip}<div class="td-label">${missionLabel}</div>
+       <div class="td-row">
+         <div style="font-size:24px;flex-shrink:0">${day.icon||'💪'}</div>
+         <div style="flex:1;min-width:0"><div class="td-title">${day.name}</div><div class="td-sub">${day.focus}</div></div>
+         ${_offset===0?'<div class="td-chevron">›</div>':''}
+       </div>`
+    : `${navStrip}<div class="td-label">${missionLabel}</div>
+       <div class="td-row">
+         <div style="font-size:24px;flex-shrink:0">😴</div>
+         <div style="flex:1"><div class="td-title">Rest Day</div><div class="td-sub">Recovery is part of the plan</div></div>
+         ${_offset===0?'<div class="td-chevron">›</div>':''}
+       </div>`;
+
+  // Quests
+  let questBody = '';
+  try {
+    const st = hmRecapStats();
+    const s  = hmXPLoad();
+    const q  = hmQuestState(s);
+    const quests   = hmTodayQuests(st);
+    const doneCount = quests.filter(x => q.claimed[x.id]).length;
+    const dots = quests.map(x => `<div class="td-qdot${q.claimed[x.id]?' done':''}"></div>`).join('');
+    const chestReady = doneCount === 3 && !q.chest;
+    questBody = `<div class="td-label">Daily Quests</div>
+      <div class="td-row" style="align-items:center">
+        <div class="td-qdots" style="margin-top:0">${dots}</div>
+        <div style="margin-left:10px;font-size:11px;color:var(--text3)">${doneCount}/3 complete</div>
+        ${chestReady ? '<div style="margin-left:auto;font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;letter-spacing:.05em">🎁 CLAIM</div>' : ''}
+      </div>`;
+  } catch(e) { questBody = '<div class="td-label">Daily Quests</div>'; }
+
+  // Walk / pet
+  let walkHtml = '';
+  try {
+    const petName = localStorage.getItem('hm-pet-name') || 'Beau';
+    const petPhoto = localStorage.getItem('hm-pet-photo') || 'assets/ui/beau/hey.png';
+    const walks = JSON.parse(localStorage.getItem(WALK_KEY_V2)||'[]');
+    const todayDateKey = now.toISOString().slice(0,10);
+    const todayWalks = walks.filter(w => w.date === todayDateKey);
+    const walked = todayWalks.length > 0;
+    const totalMi = walked ? todayWalks.reduce((a,w)=>a+(w.miles||(w.km||0)*0.621371),0).toFixed(2) : 0;
+    walkHtml = `<div class="td-card td-card-tap" onclick="showTab('wellness',document.querySelector('[onclick*=\\'wellness\\']'))">
+      <div class="td-row">
+        <img src="${petPhoto}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;border:1px solid var(--border2)" onerror="this.src='assets/ui/beau/hey.png'">
+        <div style="flex:1;min-width:0">
+          <div class="td-label" style="margin-bottom:2px">${petName}</div>
+          ${walked
+            ? `<div style="font-size:13px;color:var(--text)">✓ Walked <strong>${totalMi} mi</strong> today</div>`
+            : `<div style="font-size:13px;color:var(--text)">${petName} wants a walk 🐾</div>`}
+        </div>
+        <div class="td-chevron" style="${walked?'color:#5BC876':''}">›</div>
+      </div>
+    </div>`;
+  } catch(e) { walkHtml = ''; }
+
+  // Water
+  const water = (typeof waterGet === 'function') ? waterGet() : 0;
+
+  // Contextual motivational message
+  const _hour = now.getHours();
+  const _isTrainingDay = !!(phDays && phDays[todayDow]);
+  const _trainedToday = (typeof getCompletedSlots === 'function') && getCompletedSlots(typeof todayKey === 'function' ? todayKey() : '').length > 0;
+  let _questsDone = 0;
+  let _chestReady = false;
+  try { const _qs = hmXPLoad(); const _qq = hmQuestState(_qs); const _qt = hmTodayQuests(hmRecapStats()); _questsDone = _qt.filter(x=>_qq.claimed[x.id]).length; _chestReady = _questsDone===3 && !_qq.chest; } catch(e) {}
+  const _motiv = (() => {
+    if (_chestReady)           return 'All quests done.\nOpen your chest.';
+    if (streak >= 30)          return `${streak} days.\nLegendary.`;
+    if (streak >= 14)          return `${streak} days straight.\nYou don't quit.`;
+    if (streak >= 7)           return `${streak} days in.\nDiscipline is the identity.`;
+    if (_trainedToday)         return 'Work done.\nRest earned.';
+    if (!_isTrainingDay)       return 'Rest is the work.\nCome back stronger.';
+    if (_hour < 10)            return 'Morning.\nTime to forge.';
+    if (_hour >= 20)           return 'Still time\nto train today.';
+    if (_isTrainingDay)        return 'Training day.\nMake it count.';
+    return 'Heroes aren\'t born.\nThey\'re forged.';
+  })();
+  const [_motivL1, _motivL2] = _motiv.split('\n');
+
+  root.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
+      <img src="${hmEmblSrc(theme)}" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.45))" onerror="this.style.display='none'">
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em">${dateStr.toUpperCase()}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em;line-height:1.1">${heroName} · LVL ${lvlInfo.lvl}</div>
+        ${streak>0?`<div style="font-size:11px;color:var(--text3);margin-top:1px">🔥 ${streak}-day streak</div>`:''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;max-width:38%">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.04em;line-height:1.25">${_motivL1}</div>
+        ${_motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
+      </div>
+    </div>
+    <div class="td-stats">
+      <div class="td-stat"><div class="td-stat-val">💧${water}</div><div class="td-stat-lbl">Water</div></div>
+      <div class="td-stat"><div class="td-stat-val">⚡${xpToday>=1000?(xpToday/1000).toFixed(1)+'k':xpToday}</div><div class="td-stat-lbl">XP Today</div></div>
+      <div class="td-stat"><div class="td-stat-val">🔥${streak}</div><div class="td-stat-lbl">Streak</div></div>
+    </div>
+    <div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>
+    <div class="td-card td-card-tap" onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))">${questBody}</div>
+    ${walkHtml}`;
 }
 
 // ── DAILY RECAP + COACH — evening scorecard with data-driven encouragement ──
@@ -21420,11 +21939,30 @@ function hmRenderProfileChip(){
   const _pcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
   const _pcAid = _pcEID[hmActiveTheme().id] || hmActiveTheme().id;
   chip.innerHTML = '<div class="pc-avatar-wrap"><div class="pc-avatar ' + hmFrameClass(info.lvl) + '">' + hmAvatarHTML(prof) + '</div>' +
-    '<img class="pc-emblem-badge" src="assets/ui/emblem-'+_pcAid+'.png" alt="" onerror="this.style.display=\'none\'">' +
+    '<img class="pc-emblem-badge" src="'+hmEmblSrc(hmActiveTheme())+'" alt="" onerror="this.style.display=\'none\'">' +
     '</div>' +
-    '<div class="pc-info"><div class="pc-name">' + prof.name + (title.id !== 'hero' ? ' <span class="pc-title">· ' + title.name + '</span>' : '') + '</div>' +
+    '<div class="pc-info"><div class="pc-name">' + prof.name + (title.id !== 'hero' ? ' <span class="pc-title">· ' + title.name + '</span>' : '') +
+    ' <button onclick="event.stopPropagation();hmRenameHero()" title="Edit name" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:0 2px;line-height:1;vertical-align:middle;opacity:.7">✏️</button></div>' +
     '<div class="pc-sub">' + hmRankBadgeImg(info.lvl,'pc-rank-badge') + 'LVL ' + info.lvl + ' · ' + hmRankFor(info.lvl) + ' · ' + unlocked + ' awards</div></div>' +
     '<span class="pc-arrow">TROPHY CASE ›</span>';
+}
+function hmRenameHero(){
+  const p = hmProfilesLoad();
+  const prof = p.list.find(x => x.id === p.active) || p.list[0];
+  const current = prof.name || 'Hero';
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:14000;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:24px';
+  ov.innerHTML = `<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:28px 24px;width:100%;max-width:340px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text);margin-bottom:16px">RENAME HERO</div>
+    <input id="hm-rename-inp" type="text" value="${current}" maxlength="20" style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;font-size:16px;color:var(--text);font-family:'DM Mono',monospace;margin-bottom:16px;outline:none">
+    <div style="display:flex;gap:10px">
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;padding:12px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;color:var(--text3);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer">CANCEL</button>
+      <button onclick="(function(){const v=document.getElementById('hm-rename-inp').value.trim();if(!v)return;const p=hmProfilesLoad();const pr=p.list.find(x=>x.id===p.active)||p.list[0];pr.name=v;hmProfilesSave(p);hmRenderProfileChip();if(typeof showToast==='function')showToast('Hero renamed to '+v+' ✓','success');document.getElementById('hm-rename-inp').closest('div[style*=fixed]').remove();})()" style="flex:2;padding:12px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;cursor:pointer">SAVE</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  setTimeout(() => { const inp = document.getElementById('hm-rename-inp'); if (inp) { inp.focus(); inp.select(); } }, 80);
 }
 function hmOpenTrophyCase(){
   hmRenderTrophyCase();
@@ -21473,7 +22011,7 @@ function hmOpenHeroCard() {
       '<img class="hc-shot-img" src="assets/ui/bg-' + aid + '.png" alt="' + theme.name + '" onerror="this.style.opacity=\'0\'">' +
       '<div class="hc-shot-grad"></div>' +
       '<div class="hc-class-badge">' + theme.name.toUpperCase() + '</div>' +
-      '<img class="hc-emblem-wm" src="assets/ui/emblem-' + aid + '.png" alt="" onerror="this.style.display=\'none\'">' +
+      '<img class="hc-emblem-wm" src="'+hmEmblSrc(theme)+'" alt="" onerror="this.style.display=\'none\'">' +
     '</div>' +
     '<div class="hc-body">' +
       '<div class="hc-name-row">' +
@@ -21528,13 +22066,13 @@ function hmRenderTrophyCase(){
   const _tcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
   const _tcAid = _tcEID[theme.id] || theme.id;
   let html = '<div class="tc-head">' +
-    '<img class="tc-head-emblem-wm" src="assets/ui/emblem-'+_tcAid+'.png" alt="" onerror="this.style.display=\'none\'">' +
+    '<img class="tc-head-emblem-wm" src="'+hmEmblSrc(theme)+'" alt="" onerror="this.style.display=\'none\'">' +
     '<div class="tc-avatar-wrap"><img class="tc-avatar-frame" src="assets/ui/frame-portrait.png" alt="">' +
     '<div class="tc-avatar ' + hmFrameClass(info.lvl) + '" onclick="hmToggleProfileEdit()" title="Choose your hero portrait">' + hmAvatarHTML(prof) + '</div></div>' +
     '<div style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.1em;color:var(--text3);margin-top:-4px;margin-bottom:4px">TAP PORTRAIT TO CHANGE</div>' +
     '<div class="tc-name">' + prof.name.toUpperCase() + '</div>' +
     (eqTitle.id !== 'hero' ? '<div class="tc-title">“' + eqTitle.name + '”</div>' : '') +
-    '<div class="tc-rank"><img class="tc-rank-emblem" src="assets/ui/emblem-' + ({spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'}[theme.id]||theme.id) + '.png" alt=""> ' + theme.name + ' · LVL ' + info.lvl + ' &nbsp;' + hmRankBadgeImg(info.lvl,'tc-rank-badge') + ' ' + hmRankFor(info.lvl) + '</div>' +
+    '<div class="tc-rank"><img class="tc-rank-emblem" src="'+hmEmblSrc(theme)+'" alt="" onerror="this.style.display=\'none\'"> ' + theme.name + ' · LVL ' + info.lvl + ' &nbsp;' + hmRankBadgeImg(info.lvl,'tc-rank-badge') + ' ' + hmRankFor(info.lvl) + '</div>' +
     (metaBits.length ? '<div style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:.08em;color:var(--text2);margin-top:6px">' + metaBits.join(' &nbsp;·&nbsp; ') + '</div>' : '') +
     '<div class="tc-xp"><div class="xp-bar"><div style="height:100%;width:' + Math.round(info.rem/info.need*100) + '%;border-radius:4px;background:linear-gradient(90deg,var(--gold-dim),var(--gold))"></div></div>' +
     '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);margin-top:4px">' + info.rem + ' / ' + info.need + ' XP to level ' + (info.lvl+1) + '</div></div>' +
@@ -21681,7 +22219,7 @@ function applyTheme(id) {
   const _EID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
   const _aid = _EID[theme.id] || theme.id;
   const emb = document.getElementById('hero-emblem');
-  if (emb) emb.innerHTML = '<img src="assets/ui/emblem-'+_aid+'.png" alt="">';
+  if (emb) emb.innerHTML = '<img src="'+(theme.emblSrc||'assets/ui/emblem-'+_aid+'.png')+'" alt="" onerror="this.style.opacity=\'0\'">';
   const bgLayer = document.getElementById('hero-bg-layer');
   if (bgLayer) bgLayer.style.backgroundImage = "url('assets/ui/bg-"+_aid+".png')";
 }
@@ -21703,8 +22241,9 @@ function buildThemePicker() {
     const locked = !hmThemeUnlocked(t);
     const _aid = _EID[t.id] || t.id;
     const grad = `linear-gradient(160deg,${c1}30 0%,${c2}1A 100%)`;
+    const emblSrc = t.emblSrc || `assets/ui/emblem-${_aid}.png`;
     return `<div class="tp-card${locked ? ' tp-locked' : ''}" id="tpc-${t.id}" onclick="selectTheme('${t.id}')" style="background-image:url('assets/ui/bg-${_aid}.png'),${grad}">
-      <img class="tp-emblem-hero" src="assets/ui/emblem-${_aid}.png" alt="" onerror="this.style.display='none';var n=this.nextElementSibling;if(n)n.style.opacity='1'">
+      <img class="tp-emblem-hero" src="${emblSrc}" alt="" onerror="this.style.display='none';var n=this.nextElementSibling;if(n)n.style.opacity='1'">
       <span class="tp-emblem-emoji" style="opacity:0">${t.emblem}</span>
       <div class="tp-card-scrim"></div>
       <div class="tp-name">${t.name}</div>
@@ -21745,7 +22284,7 @@ function confirmTheme(activated) {
     const theme = HERO_THEMES.find(t => t.id === id) || HERO_THEMES[0];
     hmSfx('theme', theme.tone);
     const _cfEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
-    hmHeroFX(theme.name.toUpperCase(), 'Hero Mode Activated', _cfEID[theme.id] || theme.id);
+    hmHeroFX(theme.name.toUpperCase(), 'Hero Mode Activated', theme.emblSrc || _cfEID[theme.id] || theme.id);
     // New hero with no plan yet → straight into the plan builder
     const prof = hmActiveProfile();
     if (prof && !prof.goals && typeof gpOpen === 'function') setTimeout(gpOpen, 1900);
