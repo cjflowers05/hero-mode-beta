@@ -11710,31 +11710,63 @@ function hmDismissWhatsNew() {
   if (badge) badge.style.display = 'none';
 }
 
-// ── LEGAL DISCLAIMER ──────────────────────────────────────────────
+// ── LEGAL DISCLAIMER + TERMS OF SERVICE ───────────────────────────
 const HM_DISCLAIMER_KEY = 'hero-disclaimer-v1';
+function hmDisclaimerCheckState() {
+  const c1 = document.getElementById('hm-disc-chk1');
+  const c2 = document.getElementById('hm-disc-chk2');
+  const btn = document.getElementById('hm-disc-agree-btn');
+  if (!btn) return;
+  const ok = c1 && c2 && c1.checked && c2.checked;
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '0.4';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+}
 function hmShowDisclaimer(opts) {
   opts = opts || {};
   const readOnly = !!opts.readOnly;
   const ov = document.createElement('div');
   ov.id = 'hm-disclaimer-overlay';
   ov.style.cssText = 'position:fixed;inset:0;z-index:19000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
-  const btnLabel = readOnly ? 'CLOSE' : 'I UNDERSTAND &amp; AGREE';
-  const btnFn = readOnly ? "document.getElementById('hm-disclaimer-overlay').remove()" : 'hmAcceptDisclaimer()';
-  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:420px;width:100%;padding:28px 24px">'
-    + '<div style="text-align:center;font-size:32px;margin-bottom:8px">⚠️</div>'
-    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--gold);text-align:center;margin-bottom:14px">LEGAL DISCLAIMER</div>'
-    + '<div style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px">'
+  const sectionHead = (t) => '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;letter-spacing:.08em;color:var(--gold);margin:18px 0 8px">' + t + '</div>';
+  const body = '<div style="color:var(--text2);font-size:13.5px;line-height:1.7">'
+    + sectionHead('⚠️ Legal Disclaimer')
     + '<strong style="color:var(--text)">Hero Mode is not medical advice.</strong> The workouts, nutrition guidance, and wellness content in this app are for general fitness information only and are <em>not</em> a substitute for professional medical advice, diagnosis, or treatment.<br><br>'
     + 'Always consult a qualified healthcare provider before starting any exercise program, especially if you have a medical condition, injury, or health concern.<br><br>'
     + '<strong style="color:var(--text)">You perform all exercises at your own risk.</strong> Hero Mode and its developer are not liable for any injury, illness, or adverse health outcome resulting from the use of this app or the performance of any exercise, activity, or dietary practice described within it.'
+    + sectionHead('📋 Terms of Service')
+    + 'Hero Mode and all materials, content, features, designs, and intellectual property contained within this application are the exclusive property of <strong style="color:var(--text)">Hero Mode</strong>. All rights are reserved.<br><br>'
+    + 'This app is provided for personal, non-commercial use only. Unauthorized reproduction, redistribution, modification, or commercial use of Hero Mode or any of its materials is strictly prohibited.<br><br>'
+    + 'By using Hero Mode, you agree to these terms and acknowledge that Hero Mode retains full ownership of all content within the application.'
+    + '</div>';
+  const checkboxes = readOnly ? '' :
+    '<div style="margin-top:18px">'
+    + '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:10px">'
+    + '<input type="checkbox" id="hm-disc-chk1" onchange="hmDisclaimerCheckState()" style="margin-top:3px;accent-color:var(--accent);width:17px;height:17px;flex-shrink:0">'
+    + '<span style="color:var(--text2);font-size:13px;line-height:1.5">I have read and agree to the <strong style="color:var(--text)">Legal Disclaimer</strong></span></label>'
+    + '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:16px">'
+    + '<input type="checkbox" id="hm-disc-chk2" onchange="hmDisclaimerCheckState()" style="margin-top:3px;accent-color:var(--accent);width:17px;height:17px;flex-shrink:0">'
+    + '<span style="color:var(--text2);font-size:13px;line-height:1.5">I agree to the <strong style="color:var(--text)">Terms of Service</strong> and acknowledge that Hero Mode and its materials are the property of Hero Mode</span></label>'
+    + '</div>';
+  const agreeBtn = readOnly
+    ? '<button onclick="document.getElementById(\'hm-disclaimer-overlay\').remove()" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.08em;padding:14px;cursor:pointer">CLOSE</button>'
+    : '<button id="hm-disc-agree-btn" onclick="hmAcceptDisclaimer()" disabled style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.08em;padding:14px;cursor:not-allowed;opacity:.4;transition:opacity .2s">I AGREE &amp; CONTINUE</button>'
+    + '<div style="text-align:center;color:var(--text3);font-size:11px;margin-top:10px">You can review this anytime in ⚙ Settings</div>';
+  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:440px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden">'
+    + '<div style="padding:20px 22px 0;flex-shrink:0;text-align:center">'
+    + '<div style="font-size:28px;margin-bottom:6px">⚖️</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--gold)">TERMS &amp; LEGAL DISCLAIMER</div>'
+    + '<div style="color:var(--text3);font-size:12px;margin-top:4px">' + (readOnly ? 'For reference' : 'Please read and agree to continue') + '</div>'
     + '</div>'
-    + '<button onclick="' + btnFn + '" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.08em;padding:14px;cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity=\'.85\'" onmouseleave="this.style.opacity=\'1\'">' + btnLabel + '</button>'
-    + (readOnly ? '' : '<div style="text-align:center;color:var(--text3);font-size:11px;margin-top:10px">You can review this anytime in ⚙ Settings</div>')
+    + '<div style="padding:4px 22px 0;overflow-y:auto;flex:1">' + body + checkboxes + '</div>'
+    + '<div style="padding:14px 22px 20px;flex-shrink:0">' + agreeBtn + '</div>'
     + '</div>';
   document.body.appendChild(ov);
   window._hmDisclaimerAfterFn = (!readOnly && opts.afterFn) ? opts.afterFn : null;
 }
 function hmAcceptDisclaimer() {
+  const btn = document.getElementById('hm-disc-agree-btn');
+  if (btn && btn.disabled) return;
   localStorage.setItem(HM_DISCLAIMER_KEY, '1');
   const el = document.getElementById('hm-disclaimer-overlay');
   if (el) el.remove();
