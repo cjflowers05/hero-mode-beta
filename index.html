@@ -11986,6 +11986,7 @@ function hmCloseBriefing() {
 // ── REVIEW PROMPT ────────────────────────────────────────────
 const HM_REVIEW_DONE_KEY   = 'hm-review-done';
 const HM_REVIEW_SNOOZE_KEY = 'hm-review-snooze-until';
+const HM_REVIEW_EMAIL      = 'c.j.flowers05@gmail.com'; // swap to Supabase endpoint or new email here
 
 function hmMaybeShowReview() {
   if (!localStorage.getItem(HM_DISCLAIMER_KEY)) return;
@@ -12057,7 +12058,11 @@ function hmReviewShare() {
 
 function hmReviewSubmitFeedback() {
   const txt = (document.getElementById('hm-review-txt') || {}).value || '';
+  const stars = localStorage.getItem('hm-review-stars') || '?';
   if (txt.trim()) localStorage.setItem('hm-review-feedback', txt.trim());
+  const subject = encodeURIComponent('Hero Mode Feedback — ' + stars + ' star' + (stars === '1' ? '' : 's'));
+  const body = encodeURIComponent('Rating: ' + stars + '/5 stars\n\nFeedback:\n' + (txt.trim() || '(no message)'));
+  window.open('mailto:' + HM_REVIEW_EMAIL + '?subject=' + subject + '&body=' + body);
   showToast('Thanks for the feedback!', 'success');
   hmReviewDone();
 }
