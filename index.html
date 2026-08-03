@@ -4898,17 +4898,32 @@ document.addEventListener('DOMContentLoaded', () => {
           <input id="pet-name-input" type="text" placeholder="Pet's name" maxlength="20" style="width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-size:14px;font-family:inherit;box-sizing:border-box" oninput="hmSetPetName(this.value)">
         </div>
       </div>
-      <!-- Dog icon presets -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;flex-shrink:0">ICON</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button onclick="hmSetPetEmoji('🐕')"  title="Dog"         style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐕</button>
-          <button onclick="hmSetPetEmoji('🐶')"  title="Puppy"       style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐶</button>
-          <button onclick="hmSetPetEmoji('🦮')"  title="Golden"      style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🦮</button>
-          <button onclick="hmSetPetEmoji('🐩')"  title="Poodle"      style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐩</button>
-          <button onclick="hmSetPetEmoji('🐕‍🦺')" title="Service dog" style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐕‍🦺</button>
-          <button onclick="hmSetPetEmoji('🐺')"  title="Wolf"        style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐺</button>
-          <label title="Upload photo" style="font-size:20px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative">
+      <!-- Dog breed presets -->
+      <div style="margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;margin-bottom:8px">CHOOSE A BREED</div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
+          <button onclick="hmSetPetPreset('assets/ui/beau/hey.png')" title="Beau" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/beau/hey.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/aussie.png')" title="Aussie" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/aussie.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/beagle.png')" title="Beagle" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/beagle.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/black_lab.png')" title="Black Lab" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/black_lab.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/boxer.png')" title="Boxer" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/boxer.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/bulldog.png')" title="Bulldog" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/bulldog.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/chocolate_lab.png')" title="Chocolate Lab" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/chocolate_lab.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/dalmation.png')" title="Dalmatian" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/dalmation.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/doberman.png')" title="Doberman" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/doberman.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/frencie.png')" title="Frenchie" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/frencie.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/german_shep.png')" title="German Shepherd" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/german_shep.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/golden_retriever.png')" title="Golden Retriever" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/golden_retriever.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/husky.png')" title="Husky" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/husky.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/korgie.png')" title="Corgi" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/korgie.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/lassie.png')" title="Lassie" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/lassie.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/malmute.png')" title="Malamute" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/malmute.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/pitt.png')" title="Pittie" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/pitt.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/poodle.png')" title="Poodle" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/poodle.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/rott.png')" title="Rottweiler" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/rott.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/shelby.png')" title="Shelby" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/shelby.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <button onclick="hmSetPetPreset('assets/ui/dog_choices/terrier.png')" title="Terrier" style="flex-shrink:0;padding:0;background:none;border:none;cursor:pointer"><img src="assets/ui/dog_choices/terrier.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block"></button>
+          <label title="Upload your dog's photo" style="flex-shrink:0;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:2px dashed var(--border2);background:var(--bg4);font-size:20px">
             📷<input type="file" accept="image/*" onchange="hmSetPetPhoto(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
           </label>
         </div>
@@ -14793,23 +14808,10 @@ function hmSetPetPhoto(input) {
   };
   reader.readAsDataURL(file);
 }
-function hmSetPetEmoji(emoji) {
-  const size = 192;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#1a1a2e';
-  ctx.beginPath();
-  ctx.arc(size/2, size/2, size/2, 0, Math.PI*2);
-  ctx.fill();
-  ctx.font = Math.round(size * 0.65) + 'px serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(emoji, size/2, size/2 + size*0.03);
-  const dataUrl = canvas.toDataURL('image/png');
-  localStorage.setItem(PET_PHOTO_KEY, dataUrl);
+function hmSetPetPreset(path) {
+  localStorage.setItem(PET_PHOTO_KEY, path);
   const el = document.getElementById('pet-photo-preview');
-  if (el) el.src = dataUrl;
+  if (el) el.src = path;
   try { renderTodayDashboard(); } catch(e) {}
 }
 
