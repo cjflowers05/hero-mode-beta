@@ -11722,11 +11722,11 @@ function hmShowDisclaimer(opts) {
   const btnFn = readOnly ? "document.getElementById('hm-disclaimer-overlay').remove()" : 'hmAcceptDisclaimer()';
   ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:420px;width:100%;padding:28px 24px">'
     + '<div style="text-align:center;font-size:32px;margin-bottom:8px">⚠️</div>'
-    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--gold);text-align:center;margin-bottom:14px">MEDICAL DISCLAIMER</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--gold);text-align:center;margin-bottom:14px">LEGAL DISCLAIMER</div>'
     + '<div style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px">'
     + '<strong style="color:var(--text)">Hero Mode is not medical advice.</strong> The workouts, nutrition guidance, and wellness content in this app are for general fitness information only and are <em>not</em> a substitute for professional medical advice, diagnosis, or treatment.<br><br>'
     + 'Always consult a qualified healthcare provider before starting any exercise program, especially if you have a medical condition, injury, or health concern.<br><br>'
-    + '<strong style="color:var(--text)">You perform all exercises at your own risk.</strong> The developer is not liable for any injury or health outcome resulting from use of this app.'
+    + '<strong style="color:var(--text)">You perform all exercises at your own risk.</strong> Hero Mode and its developer are not liable for any injury, illness, or adverse health outcome resulting from the use of this app or the performance of any exercise, activity, or dietary practice described within it.'
     + '</div>'
     + '<button onclick="' + btnFn + '" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.08em;padding:14px;cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity=\'.85\'" onmouseleave="this.style.opacity=\'1\'">' + btnLabel + '</button>'
     + (readOnly ? '' : '<div style="text-align:center;color:var(--text3);font-size:11px;margin-top:10px">You can review this anytime in ⚙ Settings</div>')
@@ -11771,7 +11771,7 @@ function hmShowSettings() {
     + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
     + '<div class="hm-settings-row" onclick="hmViewDisclaimer()">'
-    + '<span>⚠️ Medical Disclaimer</span><span style="color:var(--text3)">›</span></div>'
+    + '<span>⚠️ Legal Disclaimer</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">CONTACT &amp; FEEDBACK</div>'
     + '<div class="hm-settings-row" onclick="hmContactDev()">'
     + '<span>✉️ Contact Developer</span><span style="color:var(--text3)">›</span></div>'
@@ -11797,12 +11797,12 @@ function hmViewDisclaimer() {
   setTimeout(() => hmShowDisclaimer({ readOnly: true }), 350);
 }
 function hmContactDev() {
-  window.location.href = 'mailto:cody.flowers@mymail.champlain.edu?subject=Hero%20Mode%20Feedback';
+  window.location.href = 'mailto:c.j.flowers05@gmail.com?subject=Hero%20Mode%20Feedback';
 }
 function hmSubmitFeatureRequest() {
   const txt = ((document.getElementById('hm-feature-req-txt') || {}).value || '').trim();
   if (!txt) { if (typeof showToast === 'function') showToast('Please describe your feature idea first.', 'warn'); return; }
-  window.location.href = 'mailto:cody.flowers@mymail.champlain.edu?subject=Hero%20Mode%20Feature%20Request&body=' + encodeURIComponent('Feature Request:\n\n' + txt + '\n\n— Sent from Hero Mode');
+  window.location.href = 'mailto:c.j.flowers05@gmail.com?subject=Hero%20Mode%20Feature%20Request&body=' + encodeURIComponent('Feature Request:\n\n' + txt + '\n\n— Sent from Hero Mode');
   if (typeof showToast === 'function') showToast('Opening your email app…', 'info');
 }
 
@@ -21280,7 +21280,7 @@ const HM_TOUR_STEPS = [
   { sel:'#daily-quests',         emoji:'⚔️', title:'Daily Quests',       text:'Three missions a day. Complete them, claim the XP, and open the chest for a bonus. Small wins, every day.' },
   { sel:'#custom-workout-entry', emoji:'⚡', title:'Custom Sessions',    text:'Off-plan day? Build your own session from scratch or add extra exercises to today\'s workout.' },
   { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Theme',      text:'Toggle sound here, and tap the 🎨 next to it to change your hero theme — colors, emblem, and even the sound effects.' },
-  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, contact the developer, or send a feature request. The medical disclaimer also lives here.' },
+  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, contact the developer, or send a feature request. The legal disclaimer also lives here.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
   { sel:'.tab-bar',              emoji:'🧭', title:'Get Around',         text:'Train, Log, Nutrition, Recipes, Wellness, and Progress live along the bottom. Swipe left or right anywhere to switch tabs. Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide sections. Your awards and charts are under Progress. Go be a hero. 💪' },
 ];
