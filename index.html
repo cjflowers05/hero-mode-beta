@@ -4888,8 +4888,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     <div class="well-body">
       <!-- Pet customisation -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:12px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
-        <label style="cursor:pointer;position:relative;flex-shrink:0" title="Tap to change photo">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:12px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <label style="cursor:pointer;position:relative;flex-shrink:0" title="Tap to upload a photo">
           <img id="pet-photo-preview" src="assets/ui/beau/hey.png" style="width:46px;height:46px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);display:block">
           <input type="file" accept="image/*" onchange="hmSetPetPhoto(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
         </label>
@@ -4898,12 +4898,27 @@ document.addEventListener('DOMContentLoaded', () => {
           <input id="pet-name-input" type="text" placeholder="Pet's name" maxlength="20" style="width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-size:14px;font-family:inherit;box-sizing:border-box" oninput="hmSetPetName(this.value)">
         </div>
       </div>
+      <!-- Dog icon presets -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;flex-shrink:0">ICON</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="hmSetPetEmoji('🐕')"  title="Dog"         style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐕</button>
+          <button onclick="hmSetPetEmoji('🐶')"  title="Puppy"       style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐶</button>
+          <button onclick="hmSetPetEmoji('🦮')"  title="Golden"      style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🦮</button>
+          <button onclick="hmSetPetEmoji('🐩')"  title="Poodle"      style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐩</button>
+          <button onclick="hmSetPetEmoji('🐕‍🦺')" title="Service dog" style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐕‍🦺</button>
+          <button onclick="hmSetPetEmoji('🐺')"  title="Wolf"        style="font-size:22px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;line-height:1">🐺</button>
+          <label title="Upload photo" style="font-size:20px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative">
+            📷<input type="file" accept="image/*" onchange="hmSetPetPhoto(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+          </label>
+        </div>
+      </div>
       <div id="walk-live-area"></div>
       <div class="t-section-label" style="margin-top:2px">Walk history</div>
       <div id="walk-history"></div>
       <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:4px">
         <div onclick="var b=document.getElementById('beau-awards-body');var open=b.style.display!=='none';b.style.display=open?'none':'block';this.querySelector('.beau-awd-chev').textContent=open?'&#9662;':'&#9652;'" style="display:flex;align-items:center;justify-content:space-between;padding:10px 2px;cursor:pointer">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase">Beau's Awards</div>
+          <div id="pet-awards-label" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase">Beau's Awards</div>
           <span class="beau-awd-chev" style="font-size:11px;color:var(--text3)">&#9662;</span>
         </div>
         <div id="beau-awards-body" style="display:none">
@@ -14715,7 +14730,7 @@ function renderBeauAchievements(newIds) {
 
   let html = `<div class="beau-ach-wrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase">Beau's Awards</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase">${(localStorage.getItem('hm-pet-name')||'Beau')}'s Awards</div>
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)">${earnedTotal} / ${totalAch}</div>
     </div>`;
 
@@ -14740,7 +14755,7 @@ function renderBeauAchievements(newIds) {
   el.innerHTML = html;
 
   justUnlocked.forEach((a,i) => {
-    setTimeout(() => showToast(`🏅 ${a.name} — Beau is proud of you`, 'success'), 600 + i*900);
+    setTimeout(() => showToast(`🏅 ${a.name} — ${localStorage.getItem('hm-pet-name')||'Beau'} is proud of you`, 'success'), 600 + i*900);
   });
 }
 
@@ -14756,10 +14771,14 @@ function hmInitPetSettings() {
   const photoEl = document.getElementById('pet-photo-preview');
   if (nameEl)  nameEl.value = name;
   if (photoEl) photoEl.src  = photo;
+  const labelEl = document.getElementById('pet-awards-label');
+  if (labelEl) labelEl.textContent = (localStorage.getItem(PET_NAME_KEY)||'Beau') + "'s Awards";
 }
 function hmSetPetName(val) {
   const v = val.trim();
   if (v) localStorage.setItem(PET_NAME_KEY, v); else localStorage.removeItem(PET_NAME_KEY);
+  const labelEl = document.getElementById('pet-awards-label');
+  if (labelEl) labelEl.textContent = (v || 'Beau') + "'s Awards";
   try { renderTodayDashboard(); } catch(e) {}
 }
 function hmSetPetPhoto(input) {
@@ -14773,6 +14792,25 @@ function hmSetPetPhoto(input) {
     try { renderTodayDashboard(); } catch(e) {}
   };
   reader.readAsDataURL(file);
+}
+function hmSetPetEmoji(emoji) {
+  const size = 192;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2, 0, Math.PI*2);
+  ctx.fill();
+  ctx.font = Math.round(size * 0.65) + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, size/2, size/2 + size*0.03);
+  const dataUrl = canvas.toDataURL('image/png');
+  localStorage.setItem(PET_PHOTO_KEY, dataUrl);
+  const el = document.getElementById('pet-photo-preview');
+  if (el) el.src = dataUrl;
+  try { renderTodayDashboard(); } catch(e) {}
 }
 
 function loadWalks() {
@@ -15051,9 +15089,9 @@ function renderWalkLive() {
       : `<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(91,200,118,.6);text-align:center;letter-spacing:.08em;margin-bottom:14px">🏆 ALL BADGES EARNED</div>`;
     el.innerHTML = `
       <div class="beau-card" onclick="_beauCardTap()" style="cursor:pointer">
-        <div class="beau-avatar"><img src="assets/ui/beau/hey.png" alt="Beau" style="width:72px;height:72px;object-fit:contain;display:block;margin:0 auto" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'🐾'}))"></div>
+        <div class="beau-avatar"><img src="${localStorage.getItem('hm-pet-photo')||'assets/ui/beau/hey.png'}" alt="${localStorage.getItem('hm-pet-name')||'Beau'}" style="width:72px;height:72px;object-fit:cover;border-radius:50%;display:block;margin:0 auto" onerror="this.src='assets/ui/beau/hey.png'"></div>
         <div class="beau-quote">"${_bwQ}"</div>
-        <div class="beau-byline">— Beau Berry, Chief Motivation Officer</div>
+        <div class="beau-byline">— ${localStorage.getItem('hm-pet-name')||'Beau'}, Chief Motivation Officer</div>
       </div>
       <div class="beau-stats-row">
         <div class="beau-stat-pill"><div class="beau-stat-val">${_bwSt.total}</div><div class="beau-stat-lbl">WALKS</div></div>
@@ -15068,7 +15106,7 @@ function renderWalkLive() {
         <button class="walk-wx-btn${walkWeather==='rain'?' sel':''}" onclick="walkSetWeather('rain',this)"><span class="wx-icon">🌧️</span>RAIN</button>
         <button class="walk-wx-btn${walkWeather==='snow'?' sel':''}" onclick="walkSetWeather('snow',this)"><span class="wx-icon">❄️</span>SNOW</button>
       </div>
-      <button class="walk-start-btn" onclick="startWalk()">GO WITH BEAU</button>`;
+      <button class="walk-start-btn" onclick="startWalk()">GO WITH ${(localStorage.getItem('hm-pet-name')||'BEAU').toUpperCase()}</button>`;
     return;
   }
   const isPaused = walkState === 'paused';
@@ -21550,7 +21588,7 @@ function hmOpenChest(){
     'You showed up. That\'s the whole game.',
     'Three for three. Heroes don\'t negotiate with rest days.',
     'Quests crushed. Legend status loading…',
-    'Another day, another victory. Beau is proud.',
+    'Another day, another victory. ' + (localStorage.getItem('hm-pet-name')||'Beau') + ' is proud.',
     'Full clear. The iron remembers.',
     'All three down. Your streak thanks you.',
   ];
@@ -21830,6 +21868,7 @@ function renderTodayDashboard() {
     const petName = localStorage.getItem('hm-pet-name') || 'Beau';
     const petPhoto = localStorage.getItem('hm-pet-photo') || 'assets/ui/beau/hey.png';
     const walks = JSON.parse(localStorage.getItem(WALK_KEY_V2)||'[]');
+
     const todayDateKey = now.toISOString().slice(0,10);
     const todayWalks = walks.filter(w => w.date === todayDateKey);
     const walked = todayWalks.length > 0;
