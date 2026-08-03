@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v26'; // v26: IP compliance — theme IDs neutralized, Thor→Stormcaller, Wick→Phantom, Performance Lab, OSM attribution, crosstraining key
+const CACHE_VERSION = 'hero-mode-v27'; // v27: Daily Briefing popup on launch + Today tab renders on first load
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

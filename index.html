@@ -11859,6 +11859,90 @@ function hmInitWhatsNew() {
   else if (!seen) setTimeout(hmShowWhatsNew, 1800);
 }
 
+// ── DAILY BRIEFING ───────────────────────────────────────────────
+function hmShowDailyBriefing() {
+  // Skip if first-run flows haven't completed yet — they take priority
+  if (!localStorage.getItem(HM_DISCLAIMER_KEY)) return;
+  if (!localStorage.getItem('hero-tut-seen-v1')) return;
+  if (window._hmBriefingShown) return;
+  window._hmBriefingShown = true;
+
+  // Render Today tab behind the popup so it's ready when user dismisses
+  if (typeof renderTodayDashboard === 'function') renderTodayDashboard();
+
+  const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  const dateStr = DAY_NAMES[now.getDay()].toUpperCase() + ', ' + MONTH_NAMES[now.getMonth()].toUpperCase() + ' ' + now.getDate();
+
+  const xpData  = hmXPLoad();
+  const lvlInfo = hmLevelInfo(xpData.xp);
+  const prof    = hmActiveProfile();
+  const heroName = (prof && prof.name) ? prof.name : 'Hero';
+  const streak  = Math.max((typeof calcStreak === 'function') ? calcStreak() : 0, (xpData.login && xpData.login.streak) ? xpData.login.streak : 0);
+  const theme   = hmActiveTheme();
+
+  const todayDow = now.getDay();
+  let activePhaseId = 'ph1';
+  const activePill = document.querySelector('.phase-pill.active');
+  if (activePill) { const m = (activePill.getAttribute('onclick')||'').match(/showPhase\('(\w+)'/); if (m) activePhaseId = m[1]; }
+  const phDays = (typeof TODAY_PHASE_DAYS !== 'undefined') ? TODAY_PHASE_DAYS[activePhaseId] : null;
+  const day = phDays ? phDays[todayDow] : null;
+
+  const missionHtml = day
+    ? '<div style="font-size:36px;margin-bottom:8px">' + (day.icon || '💪') + '</div>'
+      + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.04em;line-height:1.1">' + day.name + '</div>'
+      + '<div style="font-size:12px;color:var(--text3);margin-top:4px">' + day.focus + '</div>'
+    : '<div style="font-size:36px;margin-bottom:8px">😴</div>'
+      + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.04em;line-height:1.1">Rest Day</div>'
+      + '<div style="font-size:12px;color:var(--text3);margin-top:4px">Recovery is part of the plan</div>';
+
+  const _hour = now.getHours();
+  const _isTrainingDay = !!day;
+  let motiv;
+  if (streak >= 30)         motiv = streak + ' days. Legendary.';
+  else if (streak >= 14)    motiv = streak + ' days straight. You don\'t quit.';
+  else if (streak >= 7)     motiv = streak + ' days in. Discipline is the identity.';
+  else if (!_isTrainingDay) motiv = 'Rest is the work. Come back stronger.';
+  else if (_hour < 10)      motiv = 'Morning. Time to forge.';
+  else if (_hour >= 20)     motiv = 'Still time to train today.';
+  else                      motiv = "Heroes aren't born. They're forged.";
+
+  const streakLine = streak > 1
+    ? '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">🔥 ' + streak + '-day streak</div>'
+    : '';
+
+  const ov = document.createElement('div');
+  ov.id = 'hm-briefing-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:18000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .25s';
+  ov.onclick = function(e) { if (e.target === ov) hmCloseBriefing(); };
+
+  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:360px;padding:28px 22px 24px;text-align:center;cursor:default" onclick="event.stopPropagation()">'
+    + '<img src="' + hmEmblSrc(theme) + '" style="width:60px;height:60px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(var(--accent-rgb),.55))" onerror="this.style.display=\'none\'">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.16em;margin-bottom:4px">' + dateStr + '</div>'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px">' + heroName + ' · LVL ' + lvlInfo.lvl + '</div>'
+    + '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px 14px;margin-bottom:14px">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Today\'s Mission</div>'
+    + missionHtml
+    + '</div>'
+    + streakLine
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;color:var(--text2);letter-spacing:.06em;margin-bottom:20px">' + motiv + '</div>'
+    + '<button onclick="hmCloseBriefing()" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">'
+    + (_isTrainingDay ? "LET'S TRAIN →" : 'GOT IT →')
+    + '</button>'
+    + '</div>';
+
+  document.body.appendChild(ov);
+  requestAnimationFrame(function() { ov.style.opacity = '1'; });
+}
+
+function hmCloseBriefing() {
+  const ov = document.getElementById('hm-briefing-overlay');
+  if (!ov) return;
+  ov.style.opacity = '0';
+  setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 250);
+}
+
 // ── TUTORIAL WALKTHROUGH ──
 const HM_TUT_KEY = 'hero-tut-seen-v1';
 const HM_TUTORIAL_STEPS = [
@@ -22521,7 +22605,7 @@ function showThemePicker() {
   hmRenderBadges();
   hmRenderProfileChip();
   hmLoginTick();
-  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} }, 400);
+  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} try { if(typeof renderTodayDashboard==='function') renderTodayDashboard(); } catch(e) {} setTimeout(() => { try { if(typeof hmShowDailyBriefing==='function') hmShowDailyBriefing(); } catch(e) {} }, 700); }, 400);
 })();
 
 // ── STORAGE DURABILITY + INSTALL NUDGE ─────────────────────────
