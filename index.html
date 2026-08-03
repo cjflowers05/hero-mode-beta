@@ -14804,6 +14804,7 @@ function hmSetPetPhoto(input) {
     localStorage.setItem(PET_PHOTO_KEY, e.target.result);
     const el = document.getElementById('pet-photo-preview');
     if (el) el.src = e.target.result;
+    try { renderWalkLive(); } catch(e) {}
     try { renderTodayDashboard(); } catch(e) {}
   };
   reader.readAsDataURL(file);
@@ -14812,6 +14813,7 @@ function hmSetPetPreset(path) {
   localStorage.setItem(PET_PHOTO_KEY, path);
   const el = document.getElementById('pet-photo-preview');
   if (el) el.src = path;
+  try { renderWalkLive(); } catch(e) {}
   try { renderTodayDashboard(); } catch(e) {}
 }
 
