@@ -1532,7 +1532,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hc-add-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3200;display:none;align-items:flex-end;justify-content:center}
 .hc-add-overlay.open{display:flex}
 .hc-add-sheet{background:var(--bg2);border-radius:18px 18px 0 0;border:1px solid var(--border2);border-bottom:none;width:100%;max-width:600px;padding:18px 20px calc(32px + var(--safe));max-height:78vh;overflow-y:auto}
-/* Thor Mode PIN lock */
+/* Performance Lab PIN lock */
 .hc-lock-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:28px 20px;text-align:center}
 .hc-lock-icon{font-size:32px;margin-bottom:10px;opacity:.6}
 .hc-lock-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);letter-spacing:.06em;margin-bottom:4px}
@@ -2014,7 +2014,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="gp-btn" data-val="strength" role="button" aria-pressed="false"><img class="gp-btn-img" src="assets/ui/gp/get_stronger_select.png" data-img-u="assets/ui/gp/get_stronger_select.png" data-img-s="assets/ui/gp/get_stronger_selected.png" alt=""><div class="gp-btn-name">Get Stronger</div><div class="gp-btn-sub">big lifts</div></div>
       <div class="gp-btn" data-val="fit" role="button" aria-pressed="false"><img class="gp-btn-img" src="assets/ui/gp/all_around_select.png" data-img-u="assets/ui/gp/all_around_select.png" data-img-s="assets/ui/gp/all_around_selected.png" alt=""><div class="gp-btn-name">All-Round Fitness</div><div class="gp-btn-sub">athletic + healthy</div></div>
       <div class="gp-btn" data-val="endurance" role="button" aria-pressed="false"><img class="gp-btn-img" src="assets/ui/gp/race_endurance_select.png" data-img-u="assets/ui/gp/race_endurance_select.png" data-img-s="assets/ui/gp/race_endurance_selected.png" alt=""><div class="gp-btn-name">Race / Endurance</div><div class="gp-btn-sub">run · tri · pace goals</div></div>
-      <div class="gp-btn" data-val="crossfit" role="button" aria-pressed="false"><img class="gp-btn-img" src="assets/ui/gp/cross_training_select.png" data-img-u="assets/ui/gp/cross_training_select.png" data-img-s="assets/ui/gp/cross_training_selected.png" alt=""><div class="gp-btn-name">Cross-Training</div><div class="gp-btn-sub">HIIT · WODs · metcons</div></div>
+      <div class="gp-btn" data-val="crosstraining" role="button" aria-pressed="false"><img class="gp-btn-img" src="assets/ui/gp/cross_training_select.png" data-img-u="assets/ui/gp/cross_training_select.png" data-img-s="assets/ui/gp/cross_training_selected.png" alt=""><div class="gp-btn-name">Cross-Training</div><div class="gp-btn-sub">HIIT · WODs · metcons</div></div>
     </div>
 
     <div id="gp-event-wrap" style="display:none">
@@ -2230,7 +2230,7 @@ const HM_SCHEMES = {
   fit:{      found:{main:'3 × 8',second:'3 × 10',acc:'3 × 12',iso:'2 × 15',core:'3 × 12',power:'4 × 5',carry:'3 × 30m'},
              build:{main:'4 × 6–8',second:'3 × 10',acc:'3 × 12',iso:'3 × 12',core:'3 × 15',power:'5 × 4',carry:'3 × 40m'},
              peak: {main:'4 × 5–6',second:'3 × 8–10',acc:'3 × 12',iso:'3 × 12',core:'3 × 20',power:'6 × 3',carry:'4 × 40m'} },
-  crossfit:{ found:{main:'5 × 5',second:'4 × 6',acc:'3 × 10',iso:'3 × 12',core:'3 × 12',power:'5 × 3',carry:'3 × 30m'},
+  crosstraining:{ found:{main:'5 × 5',second:'4 × 6',acc:'3 × 10',iso:'3 × 12',core:'3 × 12',power:'5 × 3',carry:'3 × 30m'},
              build:{main:'5 × 3',second:'4 × 5',acc:'3 × 10',iso:'3 × 12',core:'3 × 15',power:'6 × 2',carry:'4 × 40m'},
              peak: {main:'3 × 3 heavy',second:'4 × 4',acc:'3 × 10',iso:'3 × 12',core:'3 × 15',power:'5 × 2',carry:'4 × 40m'} },
 };
@@ -2261,7 +2261,7 @@ const HM_PHASE_META = {
     {t:'found',title:'Foundation',desc:'Build the base: movement quality, full-body strength, and an aerobic foundation. Everything later stacks on what you build here.',chips:['40–55 min','60 sec rest','RPE 7/10','Move well first'],tip:'Consistency beats intensity in week one through four. Show up, move well, finish feeling better than you started.',cal:'Maintenance',result:'Moving better, base engine built',style:'Full-body strength + easy cardio'},
     {t:'build',title:'Engine Build',desc:'Strength climbs and the engine grows: heavier compounds, explosive power work, and intervals that raise your capacity week over week.',chips:['50–65 min','90 sec rest','RPE 8/10','Strength + engine'],tip:'Treat conditioning like lifting — progress it. A little faster, a little longer, a little harder each week.',cal:'Maintenance',result:'Stronger, faster, noticeably fitter',style:'Compounds + power + intervals'},
     {t:'peak',title:'Performance Peak',desc:'Power, strength, and conditioning peak together. Heavy lifts stay in, explosive work sharpens, and conditioning hits its highest gear.',chips:['50–70 min','varied rest','RPE 8–9/10','Athlete mode'],tip:'This phase is the payoff — test yourself: a 5RM, a 2k row, a max round count. Numbers prove the program worked.',cal:'Maintenance +100',result:'Peak athleticism — strong, fast, conditioned',style:'Power + strength + max conditioning'}],
-  crossfit:[
+  crosstraining:[
     {t:'found',title:'Mechanics & Base',desc:'Learn the movements, groove the positions, and build a base with moderate metcons. Intensity comes later — consistency and form come first.',chips:['scale to move well','moderate WODs','RPE 7/10','learn the lifts'],tip:'Scaling isn\'t cheating — it\'s how you hit the right stimulus. A WOD done fast with clean movement beats "Rx and broken" every time.',cal:'Maintenance',result:'Movement locked in, engine started',style:'Strength + moderate metcons'},
     {t:'build',title:'Engine Build',desc:'Longer metcons, heavier strength, more volume. Your work capacity climbs week over week as the WODs get spicier.',chips:['longer WODs','add load','RPE 8/10','push the pace'],tip:'Hard days should be genuinely hard. If every WOD feels the same, you\'re pacing too evenly — learn to redline, then recover.',cal:'Maintenance +100',result:'Bigger engine, stronger lifts',style:'Strength + volume metcons'},
     {t:'peak',title:'Benchmark Peak',desc:'Test-week energy: benchmark WODs, heavy triples, and max-effort metcons. Retest the workouts from earlier phases and watch the numbers move.',chips:['benchmark WODs','heavy + fast','RPE 9/10','retest & PR'],tip:'Retesting is the whole point — the same WOD, faster, is undeniable proof you got fitter. Record every score.',cal:'Maintenance +100',result:'Peak work capacity — strong AND conditioned',style:'Benchmarks + max metcons'}],
@@ -2528,7 +2528,7 @@ const HM_FOCUS_ADD = {
 };
 
 const HM_DOW_NAMES = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const HM_GOAL_LABEL = {muscle:'Build Muscle',fat:'Lose Fat',recomp:'Build + Burn',strength:'Get Stronger',fit:'All-Round Fitness',endurance:'Race / Endurance',crossfit:'Cross-Training'};
+const HM_GOAL_LABEL = {muscle:'Build Muscle',fat:'Lose Fat',recomp:'Build + Burn',strength:'Get Stronger',fit:'All-Round Fitness',endurance:'Race / Endurance',crosstraining:'Cross-Training'};
 const HM_EQ_CARDS = {
   rack:{title:'Barbell + Power Rack',desc:'Squats, bench, deadlifts, overhead press, pull-ups. The full compound movement library — the foundation of the plan.'},
   db:{title:'Dumbbells',desc:'Presses, rows, lunges, carries, curls, and every circuit movement. The most versatile tool in the gym.'},
@@ -2733,7 +2733,7 @@ function hmWeekSpans(weeks){
 // The split of workout templates for a goal/day-count
 function hmSplitFor(g){
   return (g.goal === 'endurance' ? HM_ENDURO_SPLITS[g.days]
-        : g.goal === 'crossfit'  ? HM_WOD_SPLITS[g.days]
+        : g.goal === 'crosstraining'  ? HM_WOD_SPLITS[g.days]
         : HM_SPLITS[g.days]) || HM_SPLITS[4];
 }
 // Weekly schedule = array[7], Mon(0)…Sun(6), each a split-slot index or null (rest).
@@ -3289,12 +3289,12 @@ function hmApplyNutrition(){
     strength:'Strength needs fuel. Eat at or slightly above maintenance, prioritize protein and carbs around your heavy sessions.',
     fit:'Eat like an athlete: mostly whole foods, protein every meal, carbs matched to how hard the day is.',
     endurance:'Endurance runs on carbs. Fuel before long runs, practice race-day nutrition in training, and never diet through a build week.',
-    crossfit:'High-intensity work burns serious fuel — eat enough carbs to power your WODs and enough protein to recover from them. Don\'t train hard on empty.',
+    crosstraining:'High-intensity work burns serious fuel — eat enough carbs to power your WODs and enough protein to recover from them. Don\'t train hard on empty.',
   };
   if (g.weight) {
     const lb = g.units === 'kg' ? g.weight * 2.2046 : Number(g.weight);
     const maint = Math.round(lb * 15 / 50) * 50;
-    const adj = {muscle:300, fat:-500, recomp:-150, strength:250, fit:0, endurance:150, crossfit:100}[g.goal] || 0;
+    const adj = {muscle:300, fat:-500, recomp:-150, strength:250, fit:0, endurance:150, crosstraining:100}[g.goal] || 0;
     const target = maint + adj;
     cal = (target - 100).toLocaleString() + '–' + (target + 100).toLocaleString();
     prot = (Math.round(lb * 0.8 / 5) * 5) + '–' + (Math.round(lb * 1.0 / 5) * 5) + 'g';
@@ -4179,6 +4179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 
+  <div style="color:var(--text3);font-size:11px;text-align:center;padding:4px 16px 10px;line-height:1.5">Hero Mode is not affiliated with or endorsed by Concept2, Peloton, or Assault Fitness. Brand names are used solely to identify compatible equipment.</div>
   <!-- ── CONCEPT2 ROWER ── -->
   <div class="connect-card" id="cc-concept2">
     <div class="connect-card-header" onclick="ccToggle('concept2')">
@@ -5403,7 +5404,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="hc-pin-overlay" id="hc-pin-overlay">
   <div class="hc-pin-modal">
     <div style="font-size:28px;margin-bottom:8px">🔐</div>
-    <div class="hc-pin-heading" id="hc-pin-heading">Thor Mode</div>
+    <div class="hc-pin-heading" id="hc-pin-heading">Performance Lab</div>
     <div class="hc-pin-sub" id="hc-pin-sub">Enter your PIN</div>
     <div class="hc-pin-dots" id="hc-pin-dots">
       <div class="hc-pin-dot" id="hc-pd-0"></div>
@@ -14355,7 +14356,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initExerciseRowHandlers();   // make exercise rows tappable → Coach tab
   checkAndRunWeeklyReport();   // load/generate Sunday weekly coaching report
   renderHeroClass();
-  // Hidden triple-tap on HERO MODE title unlocks Thor Mode
+  // Hidden triple-tap on HERO MODE title unlocks Performance Lab
   const _thorTitleEl = document.querySelector('.hero-title');
   if (_thorTitleEl) _thorTitleEl.addEventListener('click', _thorTitleTap);
 });
@@ -14787,7 +14788,7 @@ function destroyWalkMap() {
 
 function buildLiveMap(containerId) {
   destroyWalkMap();
-  walkMap = L.map(containerId, { zoomControl: false, attributionControl: false });
+  walkMap = L.map(containerId, { zoomControl: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(walkMap);
   if (walkPositions.length) {
     const last = walkPositions[walkPositions.length - 1];
@@ -14822,7 +14823,7 @@ function refreshLiveMapRoute() {
 
 function buildSummaryMap(containerId, pts) {
   destroyWalkMap();
-  walkMap = L.map(containerId, { zoomControl: false, attributionControl: false });
+  walkMap = L.map(containerId, { zoomControl: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(walkMap);
   if (pts.length < 2) {
     if (pts.length === 1) walkMap.setView([pts[0].lat, pts[0].lng], 15);
@@ -17762,7 +17763,7 @@ function renderTodayBanner() {
   const _dayIconHtml = _ICON_MAP[day.icon]
     ? `<img src="assets/ui/${_ICON_MAP[day.icon]}" class="banner-day-icon" alt="">`
     : `<span style="font-size:22px">${day.icon}</span>`;
-  const _bnEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _bnEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const _bnTheme = hmActiveTheme();
   const _bnAid = _bnEID[_bnTheme.id] || _bnTheme.id;
 
@@ -18638,7 +18639,7 @@ function renderHeroClass() {
   if (!root) return;
   if (!_thorUnlocked) { root.innerHTML = ''; return; }
   const custom = loadHcCustom();
-  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">Thor Mode</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div></div>`;
+  let html = `<div class="hc-section-hd"><div><div class="hc-section-title">Performance Lab</div><div class="hc-section-sub">Personal 5-day program · tap any exercise to log</div></div></div>`;
   HC_PLAN.forEach((day, i) => {
     const custExs = custom[i] || [];
     html += `<div class="hc-day-card" id="hc-day-${i}">
@@ -18767,7 +18768,7 @@ function hcOpenPin(mode) {
   _hcPinMode = mode;
   _hcPinBuf  = '';
   _hcPinFirst = '';
-  document.getElementById('hc-pin-heading').textContent = 'Thor Mode';
+  document.getElementById('hc-pin-heading').textContent = 'Performance Lab';
   document.getElementById('hc-pin-sub').textContent =
     mode === 'set'    ? 'Choose a 4-digit PIN' :
     mode === 'change' ? 'Enter current PIN to lock' :
@@ -20419,16 +20420,16 @@ const HERO_THEMES = [
   { id:'titan', name:'Titan', sub:'Silver & Black', emblem:'🏔️', pat:'grid', tone:'power',
     swatch:['#B0BEC5','#546E7A'],
     vars:{'--gold':'#B0BEC5','--gold-dim':'#546E7A','--bg':'#090A0B','--bg2':'#0F1112','--bg3':'#161819','--bg4':'#1D2021','--text':'#F0F2F3','--text2':'#93999D','--text3':'#666E72','--border':'rgba(176,190,197,0.12)','--border2':'rgba(176,190,197,0.28)','--accent-rgb':'176,190,197'} },
-  { id:'spiderman', name:'Vigilante', sub:'Red · Black · Blue', emblem:'🕶️', pat:'grid', tone:'power',
+  { id:'vigilante', name:'Vigilante', sub:'Red · Black · Blue', emblem:'🕶️', pat:'grid', tone:'power',
     swatch:['#E53935','#1565C0'],
     vars:{'--gold':'#EF4444','--gold-dim':'#1565C0','--bg':'#08080C','--bg2':'#0E0E14','--bg3':'#14141C','--bg4':'#1A1A24','--text':'#F1F0F4','--text2':'#9694A0','--text3':'#696673','--border':'rgba(239,68,68,0.13)','--border2':'rgba(239,68,68,0.30)','--accent-rgb':'239,68,68'} },
-  { id:'superman', name:'Paragon', sub:'Red · Yellow · Blue', emblem:'🦅', pat:'rays', tone:'light',
+  { id:'paragon', name:'Paragon', sub:'Red · Yellow · Blue', emblem:'🦅', pat:'rays', tone:'light',
     swatch:['#1E88E5','#D32F2F'],
     vars:{'--gold':'#42A5F5','--gold-dim':'#C62828','--bg':'#07090D','--bg2':'#0C1016','--bg3':'#11161F','--bg4':'#161D28','--text':'#EBF1F7','--text2':'#8A97A6','--text3':'#5F6C7B','--border':'rgba(66,165,245,0.13)','--border2':'rgba(66,165,245,0.30)','--accent-rgb':'66,165,245'} },
-  { id:'hulk', name:'Goliath', sub:'Green & Purple', emblem:'💪', pat:'scales', tone:'power',
+  { id:'goliath', name:'Goliath', sub:'Green & Purple', emblem:'💪', pat:'scales', tone:'power',
     swatch:['#43A047','#6A1B9A'],
     vars:{'--gold':'#4CAF50','--gold-dim':'#2E7031','--bg':'#080A08','--bg2':'#0D110D','--bg3':'#121812','--bg4':'#182018','--text':'#EDF3ED','--text2':'#8FA090','--text3':'#637164','--border':'rgba(76,175,80,0.13)','--border2':'rgba(76,175,80,0.30)','--accent-rgb':'76,175,80'} },
-  { id:'supersaiyan', name:'Ascendant', sub:'Gold · Orange · Blue', emblem:'🔥', pat:'rays', tone:'light', lock:0,
+  { id:'ascendant', name:'Ascendant', sub:'Gold · Orange · Blue', emblem:'🔥', pat:'rays', tone:'light', lock:0,
     swatch:['#FFB300','#FF6F00'],
     vars:{'--gold':'#FFB300','--gold-dim':'#FF6F00','--bg':'#0A0803','--bg2':'#110E06','--bg3':'#191408','--bg4':'#211B0B','--text':'#F5F0E2','--text2':'#9C9270','--text3':'#726A4F','--border':'rgba(255,179,0,0.13)','--border2':'rgba(255,179,0,0.30)','--accent-rgb':'255,179,0'} },
   { id:'valkyrie', name:'Valkyrie', sub:'Rose & Blush', emblem:'🌸', pat:'dots', tone:'light',
@@ -20464,10 +20465,10 @@ const HERO_THEMES = [
   { id:'ranger', name:'Ranger', sub:'Forest & Ember', emblem:'🎯', pat:'scales', tone:'aqua', lock:0,
     swatch:['#E8892E','#5D8A3C'],
     vars:{'--gold':'#E8892E','--gold-dim':'#9A4B18','--bg':'#0A0805','--bg2':'#120F08','--bg3':'#1A150B','--bg4':'#221C10','--text':'#F5EEE2','--text2':'#A09075','--text3':'#746852','--border':'rgba(232,137,46,0.13)','--border2':'rgba(232,137,46,0.30)','--accent-rgb':'232,137,46'} },
-  { id:'wick', name:'Wick', sub:'Shadow & Neon Purple', emblem:'🔫', pat:'dots', tone:'mystic', lock:50,
+  { id:'phantom', name:'Phantom', sub:'Shadow & Neon Purple', emblem:'🌑', emblSrc:'assets/ui/emblem-wick.png', pat:'dots', tone:'mystic', lock:50,
     swatch:['#9D4EDD','#1A0A2E'],
     vars:{'--gold':'#9D4EDD','--gold-dim':'#5A1F8A','--bg':'#08060D','--bg2':'#0E0A16','--bg3':'#150F1F','--bg4':'#1C1428','--text':'#EDE8F5','--text2':'#9B8DB0','--text3':'#6D5F82','--border':'rgba(157,78,221,0.14)','--border2':'rgba(157,78,221,0.30)','--accent-rgb':'157,78,221'} },
-  { id:'thor', name:'Thor', sub:'Storm & Lightning', emblem:'⚡', pat:'rays', tone:'power', lock:25,
+  { id:'stormcaller', name:'Stormcaller', sub:'Storm & Lightning', emblem:'⚡', emblSrc:'assets/ui/emblem-thor.png', pat:'rays', tone:'power', lock:25,
     swatch:['#72C8F0','#1B4FD8'],
     vars:{'--gold':'#72C8F0','--gold-dim':'#2B6CB0','--bg':'#06080E','--bg2':'#0C1018','--bg3':'#121822','--bg4':'#18202C','--text':'#EBF4FA','--text2':'#8AAABB','--text3':'#5E7E8C','--border':'rgba(114,200,240,0.13)','--border2':'rgba(114,200,240,0.30)','--accent-rgb':'114,200,240'} },
   { id:'amazon', name:'Amazon', sub:'Jade & Ancient Gold', emblem:'🌿', pat:'scales', tone:'light', lock:25,
@@ -20502,7 +20503,7 @@ const HM_HERO_PORTRAITS = [
   {id:'hero8',    src:'assets/ui/heroes/hero8.png',              name:'Ranger',     minLvl:5},
   {id:'hero9',    src:'assets/ui/heroes/hero9.png',              name:'Ironworker', minLvl:5},
   {id:'hero10',   src:'assets/ui/heroes/hero10.png',             name:'Scholar',    minLvl:5},
-  {id:'thor',     src:'assets/ui/heroes/Thor_hero.png',         name:'Thor',       minLvl:5},
+  {id:'stormcaller', src:'assets/ui/heroes/Thor_hero.png',      name:'Stormcaller', minLvl:5},
   {id:'amazon',   src:'assets/ui/heroes/amazon_hero.png',       name:'Amazon',     minLvl:5},
   {id:'alpha',    src:'assets/ui/heroes/alpha_hero.png',        name:'Alpha',      minLvl:5},
   {id:'nomad',    src:'assets/ui/heroes/nomad_hero.png',        name:'Nomad',      minLvl:5},
@@ -20538,7 +20539,7 @@ function hmActiveTheme(){
 }
 // Returns the correct emblem image src for any theme — uses emblSrc for signature themes
 function hmEmblSrc(theme){
-  const _eid = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _eid = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   return theme.emblSrc || ('assets/ui/emblem-' + (_eid[theme.id] || theme.id) + '.png');
 }
 function hmProfileSyncGoals(){
@@ -20570,7 +20571,7 @@ function hmSwitchProfile(id){
   hmCloseTrophyCase();
   const theme = hmActiveTheme();
   hmSfx('theme', theme.tone);
-  const _swEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _swEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   hmHeroFX(prof.name.toUpperCase(), 'Welcome Back, Hero', _swEID[theme.id] || theme.id);
   hmLoginTick(); // this profile's daily login
 }
@@ -21088,7 +21089,7 @@ function hmXP(kind, pts, meta){
   let storyQueued = false;
   if (after.lvl > before) {
     const theme = hmActiveTheme();
-    const _lvEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+    const _lvEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
     setTimeout(() => { hmHeroFX('LEVEL ' + after.lvl, hmRankFor(after.lvl), theme.emblSrc || _lvEID[theme.id] || theme.id); hmSfx('level'); }, 350);
     setTimeout(() => { if (typeof showToast === 'function') showToast('⬆️ Level ' + after.lvl + ' — ' + hmRankFor(after.lvl) + '!', 'success'); }, 1800);
     // Story chapters — comic cut-scene unlocks at level milestones
@@ -21677,7 +21678,7 @@ function renderTodayDashboard() {
   const heroName = (prof && prof.name) ? prof.name : 'Hero';
   const streak   = Math.max((typeof calcStreak === 'function') ? calcStreak() : 0, (xpData.login && xpData.login.streak) ? xpData.login.streak : 0);
   const theme    = hmActiveTheme();
-  const _eid     = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _eid     = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const themeId  = _eid[theme.id] || theme.id;
   const xpToday  = (xpData.xpDay && xpData.xpDay.earned) ? xpData.xpDay.earned : 0;
 
@@ -22071,7 +22072,7 @@ function hmRenderProfileChip(){
   const s = hmXPLoad(), info = hmLevelInfo(s.xp);
   const unlocked = HM_BADGES.filter(b => s.badges[b.id]).length;
   const title = hmActiveTitle();
-  const _pcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _pcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const _pcAid = _pcEID[hmActiveTheme().id] || hmActiveTheme().id;
   chip.innerHTML = '<div class="pc-avatar-wrap"><div class="pc-avatar ' + hmFrameClass(info.lvl) + '">' + hmAvatarHTML(prof) + '</div>' +
     '<img class="pc-emblem-badge" src="'+hmEmblSrc(hmActiveTheme())+'" alt="" onerror="this.style.display=\'none\'">' +
@@ -22116,7 +22117,7 @@ function hmOpenHeroCard() {
   const prof  = hmActiveProfile();
   const s     = hmXPLoad();
   const info  = hmLevelInfo(s.xp);
-  const _eid  = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _eid  = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const aid   = _eid[theme.id] || theme.id;
   const unlocked   = HM_BADGES.filter(function(b){ return s.badges[b.id]; });
   const imgMedals  = unlocked.filter(function(b){ return b.img; }).slice(0, 9);
@@ -22198,7 +22199,7 @@ function hmRenderTrophyCase(){
   const loc = [prof.state, prof.country].filter(Boolean).join(', ');
   if (loc) metaBits.push((share.location ? '🌐 ' : '🔒 ') + loc);
   const eqTitle = hmActiveTitle();
-  const _tcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _tcEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const _tcAid = _tcEID[theme.id] || theme.id;
   let html = '<div class="tc-head">' +
     '<img class="tc-head-emblem-wm" src="'+hmEmblSrc(theme)+'" alt="" onerror="this.style.display=\'none\'">' +
@@ -22351,7 +22352,7 @@ function applyTheme(id) {
   root.style.setProperty('--pat-size', pat ? pat.size : 'auto');
   const eyebrow = document.getElementById('hero-eyebrow-label');
   if (eyebrow) eyebrow.textContent = theme.name.toUpperCase() + ' · HERO MODE';
-  const _EID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _EID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   const _aid = _EID[theme.id] || theme.id;
   const emb = document.getElementById('hero-emblem');
   if (emb) emb.innerHTML = '<img src="'+(theme.emblSrc||'assets/ui/emblem-'+_aid+'.png')+'" alt="" onerror="this.style.opacity=\'0\'">';
@@ -22370,7 +22371,7 @@ function hmThemeUnlocked(t){
 function buildThemePicker() {
   const grid = document.getElementById('tp-grid');
   if (!grid) return;
-  const _EID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+  const _EID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
   grid.innerHTML = HERO_THEMES.map(t => {
     const [c1,c2] = t.swatch;
     const locked = !hmThemeUnlocked(t);
@@ -22418,7 +22419,7 @@ function confirmTheme(activated) {
   if (activated) {
     const theme = HERO_THEMES.find(t => t.id === id) || HERO_THEMES[0];
     hmSfx('theme', theme.tone);
-    const _cfEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant'};
+    const _cfEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
     hmHeroFX(theme.name.toUpperCase(), 'Hero Mode Activated', theme.emblSrc || _cfEID[theme.id] || theme.id);
     // New hero with no plan yet → straight into the plan builder
     const prof = hmActiveProfile();
@@ -22435,6 +22436,28 @@ function showThemePicker() {
   const saved = (hmActiveProfile() || {}).theme || localStorage.getItem('heroTheme') || 'warrior';
   selectTheme(saved);
 }
+
+(function hmLegacyIdMigration() {
+  const KEY = 'hm-id-migrated-v2';
+  if (localStorage.getItem(KEY)) return;
+  const map = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
+  const t = localStorage.getItem('heroTheme');
+  if (t && map[t]) localStorage.setItem('heroTheme', map[t]);
+  try {
+    const pd = JSON.parse(localStorage.getItem('heroProfiles') || 'null');
+    if (pd && pd.list) {
+      pd.list.forEach(p => { if (p.theme && map[p.theme]) p.theme = map[p.theme]; });
+      localStorage.setItem('heroProfiles', JSON.stringify(pd));
+    }
+  } catch(e) {}
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('heromode_goals')).forEach(k => {
+      const g = JSON.parse(localStorage.getItem(k) || 'null');
+      if (g && g.goal === 'crossfit') { g.goal = 'crosstraining'; localStorage.setItem(k, JSON.stringify(g)); }
+    });
+  } catch(e) {}
+  localStorage.setItem(KEY, '1');
+})();
 
 (function initTheme() {
   buildThemePicker();
