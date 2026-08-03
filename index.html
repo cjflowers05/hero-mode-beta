@@ -11710,6 +11710,102 @@ function hmDismissWhatsNew() {
   if (badge) badge.style.display = 'none';
 }
 
+// ── LEGAL DISCLAIMER ──────────────────────────────────────────────
+const HM_DISCLAIMER_KEY = 'hero-disclaimer-v1';
+function hmShowDisclaimer(opts) {
+  opts = opts || {};
+  const readOnly = !!opts.readOnly;
+  const ov = document.createElement('div');
+  ov.id = 'hm-disclaimer-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:19000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+  const btnLabel = readOnly ? 'CLOSE' : 'I UNDERSTAND &amp; AGREE';
+  const btnFn = readOnly ? "document.getElementById('hm-disclaimer-overlay').remove()" : 'hmAcceptDisclaimer()';
+  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:420px;width:100%;padding:28px 24px">'
+    + '<div style="text-align:center;font-size:32px;margin-bottom:8px">⚠️</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--gold);text-align:center;margin-bottom:14px">MEDICAL DISCLAIMER</div>'
+    + '<div style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px">'
+    + '<strong style="color:var(--text)">Hero Mode is not medical advice.</strong> The workouts, nutrition guidance, and wellness content in this app are for general fitness information only and are <em>not</em> a substitute for professional medical advice, diagnosis, or treatment.<br><br>'
+    + 'Always consult a qualified healthcare provider before starting any exercise program, especially if you have a medical condition, injury, or health concern.<br><br>'
+    + '<strong style="color:var(--text)">You perform all exercises at your own risk.</strong> The developer is not liable for any injury or health outcome resulting from use of this app.'
+    + '</div>'
+    + '<button onclick="' + btnFn + '" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.08em;padding:14px;cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity=\'.85\'" onmouseleave="this.style.opacity=\'1\'">' + btnLabel + '</button>'
+    + (readOnly ? '' : '<div style="text-align:center;color:var(--text3);font-size:11px;margin-top:10px">You can review this anytime in ⚙ Settings</div>')
+    + '</div>';
+  document.body.appendChild(ov);
+  window._hmDisclaimerAfterFn = (!readOnly && opts.afterFn) ? opts.afterFn : null;
+}
+function hmAcceptDisclaimer() {
+  localStorage.setItem(HM_DISCLAIMER_KEY, '1');
+  const el = document.getElementById('hm-disclaimer-overlay');
+  if (el) el.remove();
+  if (typeof window._hmDisclaimerAfterFn === 'function') {
+    setTimeout(window._hmDisclaimerAfterFn, 400);
+    window._hmDisclaimerAfterFn = null;
+  }
+}
+// ── SETTINGS PANEL ────────────────────────────────────────────────
+function hmStgToggleSound() {
+  hmToggleSound();
+  const v = document.getElementById('hm-stg-sound-val');
+  if (v) { const on = hmSoundOn(); v.textContent = on ? 'ON' : 'OFF'; v.style.color = on ? 'var(--gold)' : 'var(--text3)'; }
+}
+function hmShowSettings() {
+  if (document.getElementById('hm-settings-overlay')) { hmCloseSettings(); return; }
+  const ov = document.createElement('div');
+  ov.id = 'hm-settings-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:15000;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = e => { if (e.target === ov) hmCloseSettings(); };
+  const soundOn = hmSoundOn();
+  const lightMode = document.documentElement.classList.contains('light-mode');
+  ov.innerHTML = '<div id="hm-settings-sheet" style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0 0 calc(env(safe-area-inset-bottom,0px) + 24px) 0;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)">'
+    + '<div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.08em;color:var(--text)">⚙ SETTINGS</div>'
+    + '<button onclick="hmCloseSettings()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;padding:4px 8px">✕</button></div>'
+    + '<div style="padding:16px 20px">'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-bottom:8px">APP</div>'
+    + '<div class="hm-settings-row" onclick="hmStgToggleSound()">'
+    + '<span>🔊 Sound Effects</span><span id="hm-stg-sound-val" style="color:' + (soundOn ? 'var(--gold)' : 'var(--text3)') + '">' + (soundOn ? 'ON' : 'OFF') + '</span></div>'
+    + '<div class="hm-settings-row" onclick="hmToggleLight();hmCloseSettings()">'
+    + '<span>' + (lightMode ? '🌙' : '☀️') + ' Display Mode</span><span style="color:var(--text3)">' + (lightMode ? 'Light → Dark' : 'Dark → Light') + '</span></div>'
+    + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(showThemePicker,300)">'
+    + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
+    + '<div class="hm-settings-row" onclick="hmViewDisclaimer()">'
+    + '<span>⚠️ Medical Disclaimer</span><span style="color:var(--text3)">›</span></div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">CONTACT &amp; FEEDBACK</div>'
+    + '<div class="hm-settings-row" onclick="hmContactDev()">'
+    + '<span>✉️ Contact Developer</span><span style="color:var(--text3)">›</span></div>'
+    + '<div style="margin-top:12px">'
+    + '<div style="color:var(--text2);font-size:13px;margin-bottom:8px;font-weight:600">💡 Feature Request</div>'
+    + '<textarea id="hm-feature-req-txt" placeholder="Tell us what you\'d love to see in Hero Mode..." style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:10px 12px;resize:vertical;min-height:90px;outline:none;font-family:inherit"></textarea>'
+    + '<button onclick="hmSubmitFeatureRequest()" style="margin-top:8px;width:100%;background:var(--bg3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:.06em;padding:10px 18px;min-height:44px;cursor:pointer;transition:opacity .15s" onmouseenter="this.style.opacity=\'.8\'" onmouseleave="this.style.opacity=\'1\'">SEND FEATURE REQUEST</button>'
+    + '</div>'
+    + '<div style="text-align:center;color:var(--text3);font-size:11px;margin-top:24px">Hero Mode · Built with ❤️ by Cody</div>'
+    + '</div></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => { const s = document.getElementById('hm-settings-sheet'); if (s) requestAnimationFrame(() => { s.style.transform = 'translateY(0)'; }); });
+}
+function hmCloseSettings() {
+  const ov = document.getElementById('hm-settings-overlay');
+  const s = document.getElementById('hm-settings-sheet');
+  if (!ov) return;
+  if (s) { s.style.transform = 'translateY(100%)'; setTimeout(() => ov.remove(), 320); }
+  else ov.remove();
+}
+function hmViewDisclaimer() {
+  hmCloseSettings();
+  setTimeout(() => hmShowDisclaimer({ readOnly: true }), 350);
+}
+function hmContactDev() {
+  window.location.href = 'mailto:cody.flowers@mymail.champlain.edu?subject=Hero%20Mode%20Feedback';
+}
+function hmSubmitFeatureRequest() {
+  const txt = ((document.getElementById('hm-feature-req-txt') || {}).value || '').trim();
+  if (!txt) { if (typeof showToast === 'function') showToast('Please describe your feature idea first.', 'warn'); return; }
+  window.location.href = 'mailto:cody.flowers@mymail.champlain.edu?subject=Hero%20Mode%20Feature%20Request&body=' + encodeURIComponent('Feature Request:\n\n' + txt + '\n\n— Sent from Hero Mode');
+  if (typeof showToast === 'function') showToast('Opening your email app…', 'info');
+}
+
 function hmInitWhatsNew() {
   const seen = !!localStorage.getItem(HM_WN_KEY);
   const btn = document.getElementById('tour-btn');
@@ -11723,8 +11819,10 @@ function hmInitWhatsNew() {
       btn.appendChild(dot);
     }
   }
+  const disclaimerSeen = !!localStorage.getItem(HM_DISCLAIMER_KEY);
   const tutSeen = !!localStorage.getItem('hero-tut-seen-v1');
-  if (!tutSeen) setTimeout(hmTutOpen, 1800);
+  if (!disclaimerSeen) setTimeout(() => hmShowDisclaimer({afterFn: !tutSeen ? hmTutOpen : (!seen ? hmShowWhatsNew : null)}), 800);
+  else if (!tutSeen) setTimeout(hmTutOpen, 1800);
   else if (!seen) setTimeout(hmShowWhatsNew, 1800);
 }
 
@@ -20186,6 +20284,10 @@ if ('serviceWorker' in navigator) {
 #tour-btn:active{background:rgba(255,255,255,0.14)}
 #light-toggle-btn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:134px;z-index:400;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:rgba(255,255,255,0.4);transition:all .2s}
 #light-toggle-btn:active{background:rgba(255,255,255,0.14)}
+#settings-btn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:174px;z-index:400;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:rgba(255,255,255,0.4);transition:all .2s}
+#settings-btn:active{background:rgba(255,255,255,0.14)}
+.hm-settings-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--bg3);border-radius:10px;margin-bottom:6px;cursor:pointer;color:var(--text2);font-size:15px;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.hm-settings-row:active{background:var(--bg4)}
 /* ── Light / Sand mode ── */
 :root.light-mode{--bg:#C8C8C8 !important;--bg2:#BEBEBE !important;--bg3:#B2B2B2 !important;--bg4:#A6A6A6 !important;--text:#111111 !important;--text2:#303030 !important;--text3:#606060 !important;--border:rgba(0,0,0,0.14) !important;--border2:rgba(0,0,0,0.26) !important}
 :root.light-mode .hero{--bg:#0A0A08;--bg2:#111110;--text:#F0EDE4;--text2:#A09D94;--text3:#77746C;--border:rgba(201,168,76,0.12);background-image:linear-gradient(160deg,rgba(var(--accent-rgb),.14) 0%,#0A0A08 60%) !important}
@@ -21178,6 +21280,7 @@ const HM_TOUR_STEPS = [
   { sel:'#daily-quests',         emoji:'⚔️', title:'Daily Quests',       text:'Three missions a day. Complete them, claim the XP, and open the chest for a bonus. Small wins, every day.' },
   { sel:'#custom-workout-entry', emoji:'⚡', title:'Custom Sessions',    text:'Off-plan day? Build your own session from scratch or add extra exercises to today\'s workout.' },
   { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Theme',      text:'Toggle sound here, and tap the 🎨 next to it to change your hero theme — colors, emblem, and even the sound effects.' },
+  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, contact the developer, or send a feature request. The medical disclaimer also lives here.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
   { sel:'.tab-bar',              emoji:'🧭', title:'Get Around',         text:'Train, Log, Nutrition, Recipes, Wellness, and Progress live along the bottom. Swipe left or right anywhere to switch tabs. Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide sections. Your awards and charts are under Progress. Go be a hero. 💪' },
 ];
@@ -22312,6 +22415,18 @@ function showThemePicker() {
     if (overlay) overlay.classList.add('hidden');
   } else {
     selectTheme('warrior');
+  }
+  // settings button
+  if (!document.getElementById('settings-btn')) {
+    const sg = document.createElement('div');
+    sg.id = 'settings-btn';
+    sg.title = 'Settings, Contact & Legal';
+    sg.textContent = '⚙';
+    sg.setAttribute('role', 'button');
+    sg.setAttribute('tabindex', '0');
+    sg.setAttribute('aria-label', 'Settings');
+    sg.onclick = hmShowSettings;
+    document.body.appendChild(sg);
   }
   // sound toggle button
   if (!document.getElementById('sound-toggle-btn')) {

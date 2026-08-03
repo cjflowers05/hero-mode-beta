@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v24'; // v24: Signature themes, tab customizers, swipe, chest moment, badge pop, UX polish
+const CACHE_VERSION = 'hero-mode-v25'; // v25: Legal disclaimer, Settings panel, Contact & Feature Request
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
