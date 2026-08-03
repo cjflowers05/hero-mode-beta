@@ -3100,6 +3100,68 @@ function hmScaleExercise(fromKey, toKey){
 window.hmEasierVariant = hmEasierVariant;
 window.hmScaleExercise = hmScaleExercise;
 
+// ── SHAKE IT UP ───────────────────────────────────────────────
+function hmShakeItUp(phId, di, e) {
+  if (e) e.stopPropagation();
+  if (!window.HM_PLAN) return;
+  const ph = window.HM_PLAN.phases.find(p => p.id === phId);
+  if (!ph || !ph.days[di]) return;
+  const day = ph.days[di];
+
+  // Build muscle-group pools from the EX tag (everything before the ·)
+  const pools = {};
+  Object.entries(EX).forEach(([key, ex]) => {
+    const primary = (ex.tag || '').split('·')[0].trim().toLowerCase().replace(/[^a-z]/g, '');
+    if (!primary) return;
+    if (!pools[primary]) pools[primary] = [];
+    pools[primary].push(key);
+  });
+
+  // Original plan keys for this day
+  const origKeys = new Set();
+  (day.blocks || []).forEach(b => b.items.forEach(it => origKeys.add(it.key)));
+
+  const ed = hmPlanEditsLoad();
+  // Clear any existing day-level swaps first so shaking twice stays fresh
+  Object.keys(ed.swap).forEach(k => { if (k.startsWith(phId + '|' + di + '|')) delete ed.swap[k]; });
+
+  const usedThisShake = new Set(origKeys);
+  let swapped = 0;
+
+  (day.blocks || []).forEach(b => {
+    b.items.forEach(it => {
+      const ex = EX[it.key];
+      if (!ex) return;
+      const primary = (ex.tag || '').split('·')[0].trim().toLowerCase().replace(/[^a-z]/g, '');
+      const pool = (pools[primary] || []).filter(k => k !== it.key && !usedThisShake.has(k) && EX[k]);
+      if (!pool.length) return;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      ed.swap[phId + '|' + di + '|' + it.key] = pick;
+      usedThisShake.add(pick);
+      swapped++;
+    });
+  });
+
+  if (swapped) {
+    hmPlanEditsSave(ed);
+    hmApplyPlan(true);
+    showToast('⚡ Session shaken — ' + swapped + ' fresh exercise' + (swapped !== 1 ? 's' : '') + ', same muscles.', 'success');
+  } else {
+    showToast('No alternatives found for this session.', 'info');
+  }
+}
+
+function hmShakeRestore(phId, di, e) {
+  if (e) e.stopPropagation();
+  const ed = hmPlanEditsLoad();
+  Object.keys(ed.swap).forEach(k => { if (k.startsWith(phId + '|' + di + '|')) delete ed.swap[k]; });
+  hmPlanEditsSave(ed);
+  hmApplyPlan(true);
+  showToast('Session restored to original.', 'success');
+}
+window.hmShakeItUp = hmShakeItUp;
+window.hmShakeRestore = hmShakeRestore;
+
 function hmEditAdd(phId, di){ _hmPick = { mode:'add', phId, di }; hmOpenExPicker(); }
 function hmOpenExPicker(){
   let el = document.getElementById('hm-ex-picker');
@@ -3185,6 +3247,13 @@ function hmDayHTML(day, num, phId, di){
     b.items.forEach(it => { body += hmExerciseRowHTML(it, phId, di); });
     (b.cardio || []).forEach(c => { body += hmCardioHTML(c); });
   });
+  // shake it up / restore controls
+  const _shEd = hmPlanEditsLoad();
+  const _shHas = Object.keys(_shEd.swap).some(k => k.startsWith(phId + '|' + di + '|'));
+  body += '<div style="display:flex;gap:8px;margin:10px 0 4px">' +
+    '<button onclick="hmShakeItUp(\'' + phId + '\',' + di + ',event)" style="flex:1;padding:11px;border-radius:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);color:#3b82f6;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:6px">🔀 SHAKE IT UP</button>' +
+    (_shHas ? '<button onclick="hmShakeRestore(\'' + phId + '\',' + di + ',event)" style="padding:11px 14px;border-radius:10px;background:rgba(180,60,60,.07);border:1px solid rgba(180,60,60,.25);color:#C08080;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer;text-transform:uppercase">↩ RESTORE</button>' : '') +
+    '</div>';
   if (window._hmEditMode) {
     body += '<div class="hm-add-ex" onclick="hmEditAdd(\'' + phId + '\',' + di + ');event.stopPropagation()">+ ADD EXERCISE TO THIS DAY</div>';
   }
