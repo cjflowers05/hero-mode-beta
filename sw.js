@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v30'; // v30: Shake It Up — per-day exercise randomizer with same-muscle-group pooling
+const CACHE_VERSION = 'hero-mode-v31'; // v31: Session modes, mood check-in, wildcard hero challenges
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

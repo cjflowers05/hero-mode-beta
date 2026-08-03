@@ -3162,6 +3162,129 @@ function hmShakeRestore(phId, di, e) {
 window.hmShakeItUp = hmShakeItUp;
 window.hmShakeRestore = hmShakeRestore;
 
+// ── SESSION MODES (Heavy / Speed / Superset / Circuit) ────────
+const HM_DAY_MODES = [
+  { id:'heavy',    label:'🏋 HEAVY',    tip:'85%+ 1RM · 4-6 reps · 3-5 min rest between sets' },
+  { id:'speed',    label:'⚡ SPEED',    tip:'Explosive intent · 60s rest · light-to-moderate load' },
+  { id:'superset', label:'🔗 SUPERSET', tip:'Pair A1/A2 exercises back-to-back with no rest between' },
+  { id:'circuit',  label:'🔄 CIRCUIT',  tip:'All exercises in sequence, 2 min rest per full round' },
+];
+function hmDayModeKey(phId, di) { return 'hm-daymode-' + phId + '-' + di; }
+function hmSetDayMode(phId, di, mode, e) {
+  if (e) e.stopPropagation();
+  const key = hmDayModeKey(phId, di);
+  localStorage.setItem(key, localStorage.getItem(key) === mode ? '' : mode);
+  hmApplyPlan(true);
+}
+window.hmSetDayMode = hmSetDayMode;
+
+// ── MOOD CHECK-IN ─────────────────────────────────────────────
+function hmMoodCheck() {
+  hmCloseBriefing();
+  const todayDow = new Date().getDay();
+  let phId = 'ph1';
+  const pill = document.querySelector('.phase-pill.active');
+  if (pill) { const m = (pill.getAttribute('onclick')||'').match(/showPhase\('(\w+)'/); if (m) phId = m[1]; }
+  if (!((window.TODAY_PHASE_DAYS || {})[phId] || {})[todayDow]) return;
+  if (localStorage.getItem('hm-mood-' + new Date().toISOString().slice(0,10))) return;
+  const ov = document.createElement('div');
+  ov.id = 'hm-mood-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:18500;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .2s';
+  ov.onclick = function(e) { if (e.target === ov) hmMoodPick('ok'); };
+  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:340px;padding:26px 20px;text-align:center" onclick="event.stopPropagation()">' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px">PRE-SESSION CHECK-IN</div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.05em;margin-bottom:18px">How Are You Feeling?</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    _hmMoodBtn('locked','💪','Locked In','Peak performance') +
+    _hmMoodBtn('ok','😐','Feeling OK','Solid session ahead') +
+    _hmMoodBtn('low','😴','Low Energy','Light it up anyway') +
+    _hmMoodBtn('sore','🤕','Sore / Tired','Reduce load today') +
+    '</div></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(function() { ov.style.opacity = '1'; });
+}
+function _hmMoodBtn(id, emoji, label, sub) {
+  return '<button onclick="hmMoodPick(\'' + id + '\')" style="padding:14px 10px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent">' +
+    '<div style="font-size:28px;margin-bottom:6px">' + emoji + '</div>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text);letter-spacing:.06em;margin-bottom:2px">' + label + '</div>' +
+    '<div style="font-size:9px;color:var(--text3)">' + sub + '</div></button>';
+}
+function hmMoodPick(mood) {
+  const ov = document.getElementById('hm-mood-overlay');
+  if (ov) { ov.style.opacity = '0'; setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 200); }
+  localStorage.setItem('hm-mood-' + new Date().toISOString().slice(0,10), mood);
+  const msgs = {
+    locked: ['💪 Locked in. Make every rep count.', 'success'],
+    ok:     ['😐 Solid foundation — build on it.', 'success'],
+    low:    ['😴 Showing up is the win. Go easy, stay consistent.', 'info'],
+    sore:   ['🤕 Smart check-in. Cut load 20% and focus on form today.', 'info'],
+  };
+  const [msg, type] = msgs[mood] || ['Let\'s go.', 'success'];
+  showToast(msg, type);
+}
+window.hmMoodCheck = hmMoodCheck;
+window.hmMoodPick  = hmMoodPick;
+
+// ── WILDCARD HERO CHALLENGES ──────────────────────────────────
+const HM_WILDCARDS = [
+  { id:'burpee100',  emoji:'🔥', name:'100 Burpee Challenge',   desc:'Complete 100 burpees for time. Rest only when you must — then keep going.' },
+  { id:'cindy',      emoji:'⏱', name:'Cindy AMRAP',            desc:'20 min AMRAP: 5 pull-ups · 10 push-ups · 15 air squats. Log your rounds.' },
+  { id:'tabata',     emoji:'⚡', name:'Tabata Blast',           desc:'8 rounds × 20 sec on / 10 sec off per movement: Push-ups → Squats → Sit-ups → Burpees.' },
+  { id:'pyramid',    emoji:'🔺', name:'Push-Up Pyramid',        desc:'1-2-3-4-5-6-7-8-9-10-9-8-7-6-5-4-3-2-1 push-ups. Rest = current rep count in seconds.' },
+  { id:'deck',       emoji:'🃏', name:'Deck of Heroes',         desc:'♠ Push-ups · ♥ Sit-ups · ♦ Air Squats · ♣ Burpees. Card value = reps (face = 10, Ace = 11). Draw until the deck is gone.' },
+  { id:'beast',      emoji:'🦁', name:'The Beast Circuit',      desc:'5 rounds: 10 deadlifts · 10 hang cleans · 10 front squats · 10 press. No rest between movements in a round.' },
+  { id:'sprint',     emoji:'🏃', name:'Sprint Ladder',          desc:'Sprint 100m · rest 30s · 200m · rest 60s · 400m · rest 90s. Repeat the sequence twice.' },
+  { id:'miniMurph',  emoji:'🎖', name:'Mini Murph',             desc:'800m run · 50 pull-ups · 100 push-ups · 150 squats · 800m run. Partition pull-ups/push-ups/squats as needed.' },
+];
+const HM_WC_KEY = 'hm-wildcard-last';
+function hmWildcardCardHTML() {
+  const last = parseInt(localStorage.getItem(HM_WC_KEY) || '0', 10);
+  if (last && Date.now() - last < 28 * 86400000) return '';
+  const weekSeed = Math.floor(Date.now() / (7 * 86400000));
+  const ch = HM_WILDCARDS[weekSeed % HM_WILDCARDS.length];
+  return '<div style="background:rgba(var(--accent-rgb),.07);border:1px solid rgba(var(--accent-rgb),.3);border-radius:14px;padding:16px;margin-bottom:12px">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+    '<span style="font-size:30px">' + ch.emoji + '</span>' +
+    '<div><div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;margin-bottom:3px">⚡ WILDCARD HERO CHALLENGE</div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em">' + ch.name + '</div></div></div>' +
+    '<div style="font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:12px">' + hmEsc(ch.desc) + '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="hmWildcardAccept(\'' + ch.id + '\')" style="flex:1;padding:11px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:.08em;cursor:pointer">ACCEPT THE CHALLENGE →</button>' +
+    '<button onclick="hmWildcardDismiss()" style="padding:11px 14px;border-radius:10px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer">SKIP</button>' +
+    '</div></div>';
+}
+function hmWildcardAccept(id) {
+  localStorage.setItem(HM_WC_KEY, Date.now().toString());
+  const ch = HM_WILDCARDS.find(c => c.id === id) || HM_WILDCARDS[0];
+  const ov = document.createElement('div');
+  ov.id = 'hm-wc-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:19000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .25s';
+  ov.onclick = function(e) { if (e.target === ov) hmWildcardClose(); };
+  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid rgba(var(--accent-rgb),.4);border-radius:20px;width:100%;max-width:360px;padding:28px 22px;text-align:center" onclick="event.stopPropagation()">' +
+    '<div style="font-size:52px;margin-bottom:12px">' + ch.emoji + '</div>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.14em;margin-bottom:8px">WILDCARD HERO CHALLENGE</div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--text);letter-spacing:.05em;margin-bottom:14px">' + ch.name + '</div>' +
+    '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;font-size:13px;color:var(--text2);line-height:1.6">' + hmEsc(ch.desc) + '</div>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text3);margin-bottom:18px;line-height:1.5">Run this instead of — or on top of — your regular session. Your call, Hero.</div>' +
+    '<button onclick="hmWildcardClose()" style="width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;cursor:pointer">LET\'S GO →</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(function() { ov.style.opacity = '1'; });
+  showToast('⚡ ' + ch.name + ' accepted — go get it!', 'success');
+  hmRenderTrain();
+}
+function hmWildcardDismiss() {
+  localStorage.setItem(HM_WC_KEY, (Date.now() - 21 * 86400000).toString());
+  hmRenderTrain();
+}
+function hmWildcardClose() {
+  const ov = document.getElementById('hm-wc-overlay');
+  if (ov) { ov.style.opacity = '0'; setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 250); }
+}
+window.hmWildcardAccept  = hmWildcardAccept;
+window.hmWildcardDismiss = hmWildcardDismiss;
+window.hmWildcardClose   = hmWildcardClose;
+
 function hmEditAdd(phId, di){ _hmPick = { mode:'add', phId, di }; hmOpenExPicker(); }
 function hmOpenExPicker(){
   let el = document.getElementById('hm-ex-picker');
@@ -3254,6 +3377,22 @@ function hmDayHTML(day, num, phId, di){
     '<button onclick="hmShakeItUp(\'' + phId + '\',' + di + ',event)" style="flex:1;padding:11px;border-radius:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);color:#3b82f6;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:6px">🔀 SHAKE IT UP</button>' +
     (_shHas ? '<button onclick="hmShakeRestore(\'' + phId + '\',' + di + ',event)" style="padding:11px 14px;border-radius:10px;background:rgba(180,60,60,.07);border:1px solid rgba(180,60,60,.25);color:#C08080;font-family:\'DM Mono\',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer;text-transform:uppercase">↩ RESTORE</button>' : '') +
     '</div>';
+  // session mode selector
+  const _dayMode = localStorage.getItem(hmDayModeKey(phId, di)) || '';
+  const _modeTip = (_dayMode && (HM_DAY_MODES.find(m => m.id === _dayMode)||{}).tip) || '';
+  body += '<div style="margin:8px 0 4px;padding-top:8px;border-top:1px solid var(--border)">' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.1em;margin-bottom:6px">SESSION MODE</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">' +
+    HM_DAY_MODES.map(function(m) {
+      const on = _dayMode === m.id;
+      return '<button onclick="hmSetDayMode(\'' + phId + '\',' + di + ',\'' + m.id + '\',event)" style="padding:5px 10px;border-radius:8px;font-family:\'DM Mono\',monospace;font-size:10px;letter-spacing:.07em;cursor:pointer;border:1px solid ' +
+        (on ? 'var(--accent)' : 'var(--border2)') + ';background:' +
+        (on ? 'rgba(var(--accent-rgb),.14)' : 'transparent') + ';color:' +
+        (on ? 'var(--gold)' : 'var(--text3)') + '">' + m.label + '</button>';
+    }).join('') +
+    '</div>' +
+    (_modeTip ? '<div style="font-size:10px;color:var(--text2);margin-top:7px;line-height:1.4">📋 ' + _modeTip + '</div>' : '') +
+    '</div>';
   if (window._hmEditMode) {
     body += '<div class="hm-add-ex" onclick="hmEditAdd(\'' + phId + '\',' + di + ');event.stopPropagation()">+ ADD EXERCISE TO THIS DAY</div>';
   }
@@ -3296,6 +3435,7 @@ function hmRenderTrain(){
     '<div class="plan-edit-btn" onclick="hmOpenSchedule()" title="Rest days & which workout is on which day">🗓 WEEK</div>' +
     '<div class="plan-edit-btn' + (window._hmEditMode ? ' on' : '') + '" onclick="hmToggleEditMode()" title="Customize exercises">' + (window._hmEditMode ? '✓ DONE' : '✎ EDIT') + '</div>' +
     '<div class="plan-edit-btn" onclick="gpOpen()">GOALS</div></div>';
+  html += hmWildcardCardHTML();
   if (window._hmEditMode) {
     html += '<div style="display:flex;gap:8px;align-items:center;background:rgba(var(--accent-rgb),.06);border:1px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:12px">' +
       '<div style="flex:1;font-size:11.5px;color:var(--text2);line-height:1.45">⇄ swap · ✎ sets & reps · ✕ remove · add exercises at the bottom of each day. Your edits stick, even if you rebuild goals.</div>' +
@@ -12036,7 +12176,7 @@ function hmShowDailyBriefing() {
     + '</div>'
     + streakLine
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;color:var(--text2);letter-spacing:.06em;margin-bottom:20px">' + motiv + '</div>'
-    + '<button onclick="hmCloseBriefing()" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">'
+    + '<button onclick="' + (_isTrainingDay ? 'hmMoodCheck()' : 'hmCloseBriefing()') + '" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">'
     + (_isTrainingDay ? "LET'S TRAIN →" : 'GOT IT →')
     + '</button>'
     + '</div>';
