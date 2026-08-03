@@ -5598,18 +5598,28 @@ function showTab(id,btn){
 // ── TAB SWIPE GESTURES ───────────────────────────────────────
 (function(){
   const TAB_ORDER = ['today','workout','tracker','nutri-tracker','recipes','wellness','charts'];
-  let _swX = null, _swY = null;
+  let _swX = null, _swY = null, _swLocked = false;
   const wrap = document.querySelector('.tab-wrapper') || document.getElementById('app') || document.body;
+  function _inHScroll(el) {
+    while (el && el !== wrap) {
+      const ox = getComputedStyle(el).overflowX;
+      if ((ox === 'auto' || ox === 'scroll') && el.scrollWidth > el.clientWidth + 4) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
   wrap.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) return;
     _swX = e.touches[0].clientX;
     _swY = e.touches[0].clientY;
+    _swLocked = _inHScroll(e.target);
   }, { passive: true });
   wrap.addEventListener('touchend', e => {
     if (_swX === null) return;
     const dx = e.changedTouches[0].clientX - _swX;
     const dy = e.changedTouches[0].clientY - _swY;
     _swX = null; _swY = null;
+    if (_swLocked) { _swLocked = false; return; }
     if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
     const activeTab = document.querySelector('.tab-content.active');
     if (!activeTab) return;
