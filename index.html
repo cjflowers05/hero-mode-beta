@@ -11983,6 +11983,97 @@ function hmCloseBriefing() {
   setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 250);
 }
 
+// ── REVIEW PROMPT ────────────────────────────────────────────
+const HM_REVIEW_DONE_KEY   = 'hm-review-done';
+const HM_REVIEW_SNOOZE_KEY = 'hm-review-snooze-until';
+
+function hmMaybeShowReview() {
+  if (!localStorage.getItem(HM_DISCLAIMER_KEY)) return;
+  if (!localStorage.getItem('hero-tut-seen-v1')) return;
+  if (localStorage.getItem(HM_REVIEW_DONE_KEY)) return;
+  const snoozeUntil = parseInt(localStorage.getItem(HM_REVIEW_SNOOZE_KEY) || '0', 10);
+  if (Date.now() < snoozeUntil) return;
+  const xp = parseInt(localStorage.getItem('hero-xp') || '0', 10);
+  const sessions = (() => { try { const s = JSON.parse(localStorage.getItem('hero-log-v2') || '[]'); return s.length; } catch(e) { return 0; } })();
+  if (xp < 150 && sessions < 5) return;
+  hmShowReview();
+}
+
+function hmShowReview() {
+  if (document.getElementById('hm-review-overlay')) return;
+  let _picked = 0;
+  const ov = document.createElement('div');
+  ov.id = 'hm-review-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px;animation:hmFadeIn .25s ease;backdrop-filter:blur(4px)';
+  ov.innerHTML = `
+    <div id="hm-review-card" style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;position:relative">
+      <div style="font-size:36px;margin-bottom:8px">⚡</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;color:var(--text);line-height:1">LOVING HERO MODE?</div>
+      <div style="color:var(--text2);font-size:13px;margin:8px 0 20px;line-height:1.5">Tap a star to rate your experience.<br>It helps more heroes find us.</div>
+      <div id="hm-stars" style="display:flex;justify-content:center;gap:8px;margin-bottom:20px">
+        ${[1,2,3,4,5].map(n => `<button onclick="hmStarPick(${n})" id="hm-star-${n}" style="font-size:34px;background:none;border:none;cursor:pointer;padding:0;line-height:1;transition:transform .15s">☆</button>`).join('')}
+      </div>
+      <div id="hm-review-after" style="display:none"></div>
+      <button onclick="hmReviewSnooze()" style="margin-top:4px;background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:6px 12px;letter-spacing:.06em;font-family:'DM Mono',monospace">NOT NOW</button>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+function hmStarPick(n) {
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.getElementById('hm-star-' + i);
+    if (!btn) continue;
+    btn.textContent = i <= n ? '★' : '☆';
+    btn.style.color  = i <= n ? 'var(--gold)' : 'var(--text3)';
+    btn.style.transform = i === n ? 'scale(1.3)' : 'scale(1)';
+    btn.onclick = null;
+  }
+  localStorage.setItem('hm-review-stars', String(n));
+  const after = document.getElementById('hm-review-after');
+  if (!after) return;
+  after.style.display = 'block';
+  if (n >= 4) {
+    after.innerHTML = `
+      <div style="color:var(--text);font-weight:700;font-size:14px;margin-bottom:6px">You're a Hero. 🙌</div>
+      <div style="color:var(--text2);font-size:12.5px;margin-bottom:14px;line-height:1.5">Tell a friend who'd love this —<br>every hero needs a squad.</div>
+      <button onclick="hmReviewShare()" style="width:100%;padding:13px;border-radius:12px;background:var(--gold);border:none;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;cursor:pointer;margin-bottom:8px">SHARE HERO MODE</button>
+      <button onclick="hmReviewDone()" style="width:100%;padding:10px;border-radius:12px;background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-size:13px;cursor:pointer">Done</button>`;
+  } else {
+    after.innerHTML = `
+      <div style="color:var(--text);font-weight:700;font-size:14px;margin-bottom:6px">What can we improve?</div>
+      <textarea id="hm-review-txt" placeholder="Tell us what's missing or broken..." rows="3" style="width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--text);font-size:13px;font-family:inherit;resize:none;box-sizing:border-box;margin-bottom:10px"></textarea>
+      <button onclick="hmReviewSubmitFeedback()" style="width:100%;padding:13px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;cursor:pointer;margin-bottom:8px">SEND FEEDBACK</button>
+      <button onclick="hmReviewDone()" style="width:100%;padding:10px;border-radius:12px;background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-size:13px;cursor:pointer">Skip</button>`;
+  }
+}
+
+function hmReviewShare() {
+  const text = 'Crushing workouts with Hero Mode — free fitness app that actually levels you up. Check it out:';
+  const url  = 'https://github.com/cjflowers05/hero-mode-beta';
+  if (navigator.share) { navigator.share({ title: 'Hero Mode', text, url }).catch(() => {}); }
+  else { try { navigator.clipboard.writeText(url); showToast('Link copied!', 'success'); } catch(e) {} }
+  hmReviewDone();
+}
+
+function hmReviewSubmitFeedback() {
+  const txt = (document.getElementById('hm-review-txt') || {}).value || '';
+  if (txt.trim()) localStorage.setItem('hm-review-feedback', txt.trim());
+  showToast('Thanks for the feedback!', 'success');
+  hmReviewDone();
+}
+
+function hmReviewDone() {
+  localStorage.setItem(HM_REVIEW_DONE_KEY, '1');
+  const ov = document.getElementById('hm-review-overlay');
+  if (ov) { ov.style.opacity = '0'; ov.style.transition = 'opacity .2s'; setTimeout(() => ov.remove(), 220); }
+}
+
+function hmReviewSnooze() {
+  localStorage.setItem(HM_REVIEW_SNOOZE_KEY, String(Date.now() + 90 * 86400000));
+  const ov = document.getElementById('hm-review-overlay');
+  if (ov) { ov.style.opacity = '0'; ov.style.transition = 'opacity .2s'; setTimeout(() => ov.remove(), 220); }
+}
+
 // ── TUTORIAL WALKTHROUGH ──
 const HM_TUT_KEY = 'hero-tut-seen-v1';
 const HM_TUTORIAL_STEPS = [
@@ -19438,11 +19529,11 @@ function _cpPickGoal(id, el) {
 }
 function _cpPickWeeks(n, el) {
   _cpWeeks = n;
-  document.querySelectorAll('.cp-pick-row:nth-of-type(1) .cp-pick').forEach(b => b.classList.toggle('sel', b === el));
+  el.closest('.cp-pick-row').querySelectorAll('.cp-pick').forEach(b => b.classList.toggle('sel', b === el));
 }
 function _cpPickDays(n, el) {
   _cpDays = n;
-  document.querySelectorAll('.cp-pick-row:nth-of-type(2) .cp-pick').forEach(b => b.classList.toggle('sel', b === el));
+  el.closest('.cp-pick-row').querySelectorAll('.cp-pick').forEach(b => b.classList.toggle('sel', b === el));
 }
 function _cpGenAndSave() {
   const prog = _cpGenerate(_cpGoal, _cpWeeks, _cpDays);
@@ -22658,7 +22749,7 @@ function showThemePicker() {
   hmRenderBadges();
   hmRenderProfileChip();
   hmLoginTick();
-  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} try { if(typeof renderTodayDashboard==='function') renderTodayDashboard(); } catch(e) {} setTimeout(() => { try { if(typeof hmShowDailyBriefing==='function') hmShowDailyBriefing(); } catch(e) {} }, 700); }, 400);
+  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} try { if(typeof renderTodayDashboard==='function') renderTodayDashboard(); } catch(e) {} setTimeout(() => { try { if(typeof hmShowDailyBriefing==='function') hmShowDailyBriefing(); } catch(e) {} }, 700); setTimeout(() => { try { if(typeof hmMaybeShowReview==='function') hmMaybeShowReview(); } catch(e) {} }, 3500); }, 400);
 })();
 
 // ── STORAGE DURABILITY + INSTALL NUDGE ─────────────────────────

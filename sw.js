@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v28'; // v28: Dynamic pet name everywhere + dog icon preset picker
+const CACHE_VERSION = 'hero-mode-v29'; // v29: Cardio picker fix, review/star-rating popup, swipe-lock for sub-menus
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
