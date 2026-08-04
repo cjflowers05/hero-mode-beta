@@ -3195,19 +3195,19 @@ function hmMoodCheck() {
     '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px">PRE-SESSION CHECK-IN</div>' +
     '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.05em;margin-bottom:18px">How Are You Feeling?</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    _hmMoodBtn('locked','💪','Locked In','Peak performance') +
-    _hmMoodBtn('ok','😐','Feeling OK','Solid session ahead') +
-    _hmMoodBtn('low','😴','Low Energy','Light it up anyway') +
-    _hmMoodBtn('sore','🤕','Sore / Tired','Reduce load today') +
+    _hmMoodBtn('locked','locked_in.png','Locked In','Peak performance') +
+    _hmMoodBtn('ok','feeling_ok.png','Feeling OK','Solid session ahead') +
+    _hmMoodBtn('low','Low_energy.png','Low Energy','Light it up anyway') +
+    _hmMoodBtn('sore','sore-tired.png','Sore / Tired','Reduce load today') +
     '</div></div>';
   document.body.appendChild(ov);
   requestAnimationFrame(function() { ov.style.opacity = '1'; });
 }
-function _hmMoodBtn(id, emoji, label, sub) {
-  return '<button onclick="hmMoodPick(\'' + id + '\')" style="padding:14px 10px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent">' +
-    '<div style="font-size:28px;margin-bottom:6px">' + emoji + '</div>' +
-    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text);letter-spacing:.06em;margin-bottom:2px">' + label + '</div>' +
-    '<div style="font-size:9px;color:var(--text3)">' + sub + '</div></button>';
+function _hmMoodBtn(id, img, label, sub) {
+  return '<button onclick="hmMoodPick(\'' + id + '\')" style="padding:14px 10px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center">' +
+    '<img src="assets/ui/mood_selector/' + img + '" alt="' + label + '" style="width:110px;height:110px;object-fit:contain;margin-bottom:8px" onerror="this.style.display=\'none\'">' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--text);letter-spacing:.06em;margin-bottom:2px">' + label + '</div>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3)">' + sub + '</div></button>';
 }
 function hmMoodPick(mood) {
   const ov = document.getElementById('hm-mood-overlay');
