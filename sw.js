@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v37'; // v37: Dramatic chest opening + Today dashboard customizer
+const CACHE_VERSION = 'hero-mode-v38'; // v38: Fix day card collapsing on exercise swap
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
