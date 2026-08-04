@@ -1770,6 +1770,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div id="tab-today" class="tab-content active">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+    <button onclick="hmTodayCustomizeOpen()" style="background:var(--bg3);border:1px solid var(--gold);border-radius:10px;cursor:pointer;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;padding:9px 18px;min-height:44px;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">⚙ CUSTOMIZE</button>
+  </div>
   <div id="today-dashboard"></div>
 </div>
 
@@ -20682,6 +20685,9 @@ if ('serviceWorker' in navigator) {
 @keyframes hmChestBounce{0%{transform:scale(0.5) rotate(-8deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}80%{transform:scale(0.95) rotate(-2deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
 @keyframes hmCustomizePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5);border-color:var(--border)}50%{box-shadow:0 0 0 4px rgba(var(--accent-rgb),.2);border-color:var(--gold)}}
 .hm-customize-hint{animation:hmCustomizePulse 1.6s ease-in-out 3}
+@keyframes hmChestPulse{0%,100%{filter:drop-shadow(0 0 16px rgba(201,168,76,.45));transform:scale(1)}50%{filter:drop-shadow(0 0 48px rgba(201,168,76,.95)) drop-shadow(0 0 80px rgba(201,168,76,.3));transform:scale(1.07)}}
+@keyframes hmChestSlideUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes hmChestShake{0%,100%{transform:rotate(0deg)}20%{transform:rotate(-5deg)}40%{transform:rotate(5deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
 /* Profile chip */
 #profile-chip{display:flex;align-items:center;gap:10px;margin-top:12px;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s}
 #profile-chip:active{border-color:var(--border2)}
@@ -22024,7 +22030,33 @@ function hmOpenChest(){
   hmSfx('trophy');
   hmRenderQuests();
 
-  // Full chest opening overlay
+  // Phase 1: closed chest reveal
+  const ov = document.createElement('div');
+  ov.id = 'hm-chest-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:rgba(0,0,0,.97);display:flex;flex-direction:column;align-items:center;justify-content:center';
+  ov.innerHTML = `
+    <div id="hm-chest-p1" style="text-align:center;padding:32px 24px;max-width:360px;opacity:0;transform:scale(.88);transition:opacity .35s,transform .35s">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.2em;margin-bottom:28px">⚔️ ALL QUESTS COMPLETE</div>
+      <div id="hm-chest-icon" style="font-size:104px;line-height:1;margin-bottom:22px;display:inline-block;animation:hmChestPulse 1.8s ease-in-out infinite">📦</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:8px">CHEST READY</div>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:36px;line-height:1.5">Your reward is waiting inside</div>
+      <button id="hm-chest-open-btn" onclick="hmChestReveal()" style="background:var(--gold);border:none;border-radius:14px;padding:16px 52px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:#000;cursor:pointer;-webkit-tap-highlight-color:transparent">OPEN THE CHEST</button>
+    </div>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => {
+    const p1 = document.getElementById('hm-chest-p1');
+    if (p1) { p1.style.opacity = '1'; p1.style.transform = 'scale(1)'; }
+  });
+  // Auto-trigger after 4s if user doesn't tap
+  window._hmChestAutoTimer = setTimeout(() => { if (document.getElementById('hm-chest-overlay')) hmChestReveal(); }, 4000);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+}
+
+function hmChestReveal() {
+  const btn = document.getElementById('hm-chest-open-btn');
+  if (btn) btn.disabled = true;
+  if (window._hmChestAutoTimer) { clearTimeout(window._hmChestAutoTimer); window._hmChestAutoTimer = null; }
+
   const msgs = [
     'You showed up. That\'s the whole game.',
     'Three for three. Heroes don\'t negotiate with rest days.',
@@ -22035,47 +22067,55 @@ function hmOpenChest(){
   ];
   const msg = msgs[Math.floor(Math.random() * msgs.length)];
 
-  const ov = document.createElement('div');
-  ov.id = 'hm-chest-overlay';
-  ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0';
-  ov.innerHTML = `
-    <div id="hm-chest-inner" style="text-align:center;padding:32px 24px;max-width:360px;opacity:0;transform:scale(.85);transition:opacity .4s,transform .4s">
-      <div id="hm-chest-icon" style="font-size:88px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 0 32px rgba(201,168,76,.6));animation:hmChestBounce .55s ease-out forwards">🎁</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:.06em;color:var(--gold);line-height:1;margin-bottom:6px">CHEST OPENED</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#5BC876;letter-spacing:.04em;margin-bottom:18px">+50 BONUS XP</div>
-      <div style="font-size:14px;color:var(--text2);line-height:1.6;font-style:italic;margin-bottom:28px">"${msg}"</div>
-      <div id="hm-chest-particles" style="position:relative;height:40px;overflow:visible;margin-bottom:20px"></div>
-      <button onclick="document.getElementById('hm-chest-overlay').remove()" style="background:var(--gold);border:none;border-radius:12px;padding:14px 40px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:#000;cursor:pointer">CLAIM IT</button>
-    </div>`;
+  // Screen flash
+  const flash = document.createElement('div');
+  flash.style.cssText = 'position:fixed;inset:0;z-index:14000;background:#fff;opacity:0;transition:opacity .08s;pointer-events:none';
+  document.body.appendChild(flash);
+  requestAnimationFrame(() => { flash.style.opacity = '.85'; });
+  setTimeout(() => { flash.style.transition = 'opacity .3s'; flash.style.opacity = '0'; setTimeout(() => flash.remove(), 300); }, 110);
 
-  document.body.appendChild(ov);
-
-  // Particle burst
+  // Swap to Phase 2 as flash peaks
   setTimeout(() => {
-    const inner = document.getElementById('hm-chest-inner');
-    if (inner) { inner.style.opacity = '1'; inner.style.transform = 'scale(1)'; }
-    const pc = document.getElementById('hm-chest-particles');
-    if (pc) {
-      const colors = ['var(--gold)','#5BC876','#29B6F6','#FF6B6B','#FFD93D'];
-      for (let i = 0; i < 28; i++) {
-        const p = document.createElement('div');
-        const angle = (i / 28) * 360;
-        const dist = 60 + Math.random() * 80;
-        const size = 5 + Math.random() * 7;
-        p.style.cssText = `position:absolute;left:50%;top:50%;width:${size}px;height:${size}px;border-radius:50%;background:${colors[i%colors.length]};transform:translate(-50%,-50%);animation:hmParticle${i%4} 0.9s ease-out forwards;--dx:${Math.cos(angle*Math.PI/180)*dist}px;--dy:${Math.sin(angle*Math.PI/180)*dist}px;opacity:1`;
-        pc.appendChild(p);
-        p.animate([
-          { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
-          { transform: `translate(calc(-50% + ${Math.cos(angle*Math.PI/180)*dist}px), calc(-50% + ${Math.sin(angle*Math.PI/180)*dist}px)) scale(0)`, opacity: 0 }
-        ], { duration: 900, easing: 'ease-out', fill: 'forwards', delay: i * 12 });
+    const p1 = document.getElementById('hm-chest-p1');
+    if (!p1) return;
+    p1.style.opacity = '0';
+    p1.style.transition = 'opacity .15s';
+    setTimeout(() => {
+      p1.innerHTML = `
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.2em;margin-bottom:20px;animation:hmChestSlideUp .35s ease-out forwards">⚡ CHEST OPENED</div>
+        <div id="hm-chest-icon2" style="font-size:104px;line-height:1;margin-bottom:6px;display:inline-block;animation:hmChestBounce .55s ease-out forwards">🎁</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.06em;color:var(--gold);line-height:1;margin-bottom:8px;animation:hmChestSlideUp .4s .08s ease-out both">CHEST OPENED</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#5BC876;letter-spacing:.04em;margin-bottom:16px;animation:hmChestSlideUp .4s .15s ease-out both">+50 BONUS XP</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:22px;animation:hmChestSlideUp .4s .25s ease-out both">"${hmEsc(msg)}"</div>
+        <div id="hm-chest-particles" style="position:relative;height:0;overflow:visible;margin-bottom:8px"></div>
+        <button onclick="document.getElementById('hm-chest-overlay').remove()" style="background:var(--gold);border:none;border-radius:14px;padding:15px 48px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:#000;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:hmChestSlideUp .4s .4s ease-out both">CLAIM IT</button>
+      `;
+      p1.style.transition = 'opacity .3s';
+      p1.style.opacity = '1';
+      // Confetti burst
+      const pc = document.getElementById('hm-chest-particles');
+      if (pc) {
+        const colors = ['#C9A84C','#5BC876','#29B6F6','#FF6B6B','#FFD93D','#B388FF'];
+        for (let i = 0; i < 36; i++) {
+          const p = document.createElement('div');
+          const angle = (i / 36) * 360;
+          const dist = 70 + Math.random() * 90;
+          const size = 6 + Math.random() * 7;
+          p.style.cssText = 'position:absolute;left:50%;top:0;width:' + size + 'px;height:' + size + 'px;border-radius:' + (Math.random() > .5 ? '50%' : '3px') + ';background:' + colors[i % colors.length] + ';pointer-events:none';
+          pc.appendChild(p);
+          p.animate([
+            { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+            { transform: 'translate(calc(-50% + ' + (Math.cos(angle * Math.PI / 180) * dist) + 'px), calc(-50% + ' + (Math.sin(angle * Math.PI / 180) * dist) + 'px)) scale(0)', opacity: 0 }
+          ], { duration: 1100, easing: 'cubic-bezier(.17,.84,.44,1)', fill: 'forwards', delay: i * 10 });
+        }
       }
-    }
-  }, 60);
+    }, 150);
+  }, 100);
 
-  // Auto-close after 6s
-  setTimeout(() => { const o = document.getElementById('hm-chest-overlay'); if (o) o.remove(); }, 6000);
-  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  // Auto-close after 8s
+  setTimeout(() => { const o = document.getElementById('hm-chest-overlay'); if (o) o.remove(); }, 8000);
 }
+window.hmChestReveal = hmChestReveal;
 
 // ── TRAIN TAB CUSTOMIZER ─────────────────────────────────────────────────────
 const TRAIN_LAYOUT_KEY = 'hm-train-layout';
@@ -22224,6 +22264,68 @@ function hmWellnessCustomizeOpen() {
   document.body.appendChild(ov);
 }
 
+// ── TODAY DASHBOARD CUSTOMIZER ───────────────────────────────────────────────
+const TODAY_LAYOUT_KEY = 'hm-today-layout';
+const TODAY_SECTIONS = [
+  { id:'td-stats',   label:'Quick Stats',      icon:'📊', desc:'Water · XP · Streak at a glance' },
+  { id:'td-mission', label:"Today's Mission",  icon:'🗡️', desc:'Your workout or rest day' },
+  { id:'td-quests',  label:'Daily Quests',     icon:'🎯', desc:'3 daily challenges + chest reward' },
+  { id:'td-pet',     label:'Walk / Beau',      icon:'🐕', desc:'Pet walk status on your home screen' },
+];
+
+function hmTodayLayoutLoad() {
+  try { return JSON.parse(localStorage.getItem(TODAY_LAYOUT_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function hmTodayToggleSection(cb) {
+  const sid = cb.dataset.section;
+  const saved = hmTodayLayoutLoad();
+  saved[sid] = cb.checked;
+  localStorage.setItem(TODAY_LAYOUT_KEY, JSON.stringify(saved));
+  const track = document.querySelector('.hm-toggle-track[data-for="' + sid + '"]');
+  const knob  = document.querySelector('.hm-toggle-knob[data-for="' + sid + '"]');
+  if (track) track.style.background = cb.checked ? 'var(--gold)' : 'var(--bg4)';
+  if (knob)  knob.style.left        = cb.checked ? '23px' : '3px';
+  renderTodayDashboard();
+}
+
+function hmTodayCustomizeOpen() {
+  const saved = hmTodayLayoutLoad();
+  const rows = TODAY_SECTIONS.map(s => {
+    const on = saved[s.id] !== false;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:9px;background:var(--bg3);display:flex;align-items:center;justify-content:justify-content:center;font-size:17px;flex-shrink:0;justify-content:center">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${s.label}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">${s.desc}</div>
+      </div>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;cursor:pointer">
+        <input type="checkbox" data-section="${s.id}" ${on?'checked':''} onchange="hmTodayToggleSection(this)" style="opacity:0;width:0;height:0;position:absolute">
+        <span class="hm-toggle-track" data-for="${s.id}" style="position:absolute;inset:0;border-radius:12px;background:${on?'var(--gold)':'var(--bg4)'};transition:background .2s;pointer-events:none">
+          <span class="hm-toggle-knob" data-for="${s.id}" style="position:absolute;top:3px;left:${on?'23px':'3px'};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;pointer-events:none"></span>
+        </span>
+      </label>
+    </div>`;
+  }).join('');
+
+  const ov = document.createElement('div');
+  ov.id = 'today-customize-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML = `<div style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:0 20px 32px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 0 4px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text)">CUSTOMIZE TODAY</div>
+      <button onclick="document.getElementById('today-customize-overlay').remove()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;line-height:1;padding:4px 0">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.06em">SHOW OR HIDE CARDS</div>
+    ${rows}
+    <button onclick="document.getElementById('today-customize-overlay').remove()" style="margin-top:18px;width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;color:#000;cursor:pointer">DONE</button>
+  </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+window.hmTodayCustomizeOpen  = hmTodayCustomizeOpen;
+window.hmTodayToggleSection  = hmTodayToggleSection;
+
 // ── TODAY DASHBOARD ─────────────────────────────────────────────────────────
 function renderTodayDashboard() {
   const root = document.getElementById('today-dashboard');
@@ -22352,6 +22454,9 @@ function renderTodayDashboard() {
   })();
   const [_motivL1, _motivL2] = _motiv.split('\n');
 
+  const _tdLayout = hmTodayLayoutLoad();
+  const _tdShow = id => _tdLayout[id] !== false;
+
   root.innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
       <img src="${hmEmblSrc(theme)}" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.45))" onerror="this.style.display='none'">
@@ -22365,14 +22470,15 @@ function renderTodayDashboard() {
         ${_motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
       </div>
     </div>
-    <div class="td-stats">
+    ${_tdShow('td-stats')?`<div class="td-stats">
       <div class="td-stat"><div class="td-stat-val">💧${water}</div><div class="td-stat-lbl">Water</div></div>
       <div class="td-stat"><div class="td-stat-val">⚡${xpToday>=1000?(xpToday/1000).toFixed(1)+'k':xpToday}</div><div class="td-stat-lbl">XP Today</div></div>
       <div class="td-stat"><div class="td-stat-val">🔥${streak}</div><div class="td-stat-lbl">Streak</div></div>
-    </div>
-    <div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>
-    <div class="td-card td-card-tap" onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))">${questBody}</div>
-    ${walkHtml}`;
+    </div>`:''}
+    ${_tdShow('td-mission')?`<div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>`:''}
+    ${_tdShow('td-quests')?`<div class="td-card td-card-tap" onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))">${questBody}</div>`:''}
+    ${_tdShow('td-pet')?walkHtml:''}
+  `;
 }
 
 // ── DAILY RECAP + COACH — evening scorecard with data-driven encouragement ──
