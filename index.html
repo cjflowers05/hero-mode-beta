@@ -3181,7 +3181,7 @@ function hmSetDayMode(phId, di, mode, e) {
 }
 window.hmSetDayMode = hmSetDayMode;
 
-// ── MOOD CHECK-IN ─────────────────────────────────────────────
+// ── MOOD CHECK-IN (2-step: mood → time available) ─────────────
 function hmMoodCheck() {
   hmCloseBriefing();
   const todayDow = new Date().getDay();
@@ -3194,8 +3194,8 @@ function hmMoodCheck() {
   ov.id = 'hm-mood-overlay';
   ov.style.cssText = 'position:fixed;inset:0;z-index:18500;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .2s';
   ov.onclick = function(e) { if (e.target === ov) hmMoodPick('ok'); };
-  ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:340px;padding:26px 20px;text-align:center" onclick="event.stopPropagation()">' +
-    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px">PRE-SESSION CHECK-IN</div>' +
+  ov.innerHTML = '<div id="hm-mood-card" style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:340px;padding:26px 20px;text-align:center;transition:opacity .18s,transform .18s" onclick="event.stopPropagation()">' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px">PRE-SESSION CHECK-IN · 1 OF 2</div>' +
     '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.05em;margin-bottom:18px">How Are You Feeling?</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
     _hmMoodBtn('locked','locked_in.png','Locked In','Peak performance') +
@@ -3212,21 +3212,55 @@ function _hmMoodBtn(id, img, label, sub) {
     '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:var(--text);letter-spacing:.06em;margin-bottom:2px">' + label + '</div>' +
     '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3)">' + sub + '</div></button>';
 }
+function _hmTimeBtn(mins, icon, label, sub) {
+  return '<button onclick="hmTimePick(' + mins + ')" style="padding:16px 8px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:100px;justify-content:center">' +
+    '<div style="font-size:28px;line-height:1;margin-bottom:5px">' + icon + '</div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;color:var(--text);letter-spacing:.06em">' + label + '</div>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--gold);margin-top:1px">' + sub + '</div></button>';
+}
 function hmMoodPick(mood) {
   const ov = document.getElementById('hm-mood-overlay');
-  if (ov) { ov.style.opacity = '0'; setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 200); }
+  const card = document.getElementById('hm-mood-card');
+  // Save mood now so re-show is blocked even if user closes mid-flow
   localStorage.setItem('hm-mood-' + new Date().toISOString().slice(0,10), mood);
-  const msgs = {
-    locked: ['💪 Locked in. Make every rep count.', 'success'],
-    ok:     ['😐 Solid foundation — build on it.', 'success'],
-    low:    ['😴 Showing up is the win. Go easy, stay consistent.', 'info'],
-    sore:   ['🤕 Smart check-in. Cut load 20% and focus on form today.', 'info'],
+  if (!card || !ov) { hmTimePick(45); return; }
+  // Transition: fade card out → swap content → fade in
+  ov.onclick = function(e) { if (e.target === ov) hmTimePick(45); };
+  card.style.opacity = '0';
+  card.style.transform = 'scale(.94)';
+  setTimeout(function() {
+    card.innerHTML =
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;margin-bottom:8px">PRE-SESSION CHECK-IN · 2 OF 2</div>' +
+      '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:24px;color:var(--text);letter-spacing:.05em;margin-bottom:18px">How Long Do You Have?</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+      _hmTimeBtn(20, '⚡', 'Quick Hit', '~20 min') +
+      _hmTimeBtn(30, '🎯', 'Express', '~30 min') +
+      _hmTimeBtn(45, '💪', 'Standard', '~45 min') +
+      _hmTimeBtn(99, '🏆', 'Full Send', '60+ min') +
+      '</div>';
+    card.style.transform = 'scale(1)';
+    card.style.opacity = '1';
+  }, 180);
+}
+function hmTimePick(mins) {
+  const ov = document.getElementById('hm-mood-overlay');
+  if (ov) { ov.style.opacity = '0'; setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 200); }
+  const today = new Date().toISOString().slice(0,10);
+  localStorage.setItem('hm-time-' + today, mins);
+  const mood = localStorage.getItem('hm-mood-' + today) || 'ok';
+  const moodMsgs = {
+    locked: '💪 Locked in',
+    ok:     '😐 Solid foundation',
+    low:    '😴 Showing up is the win',
+    sore:   '🤕 Smart check-in — cut load 20%',
   };
-  const [msg, type] = msgs[mood] || ['Let\'s go.', 'success'];
-  showToast(msg, type);
+  const timeLabel = mins >= 99 ? '60+ min' : '~' + mins + ' min';
+  const moodType = (mood === 'locked' || mood === 'ok') ? 'success' : 'info';
+  showToast((moodMsgs[mood] || 'Let\'s go') + ' · ' + timeLabel + ' session', moodType);
 }
 window.hmMoodCheck = hmMoodCheck;
 window.hmMoodPick  = hmMoodPick;
+window.hmTimePick  = hmTimePick;
 
 // ── WILDCARD HERO CHALLENGES ──────────────────────────────────
 const HM_WILDCARDS = [

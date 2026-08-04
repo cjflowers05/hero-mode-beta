@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v39'; // v39: Fix chain swap — re-swapping a swapped exercise now works
+const CACHE_VERSION = 'hero-mode-v40'; // v40: Mood check-in step 2 — time available selector
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
