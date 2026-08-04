@@ -15294,6 +15294,12 @@ function startWalk() {
   if (typeof L === 'undefined') { showToast('Map still loading — try again in a moment', 'error'); return; }
   walkState = 'walking'; walkSecs = 0; walkPositions = [];
   _walkStartMs = Date.now(); _walkPausedMs = 0; _walkPauseAt = 0;
+  // Keep screen on so GPS stays active while walking
+  window._walkWakeLock = null;
+  if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function(lock) {
+    window._walkWakeLock = lock;
+    lock.addEventListener('release', function() { window._walkWakeLock = null; });
+  }).catch(function() {});
   renderWalkLive();
   walkTimer = setInterval(() => { walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000); updateWalkStats(); }, 1000);
   walkWatchId = navigator.geolocation.watchPosition(
@@ -15315,6 +15321,7 @@ function pauseWalk() {
   walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000);
   clearInterval(walkTimer); walkTimer = null;
   navigator.geolocation.clearWatch(walkWatchId); walkWatchId = null;
+  if (window._walkWakeLock) { window._walkWakeLock.release().catch(function(){}); window._walkWakeLock = null; }
   updateWalkStats();
   // Update pause button in place without re-rendering (keeps map alive)
   const pauseBtn = document.querySelector('.walk-pause-btn');
@@ -15327,6 +15334,10 @@ function resumeWalk() {
   if (walkState !== 'paused') return;
   walkState = 'walking';
   if (_walkPauseAt) { _walkPausedMs += Date.now() - _walkPauseAt; _walkPauseAt = 0; }
+  if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function(lock) {
+    window._walkWakeLock = lock;
+    lock.addEventListener('release', function() { window._walkWakeLock = null; });
+  }).catch(function() {});
   walkTimer = setInterval(() => { walkSecs = Math.floor((Date.now() - _walkStartMs - _walkPausedMs) / 1000); updateWalkStats(); }, 1000);
   walkWatchId = navigator.geolocation.watchPosition(
     pos => {
@@ -15346,6 +15357,7 @@ function resumeWalk() {
 function finishWalk() {
   clearInterval(walkTimer); walkTimer = null;
   if (walkWatchId !== null) { navigator.geolocation.clearWatch(walkWatchId); walkWatchId = null; }
+  if (window._walkWakeLock) { window._walkWakeLock.release().catch(function(){}); window._walkWakeLock = null; }
   const km      = walkTotalKm();
   const miles   = km * 0.621371;
   const pace    = walkAvgPaceMinMi(walkSecs, km);
@@ -21212,6 +21224,7 @@ document.addEventListener('visibilitychange', () => {
 function hmSfx(name, tone){
   if (!hmSoundOn()) return;
   try {
+    if (!_hmAudioCtx && navigator.audioSession) navigator.audioSession.type = 'ambient';
     _hmAudioCtx = _hmAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
     const ctx = _hmAudioCtx;
     if (ctx.state === 'suspended') ctx.resume();
@@ -21252,11 +21265,13 @@ function hmHeroFX(title, sub, emblem){
     const d = 160 + Math.random() * 190;
     particles += '<div class="fx-p" style="--dx:' + Math.round(Math.cos(a)*d) + 'px;--dy:' + Math.round(Math.sin(a)*d) + 'px;animation-delay:' + (0.42 + Math.random()*.1).toFixed(2) + 's"></div>';
   }
-  const _fxEmbHtml = emblem
-    ? (emblem.includes('/')
-        ? '<img src="' + emblem + '" alt="" style="max-width:180px;max-height:180px;object-fit:contain" onerror="this.style.opacity=\'0\'">'
-        : '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">')
-    : '<span style="font-size:120px">⚡</span>';
+  const _fxEmbHtml = !emblem
+    ? '<span style="font-size:120px">⚡</span>'
+    : emblem.includes('/')
+      ? '<img src="' + emblem + '" alt="" style="max-width:180px;max-height:180px;object-fit:contain" onerror="this.style.opacity=\'0\'">'
+      : /^[a-zA-Z]/.test(emblem)
+        ? '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">'
+        : '<span style="font-size:120px">' + emblem + '</span>';
   fx.innerHTML = (noMotion ? '' : '<div class="fx-ring"></div><div class="fx-ring r2"></div>') + particles +
     '<div class="fx-emblem">' + _fxEmbHtml + '</div>' +
     '<div class="fx-title">' + title + '</div>' +
@@ -21548,7 +21563,7 @@ function hmXP(kind, pts, meta){
   const awardDelayBase = storyQueued ? 9500 : (after.lvl > before ? 2100 : 800);
   newAwards.forEach((b, i) => setTimeout(() => {
     if (b.trophy) {
-      hmHeroFX(b.name.toUpperCase(), 'Trophy Earned', b.ico);
+      hmHeroFX(b.name.toUpperCase(), 'Trophy Earned', b.img ? 'assets/ui/' + b.img : b.ico);
       hmSfx('trophy');
     } else {
       hmBadgePop(b);
