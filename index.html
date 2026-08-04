@@ -21296,7 +21296,7 @@ function hmXPLoad(){
       return s;
     }
   } catch(e) {}
-  return { xp:0, freezes:0, counters:{sets:0,days:0,walks:0,prs:0,checkins:0,logins:0,volume:0,perfectWeeks:0,early:0,night:0,weekendw:0,comeback:0,club225:0,club315:0,club405:0,water:0,bw:0,cardio:0,meals:0,recipes:0,meas:0,photos:0,stretches:0,zenWeeks:0,quests:0}, badges:{}, login:{}, story:{} };
+  return { xp:0, freezes:0, counters:{sets:0,days:0,walks:0,prs:0,checkins:0,logins:0,volume:0,perfectWeeks:0,early:0,night:0,weekendw:0,comeback:0,club225:0,club315:0,club405:0,water:0,bw:0,cardio:0,meals:0,recipes:0,meas:0,photos:0,stretches:0,zenWeeks:0,quests:0,gutCheck:0}, badges:{}, login:{}, story:{} };
 }
 function hmXPSave(s){ try { localStorage.setItem(hmXPKey(), JSON.stringify(s)); } catch(e) {} }
 function hmLevelInfo(xp){
@@ -21380,6 +21380,7 @@ const HM_BADGES = [
   { id:'club-225',   cat:'Strength', name:'225 Bench Club',  ico:'🔨', img:'trophies/225_bench_club_trophy.png', trophy:true, desc:'Bench press 225 lb',       test:s => s.counters.club225 >= 1 },
   { id:'club-315',   cat:'Strength', name:'315 Squat Club',  ico:'🪨', img:'trophies/315_squat_club_trophy.png', trophy:true, desc:'Squat 315 lb',             test:s => s.counters.club315 >= 1 },
   { id:'club-405',   cat:'Strength', name:'405 Pull Club',   ico:'🦣', img:'trophies/405_pull_club_trophy.png',  trophy:true, desc:'Deadlift 405 lb',          test:s => s.counters.club405 >= 1 },
+  { id:'built-diff', cat:'Strength', name:'Built Different', ico:'🏗️', img:'trophies/built_different_trophy.png', trophy:true, desc:'Earn all three strength clubs: 225 bench · 315 squat · 405 deadlift', test:s => s.counters.club225 >= 1 && s.counters.club315 >= 1 && s.counters.club405 >= 1 },
   // Volume
   { id:'sets-100',   cat:'Volume', name:'Volume Dealer',     ico:'📈', img:'trophies/volume_dealer_trophy.png',     desc:'Log 100 sets',                    test:s => s.counters.sets >= 100 },
   { id:'sets-1000',  cat:'Volume', name:'Thousand Sets',     ico:'🏗️', img:'trophies/thousand_sets_trophy.png',    trophy:true, desc:'Log 1,000 sets',        test:s => s.counters.sets >= 1000 },
@@ -21406,7 +21407,8 @@ const HM_BADGES = [
   { id:'early',   cat:'Special', name:'Early Bird',      ico:'🌅', img:'trophies/early_bird_trophy.png',     desc:'Log a set before 7am',                              test:s => s.counters.early >= 1 },
   { id:'night',   cat:'Special', name:'Night Owl',       ico:'🦉', img:'trophies/night_owl_trophy.png',      desc:'Log a set after 10pm',                              test:s => s.counters.night >= 1 },
   { id:'weekend', cat:'Special', name:'Weekend Warrior', ico:'🏖️', img:'trophies/weekend_warrior_trophy.png',desc:'Train Saturday and Sunday of the same weekend',     test:s => s.counters.weekendw >= 1 },
-  { id:'comeback',cat:'Special', name:'The Comeback',    ico:'💪', img:'trophies/the_comeback_trophy.png',   desc:'Return after 14+ days away',                        test:s => s.counters.comeback >= 1 },
+  { id:'comeback', cat:'Special', name:'The Comeback',    ico:'💪', img:'trophies/the_comeback_trophy.png',   desc:'Return after 14+ days away',                        test:s => s.counters.comeback >= 1 },
+  { id:'iron-will',cat:'Special', name:'Iron Will',       ico:'🔩', img:'trophies/iron_will_trophy.png',      trophy:true, desc:'Train through a low or sore mood check-in 5 times', test:s => (s.counters.gutCheck || 0) >= 5 },
   // Levels
   { id:'level-5',  cat:'Levels', name:'Rising Hero', ico:'⚡', img:'trophies/rising_hero_trophy.png', desc:'Reach level 5',  test:s => hmLevelInfo(s.xp).lvl >= 5 },
   { id:'level-10', cat:'Levels', name:'Apex',        ico:'👑', img:'trophies/apex_trophy.png',        desc:'Reach level 10', test:s => hmLevelInfo(s.xp).lvl >= 10 },
@@ -21497,6 +21499,14 @@ function hmXP(kind, pts, meta){
         other.setDate(d.getDate() + (dow === 6 ? 1 : -1));
         const k = other.getFullYear() + '-' + String(other.getMonth()+1).padStart(2,'0') + '-' + String(other.getDate()).padStart(2,'0');
         if (log[k] && Object.keys(log[k]).length) s.counters.weekendw = 1;
+      }
+    } catch(e) {}
+    // Iron Will: train through a low or sore mood check-in (once per day)
+    try {
+      const _mood = localStorage.getItem('hm-mood-' + _todayKey);
+      if ((_mood === 'low' || _mood === 'sore') && s.gutCheckDay !== _todayKey) {
+        s.counters.gutCheck = (s.counters.gutCheck || 0) + 1;
+        s.gutCheckDay = _todayKey;
       }
     } catch(e) {}
   }

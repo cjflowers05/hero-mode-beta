@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v32'; // v32: Badge trophy image fix, audio ambient session, walk GPS wake lock
+const CACHE_VERSION = 'hero-mode-v33'; // v33: Assign Built Different + Iron Will trophies
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
