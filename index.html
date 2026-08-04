@@ -3266,53 +3266,119 @@ const HM_WILDCARDS = [
   { id:'300',        emoji:'⚔️', name:'The 300',                desc:'For time: 25 pull-ups · 50 deadlifts (135 lb) · 50 push-ups · 50 box jumps · 50 floor wipers · 50 clean-and-press · 25 pull-ups. Inspired by the film.' },
   { id:'grindstone', emoji:'⚙️', name:'Grind Stone',            desc:'15 min AMRAP: 5 pull-ups · 10 push-ups · 15 squats · 20 sit-ups. Full rounds only. Log your rounds + reps.' },
 ];
-const HM_WC_KEY = 'hm-wildcard-last';
-function hmWildcardCardHTML() {
-  const last = parseInt(localStorage.getItem(HM_WC_KEY) || '0', 10);
-  if (last && Date.now() - last < 28 * 86400000) return '';
-  const weekSeed = Math.floor(Date.now() / (7 * 86400000));
-  const ch = HM_WILDCARDS[weekSeed % HM_WILDCARDS.length];
-  return '<div style="background:rgba(var(--accent-rgb),.07);border:1px solid rgba(var(--accent-rgb),.3);border-radius:14px;padding:16px;margin-bottom:12px">' +
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
-    '<span style="font-size:30px">' + ch.emoji + '</span>' +
-    '<div><div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;margin-bottom:3px">⚡ WILDCARD HERO CHALLENGE</div>' +
-    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em">' + ch.name + '</div></div></div>' +
-    '<div style="font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:12px">' + hmEsc(ch.desc) + '</div>' +
-    '<div style="display:flex;gap:8px">' +
-    '<button onclick="hmWildcardAccept(\'' + ch.id + '\')" style="flex:1;padding:11px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:.08em;cursor:pointer">ACCEPT THE CHALLENGE →</button>' +
-    '<button onclick="hmWildcardDismiss()" style="padding:11px 14px;border-radius:10px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer">SKIP</button>' +
-    '</div></div>';
+const HM_WC_ACTIVE_KEY = 'hm-wildcard-active';
+if (!window._hmWCIdx) window._hmWCIdx = 0;
+
+function _hmWCCardInner(idx) {
+  const ch = HM_WILDCARDS[idx];
+  const total = HM_WILDCARDS.length;
+  const navBtn = 'padding:8px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;line-height:1;-webkit-tap-highlight-color:transparent';
+  return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
+    '<button onclick="hmWCNav(-1,event)" style="' + navBtn + '">‹</button>' +
+    '<div style="text-align:center">' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em">⚡ WILDCARD HERO CHALLENGE</div>' +
+    '<div style="font-size:9px;color:var(--text3);margin-top:2px">' + (idx + 1) + ' of ' + total + '</div>' +
+    '</div>' +
+    '<button onclick="hmWCNav(1,event)" style="' + navBtn + '">›</button>' +
+    '</div>' +
+    '<div style="text-align:center;margin-bottom:10px"><span style="font-size:46px">' + ch.emoji + '</span></div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--text);letter-spacing:.04em;margin-bottom:8px;text-align:center">' + ch.name + '</div>' +
+    '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">' + hmEsc(ch.desc) + '</div>' +
+    '<button onclick="hmWildcardAccept(\'' + ch.id + '\',event)" style="width:100%;padding:13px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:17px;letter-spacing:.08em;cursor:pointer;-webkit-tap-highlight-color:transparent">ACCEPT THE CHALLENGE →</button>';
 }
-function hmWildcardAccept(id) {
-  localStorage.setItem(HM_WC_KEY, Date.now().toString());
+
+function _hmWCActiveInner(active) {
+  const s = hmXPLoad();
+  const count = s.counters.wildcards || 0;
+  const milestones = [1,5,10,25,50];
+  const nextMs = milestones.find(m => m > count) || '∞';
+  return '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em;margin-bottom:10px;text-align:center">⚡ CHALLENGE IN PROGRESS</div>' +
+    '<div style="text-align:center;margin-bottom:8px"><span style="font-size:44px">' + active.emoji + '</span></div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--text);letter-spacing:.04em;margin-bottom:8px;text-align:center">' + active.name + '</div>' +
+    '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px">' + hmEsc(active.desc) + '</div>' +
+    '<div style="font-size:9px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-bottom:14px;text-align:center">' + count + ' completed · next milestone: ' + nextMs + '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="hmWildcardComplete(event)" style="flex:1;padding:13px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:17px;letter-spacing:.08em;cursor:pointer;-webkit-tap-highlight-color:transparent">✓ MARK COMPLETE</button>' +
+    '<button onclick="hmWildcardAbandon(event)" style="padding:13px 14px;border-radius:10px;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:\'DM Mono\',monospace;font-size:10px;cursor:pointer;-webkit-tap-highlight-color:transparent">ABANDON</button>' +
+    '</div>';
+}
+
+function hmWildcardCardHTML() {
+  const active = JSON.parse(localStorage.getItem(HM_WC_ACTIVE_KEY) || 'null');
+  const inner = active ? _hmWCActiveInner(active) : _hmWCCardInner(window._hmWCIdx || 0);
+  const border = active ? 'border:1px solid rgba(var(--accent-rgb),.5)' : 'border:1px solid rgba(var(--accent-rgb),.3)';
+  return '<div style="background:rgba(var(--accent-rgb),.07);' + border + ';border-radius:14px;padding:16px;margin-bottom:12px"><div id="hm-wc-inner">' + inner + '</div></div>';
+}
+
+function hmWCNav(dir, e) {
+  if (e) e.stopPropagation();
+  const total = HM_WILDCARDS.length;
+  window._hmWCIdx = ((window._hmWCIdx || 0) + dir + total) % total;
+  const el = document.getElementById('hm-wc-inner');
+  if (el) el.innerHTML = _hmWCCardInner(window._hmWCIdx);
+}
+
+function hmWildcardAccept(id, e) {
+  if (e) e.stopPropagation();
   const ch = HM_WILDCARDS.find(c => c.id === id) || HM_WILDCARDS[0];
+  localStorage.setItem(HM_WC_ACTIVE_KEY, JSON.stringify({id:ch.id, name:ch.name, emoji:ch.emoji, desc:ch.desc, ts:Date.now()}));
+  const el = document.getElementById('hm-wc-inner');
+  const active = JSON.parse(localStorage.getItem(HM_WC_ACTIVE_KEY));
+  if (el) el.innerHTML = _hmWCActiveInner(active);
   const ov = document.createElement('div');
   ov.id = 'hm-wc-overlay';
   ov.style.cssText = 'position:fixed;inset:0;z-index:19000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .25s';
-  ov.onclick = function(e) { if (e.target === ov) hmWildcardClose(); };
+  ov.onclick = function(ev) { if (ev.target === ov) hmWildcardClose(); };
   ov.innerHTML = '<div style="background:var(--bg2);border:1px solid rgba(var(--accent-rgb),.4);border-radius:20px;width:100%;max-width:360px;padding:28px 22px;text-align:center" onclick="event.stopPropagation()">' +
-    '<div style="font-size:52px;margin-bottom:12px">' + ch.emoji + '</div>' +
+    '<div style="font-size:56px;margin-bottom:12px">' + ch.emoji + '</div>' +
     '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.14em;margin-bottom:8px">WILDCARD HERO CHALLENGE</div>' +
-    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--text);letter-spacing:.05em;margin-bottom:14px">' + ch.name + '</div>' +
+    '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:28px;color:var(--text);letter-spacing:.05em;margin-bottom:14px">' + ch.name + '</div>' +
     '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;font-size:13px;color:var(--text2);line-height:1.6">' + hmEsc(ch.desc) + '</div>' +
-    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text3);margin-bottom:18px;line-height:1.5">Run this instead of — or on top of — your regular session. Your call, Hero.</div>' +
-    '<button onclick="hmWildcardClose()" style="width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;cursor:pointer">LET\'S GO →</button>' +
+    '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text3);margin-bottom:18px;line-height:1.5">Run this instead of — or on top of — your regular session. When you\'re done, hit MARK COMPLETE for XP + rewards.</div>' +
+    '<button onclick="hmWildcardClose()" style="width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:22px;letter-spacing:.1em;cursor:pointer">LET\'S GO →</button>' +
     '</div>';
   document.body.appendChild(ov);
   requestAnimationFrame(function() { ov.style.opacity = '1'; });
   showToast('⚡ ' + ch.name + ' accepted — go get it!', 'success');
-  hmRenderTrain();
 }
-function hmWildcardDismiss() {
-  localStorage.setItem(HM_WC_KEY, (Date.now() - 21 * 86400000).toString());
-  hmRenderTrain();
+
+function hmWildcardComplete(e) {
+  if (e) e.stopPropagation();
+  const active = JSON.parse(localStorage.getItem(HM_WC_ACTIVE_KEY) || 'null');
+  if (!active) return;
+  localStorage.removeItem(HM_WC_ACTIVE_KEY);
+  hmXP('wildcards', 150, {});
+  const s = hmXPLoad();
+  const count = s.counters.wildcards || 0;
+  const el = document.getElementById('hm-wc-inner');
+  if (el) el.innerHTML = _hmWCCardInner(window._hmWCIdx || 0);
+  // Milestone rewards
+  if (count === 1) {
+    setTimeout(function() { hmHeroFX('FIRST WILDCARD DONE', 'The forge is hot.', '⚡'); }, 400);
+  } else if (count % 5 === 0) {
+    setTimeout(function() { hmHeroFX('WILDCARD LEGEND', count + ' challenges crushed', '⚡'); }, 400);
+  } else {
+    showToast('⚡ ' + active.name + ' complete! +150 XP', 'success');
+  }
 }
+
+function hmWildcardAbandon(e) {
+  if (e) e.stopPropagation();
+  localStorage.removeItem(HM_WC_ACTIVE_KEY);
+  const el = document.getElementById('hm-wc-inner');
+  if (el) el.innerHTML = _hmWCCardInner(window._hmWCIdx || 0);
+  showToast('Challenge abandoned. Come back stronger.', 'info');
+}
+
 function hmWildcardClose() {
   const ov = document.getElementById('hm-wc-overlay');
   if (ov) { ov.style.opacity = '0'; setTimeout(function() { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 250); }
 }
+
+window.hmWCNav           = hmWCNav;
 window.hmWildcardAccept  = hmWildcardAccept;
-window.hmWildcardDismiss = hmWildcardDismiss;
+window.hmWildcardComplete= hmWildcardComplete;
+window.hmWildcardAbandon = hmWildcardAbandon;
 window.hmWildcardClose   = hmWildcardClose;
 
 function hmEditAdd(phId, di){ _hmPick = { mode:'add', phId, di }; hmOpenExPicker(); }
@@ -21326,7 +21392,7 @@ function hmXPLoad(){
       return s;
     }
   } catch(e) {}
-  return { xp:0, freezes:0, counters:{sets:0,days:0,walks:0,prs:0,checkins:0,logins:0,volume:0,perfectWeeks:0,early:0,night:0,weekendw:0,comeback:0,club225:0,club315:0,club405:0,water:0,bw:0,cardio:0,meals:0,recipes:0,meas:0,photos:0,stretches:0,zenWeeks:0,quests:0,gutCheck:0}, badges:{}, login:{}, story:{} };
+  return { xp:0, freezes:0, counters:{sets:0,days:0,walks:0,prs:0,checkins:0,logins:0,volume:0,perfectWeeks:0,early:0,night:0,weekendw:0,comeback:0,club225:0,club315:0,club405:0,water:0,bw:0,cardio:0,meals:0,recipes:0,meas:0,photos:0,stretches:0,zenWeeks:0,quests:0,gutCheck:0,wildcards:0,wcPRs:0}, badges:{}, login:{}, story:{} };
 }
 function hmXPSave(s){ try { localStorage.setItem(hmXPKey(), JSON.stringify(s)); } catch(e) {} }
 function hmLevelInfo(xp){
