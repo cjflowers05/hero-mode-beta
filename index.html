@@ -3227,6 +3227,7 @@ window.hmMoodPick  = hmMoodPick;
 
 // ── WILDCARD HERO CHALLENGES ──────────────────────────────────
 const HM_WILDCARDS = [
+  // Bodyweight Classics
   { id:'burpee100',  emoji:'🔥', name:'100 Burpee Challenge',   desc:'Complete 100 burpees for time. Rest only when you must — then keep going.' },
   { id:'cindy',      emoji:'⏱', name:'Cindy AMRAP',            desc:'20 min AMRAP: 5 pull-ups · 10 push-ups · 15 air squats. Log your rounds.' },
   { id:'tabata',     emoji:'⚡', name:'Tabata Blast',           desc:'8 rounds × 20 sec on / 10 sec off per movement: Push-ups → Squats → Sit-ups → Burpees.' },
@@ -3235,6 +3236,35 @@ const HM_WILDCARDS = [
   { id:'beast',      emoji:'🦁', name:'The Beast Circuit',      desc:'5 rounds: 10 deadlifts · 10 hang cleans · 10 front squats · 10 press. No rest between movements in a round.' },
   { id:'sprint',     emoji:'🏃', name:'Sprint Ladder',          desc:'Sprint 100m · rest 30s · 200m · rest 60s · 400m · rest 90s. Repeat the sequence twice.' },
   { id:'miniMurph',  emoji:'🎖', name:'Mini Murph',             desc:'800m run · 50 pull-ups · 100 push-ups · 150 squats · 800m run. Partition pull-ups/push-ups/squats as needed.' },
+  // Bodyweight Grinders
+  { id:'chelsea',    emoji:'⏰', name:'Chelsea',                desc:'30 min EMOM: every minute — 5 pull-ups · 10 push-ups · 15 air squats. If you fall behind, rest a minute and jump back in. Scale to 20 min if needed.' },
+  { id:'century',    emoji:'💯', name:'The Century',            desc:'100 push-ups · 100 sit-ups · 100 air squats for time. Partition however you want. Don\'t stop the clock.' },
+  { id:'deathpushup',emoji:'☠️', name:'Death by Push-Up',       desc:'EMOM: start with 1 push-up in minute 1, add 1 each minute. When you can\'t finish a round, your score is that minute number. Chase it.' },
+  { id:'jacob',      emoji:'📈', name:'Jacob\'s Ladder',        desc:'1 pull-up · 1 push-up · 1 squat. Then 2-2-2. Keep climbing to 10-10-10, then back down to 1-1-1. Rest only between rungs.' },
+  { id:'2115',       emoji:'💥', name:'21-15-9',                desc:'For time: 21 · 15 · 9 reps of push-ups · air squats · sit-ups. Simple. Brutal. Go.' },
+  { id:'plank10',    emoji:'🧱', name:'10-Minute Plank',        desc:'Accumulate 10 total minutes of plank hold in as few sets as possible. Forearms or hands. Rest only when you must.' },
+  // Military-Inspired
+  { id:'pttest',     emoji:'🪖', name:'PT Test Gauntlet',       desc:'Max push-ups in 2 min · rest 2 min · max sit-ups in 2 min · rest 2 min · 1 mile run. Log each number. This is your baseline.' },
+  { id:'thegrunt',   emoji:'💂', name:'The Grunt',              desc:'5 rounds: 20 push-ups · 20 air squats · 20 mountain climbers · 20 jumping jacks. No rest between movements within a round.' },
+  { id:'ranger',     emoji:'🎯', name:'Ranger Protocol',        desc:'10 rounds: 10 pull-ups · 10 push-ups · 10 dips. Rest 60 sec between rounds. Log total time. Come back faster.' },
+  { id:'ironrise',   emoji:'🌅', name:'Iron Sunrise',           desc:'Before your first meal: 100 push-ups · 100 sit-ups · 100 squats. Partition freely. Do it all before breakfast.' },
+  { id:'doorstep',   emoji:'🚪', name:'Doorstep Protocol',      desc:'Every time you walk through a doorway today: 10 push-ups. No exceptions. Log your total reps at the end of the day.' },
+  // Strength-Based
+  { id:'twentyrep',  emoji:'🏋', name:'20-Rep Squat',           desc:'Load the bar to your 10-rep max. Squat 20 consecutive reps without re-racking. Rest at the top. Breathe. This one is legendary.' },
+  { id:'5x5hunt',    emoji:'🔍', name:'5×5 PR Hunt',            desc:'Pick 3 compound lifts. Work up to a hard 5×5 on each. Rest 3 min between sets. If you don\'t set a PR today, come back heavier next time.' },
+  { id:'tempoday',   emoji:'🎵', name:'Tempo Takeover',         desc:'Every set today: 4 sec descent · 2 sec pause at the bottom · 1 sec up. Drop weight 20% from normal. Feel every fiber.' },
+  { id:'totalwar',   emoji:'⚔️', name:'Total War',              desc:'Attempt a 1RM on bench · squat · deadlift — in that order. Full warm-up protocol each time. This is your strength census.' },
+  { id:'farmer',     emoji:'🌾', name:'Farmer\'s Century',      desc:'Grab the heaviest dumbbells you can carry. Walk 100m without setting them down. Rest the same time it took. 10 rounds.' },
+  // Conditioning
+  { id:'hillsprint', emoji:'🏔', name:'Hill Sprint Protocol',   desc:'10 × 30 sec max effort sprint uphill (or max treadmill incline). Walk 90 sec between each. No coasting on the sprints.' },
+  { id:'miletest',   emoji:'🏁', name:'Mile Time Trial',        desc:'Run 1 mile for time. Log it. Every time this appears, your only opponent is your previous time. Chase the clock.' },
+  { id:'fgb',        emoji:'🔔', name:'Fight Gone Bad',         desc:'3 rounds: 1 min each of — row/bike · push-press (75 lb) · box jumps · deadlift high-pull · wall balls. 1 min rest. Max total reps wins.' },
+  // Hero Mode Exclusives
+  { id:'arsenal',    emoji:'🗡️', name:'The Arsenal',            desc:'10 rounds × 10 reps: push-ups · squats · sit-ups · lunges · burpees · mountain climbers · dips · jumping jacks · hollow holds · plank-to-push-up. All 10 movements, all 10 rounds.' },
+  { id:'gauntlet',   emoji:'🛡', name:'Hero\'s Gauntlet',       desc:'For time: 400m run · 50 push-ups · 50 squats · 50 sit-ups · 400m run · 25 pull-ups · 25 burpees · 400m run. This is the full test.' },
+  { id:'theforge',   emoji:'⚒️', name:'The Forge',              desc:'5 rounds: max push-ups · rest 60s · max pull-ups · rest 60s · max air squats · rest 60s. Log peak reps each movement. Build the numbers.' },
+  { id:'300',        emoji:'⚔️', name:'The 300',                desc:'For time: 25 pull-ups · 50 deadlifts (135 lb) · 50 push-ups · 50 box jumps · 50 floor wipers · 50 clean-and-press · 25 pull-ups. Inspired by the film.' },
+  { id:'grindstone', emoji:'⚙️', name:'Grind Stone',            desc:'15 min AMRAP: 5 pull-ups · 10 push-ups · 15 squats · 20 sit-ups. Full rounds only. Log your rounds + reps.' },
 ];
 const HM_WC_KEY = 'hm-wildcard-last';
 function hmWildcardCardHTML() {
