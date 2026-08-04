@@ -3425,7 +3425,17 @@ function hmExPicked(key){
   if (!_hmPick) return hmCloseExPicker();
   const ed = hmPlanEditsLoad();
   if (_hmPick.mode === 'swap') {
-    if (key !== _hmPick.key) ed.swap[_hmPick.phId + '|' + _hmPick.di + '|' + _hmPick.key] = key;
+    if (key !== _hmPick.key) {
+      const slotPfx = _hmPick.phId + '|' + _hmPick.di + '|';
+      // If an existing swap at this slot already points TO the current display key,
+      // update that original entry instead of creating an unresolvable chain.
+      const chainOrigin = Object.keys(ed.swap).find(k => k.startsWith(slotPfx) && ed.swap[k] === _hmPick.key);
+      if (chainOrigin) {
+        ed.swap[chainOrigin] = key;
+      } else {
+        ed.swap[slotPfx + _hmPick.key] = key;
+      }
+    }
   } else {
     const dk = _hmPick.phId + '|' + _hmPick.di;
     ed.add[dk] = ed.add[dk] || [];
