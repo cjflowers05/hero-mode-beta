@@ -3633,12 +3633,27 @@ function hmApplyHeader(){
 }
 
 function hmApplyPlan(regen){
+  // Preserve open day cards so a swap/edit doesn't collapse the section
+  const _openDays = new Set();
+  document.querySelectorAll('.day-item.open').forEach(el => {
+    const ph = el.closest('.phase-section');
+    if (ph) _openDays.add(ph.id + '|' + (el.dataset.dow || ''));
+  });
+
   HM_PLAN = hmGeneratePlan(hmGoals());
   hmRenderTrain();
   hmRenderRoadmap();
   hmApplyNutrition();
   hmApplyHeader();
   if (regen) hmRefreshIntegrations();
+
+  // Restore open day cards
+  if (_openDays.size > 0) {
+    document.querySelectorAll('.day-item').forEach(el => {
+      const ph = el.closest('.phase-section');
+      if (ph && _openDays.has(ph.id + '|' + (el.dataset.dow || ''))) el.classList.add('open');
+    });
+  }
 }
 
 // ── ONBOARDING UI ──
