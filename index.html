@@ -741,6 +741,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .week-sum-highlight{grid-column:1/-1;background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3)}
 .week-sum-best{font-size:12px;color:var(--text2);margin-top:4px}
 
+/* ── DECK OF CARDS WORKOUT ── */
+.dc-overlay{position:fixed;inset:0;background:var(--bg);z-index:9990;display:flex;flex-direction:column;overflow:hidden;opacity:0;transition:opacity .2s;pointer-events:none}
+.dc-overlay.open{opacity:1;pointer-events:all}
+.dc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;flex-shrink:0}
+.dc-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text)}
+.dc-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.dc-body{flex:1;overflow-y:auto;padding:0 18px 24px}
+/* Setup screen */
+.dc-suit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.dc-suit-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:12px 10px;cursor:pointer;transition:border-color .15s}
+.dc-suit-card:hover{border-color:var(--border2)}
+.dc-suit-symbol{font-size:24px;margin-bottom:4px}
+.dc-suit-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--text3);margin-bottom:6px}
+.dc-suit-exname{font-size:13px;color:var(--text);font-weight:600}
+.dc-start-btn{width:100%;padding:16px;border-radius:14px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;cursor:pointer;margin-top:4px}
+/* Game screen */
+.dc-progress{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);text-align:center;margin-bottom:12px}
+.dc-card-wrap{display:flex;justify-content:center;margin-bottom:18px}
+.dc-card{width:180px;height:260px;border-radius:18px;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:space-between;padding:14px;position:relative;user-select:none}
+.dc-card.red{color:#C0392B}
+.dc-card.black{color:#111}
+.dc-card-corner{display:flex;flex-direction:column;align-items:center;line-height:1}
+.dc-card-corner-val{font-size:26px;font-weight:900;line-height:1}
+.dc-card-corner-suit{font-size:20px;line-height:1}
+.dc-card-center{font-size:64px;text-align:center;line-height:1;flex:1;display:flex;align-items:center;justify-content:center}
+.dc-card-btm{transform:rotate(180deg)}
+.dc-reps-label{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);letter-spacing:.04em;margin-bottom:4px}
+.dc-ex-label{text-align:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:22px;letter-spacing:.06em}
+.dc-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:16px}
+.dc-skip-btn{padding:14px;border-radius:13px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer}
+.dc-done-btn{padding:14px;border-radius:13px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;cursor:pointer}
+.dc-totals{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center}
+.dc-total-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)}
+.dc-total-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.08em}
+/* Summary screen */
+.dc-summary-icon{font-size:52px;text-align:center;margin:20px 0 8px}
+.dc-summary-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.06em;color:var(--gold);text-align:center;margin-bottom:6px}
+.dc-summary-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+.dc-summary-stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.dc-summary-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;margin-bottom:4px}
+.dc-summary-stat-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+
 /* ── CUSTOM WORKOUT BUILDER ── */
 .cw-chip{padding:9px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
 .cw-chip.active{border-color:var(--gold);background:rgba(201,168,76,.12);color:var(--gold)}
@@ -1821,6 +1863,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div style="flex:1">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:.04em">Custom Session / Add-Ons</div>
       <div style="font-size:11px;color:var(--text3);margin-top:1px">Build from scratch or add exercises to today's plan</div>
+    </div>
+    <div style="color:var(--text3);font-size:16px">›</div>
+  </div>
+  <!-- Deck of Cards workout entry -->
+  <div onclick="openDeckWorkout()" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
+    <div style="width:38px;height:38px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🃏</div>
+    <div style="flex:1">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:.04em">Deck of Cards</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:1px">Military-style full-body workout · flip a card, do the reps</div>
     </div>
     <div style="color:var(--text3);font-size:16px">›</div>
   </div>
@@ -4261,6 +4312,15 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="me-safe-pad"></div>
     </div>
   </div>
+</div>
+
+<!-- ══ DECK OF CARDS WORKOUT ══ -->
+<div class="dc-overlay" id="dc-overlay">
+  <div class="dc-header">
+    <div class="dc-title">🃏 Deck of Cards</div>
+    <button class="dc-close" onclick="closeDeckWorkout()">✕</button>
+  </div>
+  <div class="dc-body" id="dc-body"></div>
 </div>
 
 <!-- ══ CUSTOM WORKOUT MODAL ══ -->
@@ -20562,6 +20622,243 @@ function rbSpeak(text) {
 }
 
 // ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// DECK OF CARDS WORKOUT
+// Suits map to exercises; card value = reps (face cards = 10, Ace = 11)
+
+const DC_SUITS = [
+  { id:'spades',   sym:'♠', color:'black', name:'Spades'   },
+  { id:'hearts',   sym:'♥', color:'red',   name:'Hearts'   },
+  { id:'diamonds', sym:'♦', color:'red',   name:'Diamonds' },
+  { id:'clubs',    sym:'♣', color:'black', name:'Clubs'    },
+];
+const DC_DEFAULT_EX = {
+  spades:   { key:'pushup',   label:'Push-Ups'   },
+  hearts:   { key:'situp',    label:'Sit-Ups'    },
+  diamonds: { key:'airsquat', label:'Air Squats'  },
+  clubs:    { key:'burpee',   label:'Burpees'    },
+};
+const DC_VALUES = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+const DC_REPS   = { '2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':10,'Q':10,'K':13,'A':11 };
+
+let _dc = null; // game state
+
+function _dcBuildDeck() {
+  const deck = [];
+  DC_SUITS.forEach(s => DC_VALUES.forEach(v => deck.push({ suit: s.id, val: v })));
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function _dcExName(suitId) {
+  const ex = (_dc && _dc.mapping) ? _dc.mapping[suitId] : DC_DEFAULT_EX[suitId];
+  if (ex && ex.key && EX[ex.key]) return EX[ex.key].name;
+  return (ex && ex.label) ? ex.label : suitId;
+}
+
+function openDeckWorkout() {
+  const ov = document.getElementById('dc-overlay');
+  if (!ov) return;
+  _dc = { phase: 'setup', mapping: JSON.parse(JSON.stringify(DC_DEFAULT_EX)), deck: [], idx: 0, done: 0, skipped: 0, totalReps: 0, repsBySuit: {spades:0,hearts:0,diamonds:0,clubs:0}, startTime: 0 };
+  _dcRender();
+  ov.classList.add('open');
+}
+
+function closeDeckWorkout() {
+  const ov = document.getElementById('dc-overlay');
+  if (ov) ov.classList.remove('open');
+  _dc = null;
+}
+window.closeDeckWorkout = closeDeckWorkout;
+
+function _dcRender() {
+  const body = document.getElementById('dc-body');
+  if (!body || !_dc) return;
+  if (_dc.phase === 'setup')   body.innerHTML = _dcSetupHtml();
+  else if (_dc.phase === 'game') body.innerHTML = _dcGameHtml();
+  else if (_dc.phase === 'done') body.innerHTML = _dcSummaryHtml();
+}
+
+function _dcSetupHtml() {
+  const rows = DC_SUITS.map(s => {
+    const ex = _dc.mapping[s.id];
+    const name = (ex && ex.key && EX[ex.key]) ? EX[ex.key].name : (ex && ex.label) || s.name;
+    return `<div class="dc-suit-card" onclick="dcPickEx('${s.id}')">
+      <div class="dc-suit-symbol" style="color:${s.color==='red'?'#C0392B':'#111'}">${s.sym}</div>
+      <div class="dc-suit-name">${s.name}</div>
+      <div class="dc-suit-exname">${name}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">tap to change</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.5">
+      Flip a card — the number is your reps, the suit is your exercise. Face cards = 10 reps, Aces = 11. Work through the full deck.
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Suit → Exercise</div>
+    <div class="dc-suit-row">${rows}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">52 cards · ${DC_VALUES.reduce((a,v)=>a+DC_REPS[v],0)*4} total reps if you go all the way</div>
+    <button class="dc-start-btn" onclick="dcStartGame()">DEAL THE DECK</button>`;
+}
+
+function dcPickEx(suitId) {
+  // Show quick exercise picker for this suit — bodyweight exercises
+  const bw = Object.entries(EX)
+    .filter(([,e]) => e.equip === 'Bodyweight' || e.equip === 'bodyweight' || (e.tags||[]).includes('bodyweight') || (e.tags||[]).includes('bodyweight') || e.type === 'bodyweight')
+    .slice(0, 24)
+    .map(([k,e]) => `<button onclick="dcSetEx('${suitId}','${k}','${(e.name||k).replace(/'/g,"\\'")}');event.stopPropagation()"
+      style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:11px;cursor:pointer;text-align:left">${e.name||k}</button>`).join('');
+
+  const body = document.getElementById('dc-body');
+  const suit = DC_SUITS.find(s=>s.id===suitId);
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <button onclick="_dcRender()" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer">← Back</button>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)">Choose for ${suit?suit.sym+' ':''} ${suit?suit.name:suitId}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${bw}</div>`;
+}
+window.dcPickEx = dcPickEx;
+
+function dcSetEx(suitId, key, label) {
+  if (_dc) _dc.mapping[suitId] = { key, label };
+  _dcRender();
+}
+window.dcSetEx = dcSetEx;
+
+function dcStartGame() {
+  if (!_dc) return;
+  _dc.deck     = _dcBuildDeck();
+  _dc.idx      = 0;
+  _dc.done     = 0;
+  _dc.skipped  = 0;
+  _dc.totalReps= 0;
+  _dc.repsBySuit = { spades:0, hearts:0, diamonds:0, clubs:0 };
+  _dc.startTime = Date.now();
+  _dc.phase    = 'game';
+  _dcRender();
+}
+window.dcStartGame = dcStartGame;
+
+function _dcCurrentCard() { return _dc ? _dc.deck[_dc.idx] : null; }
+
+function _dcGameHtml() {
+  const card = _dcCurrentCard();
+  if (!card) return '';
+  const suit  = DC_SUITS.find(s => s.id === card.suit);
+  const reps  = DC_REPS[card.val];
+  const exName = _dcExName(card.suit);
+  const total  = _dc.deck.length;
+  const remain = total - _dc.idx;
+
+  const totals = DC_SUITS.map(s => {
+    const r = _dc.repsBySuit[s.id] || 0;
+    return `<div><div class="dc-total-val" style="color:${s.color==='red'?'#C0392B':'var(--text)'}">${r}</div><div class="dc-total-lbl">${s.sym}</div></div>`;
+  }).join('');
+
+  const elapsed = Math.floor((Date.now() - _dc.startTime) / 1000);
+  const mm = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const ss = String(elapsed%60).padStart(2,'0');
+
+  return `
+    <div class="dc-progress">${_dc.idx + 1} of ${total} · ${remain - 1} remaining · ${mm}:${ss}</div>
+    <div class="dc-card-wrap">
+      <div class="dc-card ${suit.color}">
+        <div class="dc-card-corner">
+          <div class="dc-card-corner-val">${card.val}</div>
+          <div class="dc-card-corner-suit">${suit.sym}</div>
+        </div>
+        <div class="dc-card-center">${suit.sym}</div>
+        <div class="dc-card-corner dc-card-btm">
+          <div class="dc-card-corner-val">${card.val}</div>
+          <div class="dc-card-corner-suit">${suit.sym}</div>
+        </div>
+      </div>
+    </div>
+    <div class="dc-reps-label">${reps} REPS</div>
+    <div class="dc-ex-label">${exName.toUpperCase()}</div>
+    <div class="dc-btns">
+      <button class="dc-skip-btn" onclick="dcSkip()">SKIP</button>
+      <button class="dc-done-btn" onclick="dcCardDone()">DONE ›</button>
+    </div>
+    <div class="dc-totals">${totals}
+      <div><div class="dc-total-val" style="color:var(--gold)">${_dc.totalReps}</div><div class="dc-total-lbl">TOTAL</div></div>
+    </div>`;
+}
+
+function dcCardDone() {
+  if (!_dc) return;
+  const card = _dcCurrentCard();
+  if (!card) return;
+  const reps = DC_REPS[card.val];
+  _dc.totalReps += reps;
+  _dc.repsBySuit[card.suit] = (_dc.repsBySuit[card.suit]||0) + reps;
+  _dc.done++;
+  _dc.idx++;
+  if (_dc.idx >= _dc.deck.length) { _dc.phase = 'done'; }
+  _dcRender();
+  if (window.hmSfx) hmSfx('set');
+}
+window.dcCardDone = dcCardDone;
+
+function dcSkip() {
+  if (!_dc) return;
+  _dc.skipped++;
+  _dc.idx++;
+  if (_dc.idx >= _dc.deck.length) { _dc.phase = 'done'; }
+  _dcRender();
+}
+window.dcSkip = dcSkip;
+
+function _dcSummaryHtml() {
+  const elapsed = Math.floor((Date.now() - _dc.startTime) / 1000);
+  const mm = Math.floor(elapsed/60), ss = elapsed%60;
+  const timeStr = mm > 0 ? mm + 'm ' + ss + 's' : ss + 's';
+  const msgs = ['Warrior mindset.','Cards don\'t lie.','You dealt with it.','That\'s the game.','Mission complete.'];
+  const msg  = msgs[Math.floor(Math.random()*msgs.length)];
+
+  const byEx = DC_SUITS.map(s => {
+    const r = _dc.repsBySuit[s.id] || 0;
+    if (!r) return '';
+    return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px">
+      <span style="color:${s.color==='red'?'#C0392B':'var(--text2)'}">${s.sym} ${_dcExName(s.id)}</span>
+      <span style="font-family:'DM Mono',monospace;color:var(--gold)">${r} reps</span>
+    </div>`;
+  }).join('');
+
+  if (window.hmXP) hmXP('cardio', 30);
+
+  return `
+    <div class="dc-summary-icon">🏆</div>
+    <div class="dc-summary-title">Deck Complete</div>
+    <div style="text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:4px">${msg}</div>
+    <div class="dc-summary-stats">
+      <div class="dc-summary-stat">
+        <div class="dc-summary-stat-val">${_dc.totalReps}</div>
+        <div class="dc-summary-stat-lbl">Total Reps</div>
+      </div>
+      <div class="dc-summary-stat">
+        <div class="dc-summary-stat-val">${timeStr}</div>
+        <div class="dc-summary-stat-lbl">Time</div>
+      </div>
+      <div class="dc-summary-stat">
+        <div class="dc-summary-stat-val">${_dc.done}</div>
+        <div class="dc-summary-stat-lbl">Cards Done</div>
+      </div>
+      <div class="dc-summary-stat">
+        <div class="dc-summary-stat-val">${_dc.skipped}</div>
+        <div class="dc-summary-stat-lbl">Skipped</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:20px">${byEx}</div>
+    <button class="dc-start-btn" onclick="closeDeckWorkout()">CLOSE</button>`;
+}
+
+window.openDeckWorkout = openDeckWorkout;
+
 // CUSTOM WORKOUT BUILDER
 // ══════════════════════════════════════════════════
 
