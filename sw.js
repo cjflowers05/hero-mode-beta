@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v44'; // v44: Deck of Cards workout — military-style full-body mode with suit→exercise mapping
+const CACHE_VERSION = 'hero-mode-v45'; // v45: Session History in Training tab — expandable log of every past training day
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

@@ -528,6 +528,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .prog-row-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
 .prog-row-name{flex:1;font-size:12px;color:var(--text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prog-row-action{font-family:'DM Mono',monospace;font-size:10px;flex-shrink:0;text-align:right}
+.sh-row{border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;user-select:none}
+.sh-row:last-child{border-bottom:none}
+.sh-header{display:flex;align-items:center;gap:10px;padding:10px 0}
+.sh-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);width:52px;flex-shrink:0}
+.sh-name{flex:1;font-size:12px;color:var(--text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);text-align:right;flex-shrink:0}
+.sh-chevron{color:var(--text3);font-size:11px;transition:transform .2s;flex-shrink:0}
+.sh-chevron.open{transform:rotate(90deg)}
+.sh-detail{display:none;padding:0 0 10px 62px}
+.sh-detail.open{display:block}
+.sh-ex-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.sh-ex-row:last-child{border-bottom:none}
+.sh-ex-name{color:var(--text2)}
+.sh-ex-sets{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
 .auto-spark-row{margin-bottom:16px}
 .auto-spark-name{font-size:12px;color:var(--text);margin-bottom:2px;display:flex;justify-content:space-between;align-items:baseline}
 .auto-spark-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
@@ -4966,6 +4980,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <div class="chart-sub">Max weight logged per session over time</div>
       <div id="chart-strength-line" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Session History -->
+    <div class="chart-section">
+      <div class="chart-title">Session History</div>
+      <div class="chart-sub">Every logged training day — tap to expand</div>
+      <div id="chart-session-history"></div>
     </div>
   </div>
 
@@ -11841,6 +11862,7 @@ function renderTrainingCharts() {
   renderPRBoard();
   renderAutoSparklines();
   populateStrengthExPicker();
+  renderSessionHistory();
   // Volume top chart
   const slLog = slLoad();
   const volByEx = {};
@@ -12020,6 +12042,64 @@ function renderStrengthChart(key) {
       <span>${labels[labels.length-1]}</span>
     </div>`;
 }
+
+function renderSessionHistory() {
+  const el = document.getElementById('chart-session-history');
+  if (!el) return;
+  const log = slLoad();
+  const days = Object.keys(log).filter(d => Object.keys(log[d]).length > 0).sort().reverse();
+
+  if (!days.length) {
+    el.innerHTML = '<div class="chart-empty">No sessions logged yet.</div>';
+    return;
+  }
+
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  el.innerHTML = days.map((date, i) => {
+    const d   = new Date(date + 'T12:00:00');
+    const lbl = MONTHS[d.getMonth()] + ' ' + d.getDate();
+    const dow = DAYS[d.getDay()];
+    const exes = Object.entries(log[date]);
+    let totalSets = 0, totalVol = 0;
+    exes.forEach(([,sets]) => {
+      totalSets += sets.length;
+      sets.forEach(s => { totalVol += (s.w||0)*(s.r||0); });
+    });
+    const volStr = totalVol > 0 ? Math.round(hmDispVol(totalVol)/1000*10)/10 + 'k ' + hmUnitLbl() : totalSets + ' sets';
+    const exNames = exes.slice(0,3).map(([k])=>EX[k]?.name||k).join(', ') + (exes.length>3?' +'+( exes.length-3):'');
+
+    const detailRows = exes.map(([key, sets]) => {
+      const name = EX[key]?.name || key;
+      const type = slExType(key);
+      let setsStr;
+      if (type === 'weighted') {
+        setsStr = sets.map(s => hmDispW(s.w)+' ×'+s.r).join(' · ');
+      } else {
+        setsStr = sets.length + (sets.length===1?' set':' sets') + (sets[0]?.r ? ' · '+sets[0].r+' reps' : '');
+      }
+      return `<div class="sh-ex-row"><span class="sh-ex-name">${name}</span><span class="sh-ex-sets">${setsStr}</span></div>`;
+    }).join('');
+
+    return `<div class="sh-row">
+      <div class="sh-header" onclick="shToggle(${i})">
+        <div class="sh-date">${lbl}<br><span style="color:var(--text3)">${dow}</span></div>
+        <div class="sh-name">${exNames}</div>
+        <div class="sh-meta">${volStr}</div>
+        <div class="sh-chevron" id="sh-chev-${i}">›</div>
+      </div>
+      <div class="sh-detail" id="sh-det-${i}">${detailRows}</div>
+    </div>`;
+  }).join('');
+}
+window.shToggle = function(i) {
+  const det  = document.getElementById('sh-det-'  + i);
+  const chev = document.getElementById('sh-chev-' + i);
+  if (!det) return;
+  const open = det.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', open);
+};
 
 function renderProgressionGuide() {
   const el = document.getElementById('chart-progression');
