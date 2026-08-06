@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v40'; // v40: Mood check-in step 2 — time available selector
+const CACHE_VERSION = 'hero-mode-v41'; // v41: Overload tag on exercise rows — shows weight suggestion before logging
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

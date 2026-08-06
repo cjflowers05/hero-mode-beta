@@ -995,6 +995,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .log-set-btn.has-sets{background:rgba(201,168,76,.2);border-color:var(--gold)}
 .ex-last-session{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:.04em;line-height:1.4}
 .ex-last-session.has-data{color:rgba(201,168,76,.7)}
+.ex-overload-tag{display:none;font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.04em;margin-top:2px}
 .sl-overlay{position:fixed;inset:0;z-index:520;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center}
 .sl-overlay.open{display:flex}
 .sl-sheet{background:var(--bg2);border-radius:20px 20px 0 0;border:1px solid var(--border2);border-bottom:none;width:100%;max-width:480px;padding-bottom:var(--safe);max-height:88vh;max-height:88dvh;overflow-y:auto;overscroll-behavior:contain}
@@ -17458,6 +17459,7 @@ function slRenderSheet() {
 function slRefreshRow(key) {
   document.querySelectorAll('[data-ex-key="' + key + '"]').forEach(row => {
     const sub  = row.querySelector('.ex-last-session');
+    const tag  = row.querySelector('.ex-overload-tag');
     const lBtn = row.querySelector('.log-set-btn');
     if (!sub) return;
     const today = slTodaySets(key);
@@ -17469,16 +17471,38 @@ function slRefreshRow(key) {
       sub.textContent = 'Today · ' + today.length + ' set' + (today.length>1?'s':'') + ' · up to ' + hmDispW(maxW) + ' ' + hmUnitLbl();
       sub.className   = 'ex-last-session has-data';
       if (lBtn) { lBtn.textContent = '✓ ' + today.length; lBtn.classList.add('has-sets'); }
+      if (tag) tag.style.display = 'none';
     } else if (last) {
       const maxW  = Math.max(...last.sets.map(s => s.w));
       const lbl   = new Date(last.date + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
       sub.textContent = 'Last ' + lbl + ' · ' + last.sets.length + ' sets · ' + hmDispW(maxW) + ' ' + hmUnitLbl();
       sub.className   = 'ex-last-session has-data';
       if (lBtn) { lBtn.textContent = '+ LOG'; lBtn.classList.remove('has-sets'); }
+      if (tag) {
+        const nudge = slSmartNudge(key);
+        if (nudge && nudge.type === 'increase') {
+          tag.textContent  = '↑ Try ' + hmDispW(nudge.newWeight) + ' ' + hmUnitLbl() + ' today';
+          tag.style.display = 'block';
+        } else if (nudge && (nudge.type === 'reps' || nudge.type === 'maintain')) {
+          tag.textContent  = '→ ' + hmDispW(nudge.newWeight) + ' ' + hmUnitLbl() + ' — ' + (nudge.type === 'reps' ? 'push for reps' : 'lock it in');
+          tag.style.display = 'block';
+        } else {
+          tag.style.display = 'none';
+        }
+      }
     } else {
       sub.textContent = pr ? ('PR: ' + hmDispW(pr.w) + ' ' + hmUnitLbl() + ' × ' + pr.r + ' · ' + hmDispW(pr.e1rm) + ' ' + hmUnitLbl() + ' e1RM') : '';
       sub.className   = 'ex-last-session';
       if (lBtn) { lBtn.textContent = '+ LOG'; lBtn.classList.remove('has-sets'); }
+      if (tag) {
+        const nudge = slSmartNudge(key);
+        if (nudge && nudge.type === 'start') {
+          tag.textContent  = '→ Start ~' + hmDispW(nudge.newWeight) + ' ' + hmUnitLbl();
+          tag.style.display = 'block';
+        } else {
+          tag.style.display = 'none';
+        }
+      }
     }
   });
 }
@@ -17507,6 +17531,9 @@ function slInjectLogButtons() {
       const sub      = document.createElement('span');
       sub.className  = 'ex-last-session';
       exLeft.appendChild(sub);
+      const tag      = document.createElement('span');
+      tag.className  = 'ex-overload-tag';
+      exLeft.appendChild(tag);
     }
     // Populate immediately
     slRefreshRow(key);
