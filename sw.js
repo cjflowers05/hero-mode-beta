@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v42'; // v42: Auto sparklines for top lifts + post-session summary overlay
+const CACHE_VERSION = 'hero-mode-v43'; // v43: Progression Guide in Training tab — ready to increase / push reps / hold
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

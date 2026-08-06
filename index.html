@@ -522,6 +522,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .strength-line-wrap{position:relative;height:90px;margin-bottom:8px}
 .strength-line-svg{width:100%;height:90px;overflow:visible}
 .strength-line-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px}
+.prog-group-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin:10px 0 5px;padding:3px 7px;border-radius:4px;display:inline-block}
+.prog-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.prog-row:last-child{border-bottom:none}
+.prog-row-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.prog-row-name{flex:1;font-size:12px;color:var(--text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-row-action{font-family:'DM Mono',monospace;font-size:10px;flex-shrink:0;text-align:right}
 .auto-spark-row{margin-bottom:16px}
 .auto-spark-name{font-size:12px;color:var(--text);margin-bottom:2px;display:flex;justify-content:space-between;align-items:baseline}
 .auto-spark-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
@@ -4812,6 +4818,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- TRAINING CHARTS -->
   <div id="chartview-training" style="display:none">
+    <!-- Progression suggestions -->
+    <div class="chart-section" id="chart-progression-section">
+      <div class="chart-title">Progression Guide</div>
+      <div class="chart-sub">What to do next session — based on your recent performance</div>
+      <div id="chart-progression"></div>
+    </div>
+
     <!-- sets per day last 2 weeks -->
     <div class="chart-section">
       <div class="chart-title">Sets Logged — Last 14 Days</div>
@@ -11762,6 +11775,7 @@ function renderTrainingCharts() {
         </div>
       </div>`).join('');
   }
+  renderProgressionGuide();
   renderTrainingHeatmap();
   renderMuscleVolumeChart();
   renderPRBoard();
@@ -11945,6 +11959,60 @@ function renderStrengthChart(key) {
       ${sessions.length > 2 ? `<span style="color:var(--gold)">${sessions.length} sessions</span>` : ''}
       <span>${labels[labels.length-1]}</span>
     </div>`;
+}
+
+function renderProgressionGuide() {
+  const el = document.getElementById('chart-progression');
+  if (!el) return;
+  const log = slLoad();
+
+  // Collect every exercise key that has at least 1 logged session
+  const allKeys = new Set();
+  Object.values(log).forEach(day => Object.keys(day).forEach(k => allKeys.add(k)));
+
+  const increase = [], maintain = [], repsPush = [], starter = [], noData = [];
+
+  allKeys.forEach(key => {
+    if (slExType(key) !== 'weighted') return;
+    const nudge = slSmartNudge(key);
+    if (!nudge) { noData.push(key); return; }
+    switch (nudge.type) {
+      case 'increase': increase.push({ key, nudge }); break;
+      case 'reps':     repsPush.push({ key, nudge }); break;
+      case 'maintain': maintain.push({ key, nudge }); break;
+      case 'start':    starter.push({ key, nudge });  break;
+      default:         noData.push(key);
+    }
+  });
+
+  if (!allKeys.size) {
+    el.innerHTML = '<div class="chart-empty">Log weighted exercises to unlock progression suggestions.</div>';
+    return;
+  }
+
+  const row = (key, nudge, icon, color, action) => {
+    const name = EX[key]?.name || key;
+    return `<div class="prog-row">
+      <div class="prog-row-icon">${icon}</div>
+      <div class="prog-row-name">${name}</div>
+      <div class="prog-row-action" style="color:${color}">${action}</div>
+    </div>`;
+  };
+
+  const group = (label, color, bg, items) => items.length === 0 ? '' : `
+    <div class="prog-group-label" style="color:${color};background:${bg}">${label}</div>
+    <div>${items.join('')}</div>`;
+
+  el.innerHTML = [
+    group('Ready to increase', '#5BC876', 'rgba(91,200,118,.1)',
+      increase.map(({key,nudge}) => row(key, nudge, '↑', '#5BC876', hmDispW(nudge.newWeight)+' '+hmUnitLbl()))),
+    group('Push the reps', 'var(--gold)', 'rgba(201,168,76,.1)',
+      repsPush.map(({key,nudge}) => row(key, nudge, '→', 'var(--gold)', 'More reps @ '+hmDispW(nudge.newWeight)+' '+hmUnitLbl()))),
+    group('Lock it in', 'var(--text3)', 'rgba(255,255,255,.04)',
+      maintain.map(({key,nudge}) => row(key, nudge, '•', 'var(--text3)', 'Hold '+hmDispW(nudge.newWeight)+' '+hmUnitLbl()))),
+    group('Good starting point', '#5AAEE0', 'rgba(90,174,224,.1)',
+      starter.map(({key,nudge}) => row(key, nudge, '★', '#5AAEE0', '~'+hmDispW(nudge.newWeight)+' '+hmUnitLbl()))),
+  ].join('') || '<div class="chart-empty">Not enough sessions yet — keep logging.</div>';
 }
 
 function renderAutoSparklines() {
