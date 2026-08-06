@@ -20839,8 +20839,9 @@ function _dcCurrentCard() { return _dc ? _dc.deck[_dc.idx] : null; }
 function _dcCardImgSrc(val, suit) {
   const faceNames = { J: 'Jack', Q: 'Queen', K: 'King', A: 'Ace' };
   let name = faceNames[val] || val;
-  // Some spades face card filenames are lowercase
-  if (suit === 'spades' && (val === 'Q' || val === 'K')) name = name.toLowerCase();
+  // Files with lowercase prefix (spades Q/K, diamonds J/K)
+  const lc = { J: ['diamonds'], Q: ['spades'], K: ['spades', 'diamonds'] };
+  if (lc[val] && lc[val].includes(suit)) name = name.toLowerCase();
   return 'assets/ui/deck_cards/' + name + '_' + suit + '.png';
 }
 window._dcImgError = function(img) {
