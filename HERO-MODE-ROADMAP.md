@@ -119,3 +119,38 @@ Guild = culture and belonging ("Phoenix Order for life," like Hogwarts houses / 
 5. **P2 backend:** accounts + cloud sync (the first paid infra; unlocks everything social).
 
 *Captured 2026-07-13. Vision by the founder; local-vs-backend split and phasing added as engineering guidance.*
+
+---
+
+## Competitive gaps — things to build when we can
+
+*Catalogued 2026-08-06. None of these are blockers for v1 — Hero Mode already competes on gamification depth and plan generation. These are the gaps that matter once we have real users and want to go head-to-head with paid apps.*
+
+### Must-haves for a paid product (critical)
+
+| Gap | Why it matters | Notes |
+|---|---|---|
+| **Exercise video / GIF demos** | Every major app (Strong, Hevy, Fitbod, Nike) shows how to do the movement. Beginners won't pay without this. | Could start with YouTube embeds keyed to each EX entry — no hosting cost. |
+| **Push notifications** | Workout reminders, streak alerts, quest pings are the #1 retention driver. | Blocked until Capacitor native shell ships to App Store. Infrastructure is already scaffolded. |
+| **Cross-device sync / cloud accounts** | Data is localStorage only — one phone swap = all history gone. Kills word-of-mouth. | Needs P2 backend (Supabase). Don't cross this line until ~100 daily users. |
+
+### Meaningful competitive gaps
+
+| Gap | Why it matters | Notes |
+|---|---|---|
+| **Social / friend activity** | Hevy, Strava, Fitbod all have friend feeds or leaderboards. Without a social layer there's no viral loop beyond the Hero Card share. | P3 in the phasing model. Needs accounts first. |
+| **Searchable nutrition database** | Meal check-ins exist, barcode scanner exists, but there's no food lookup. MyFitnessPal wins every nutrition comparison until there's one. | Could integrate Open Food Facts (free, open-source) or USDA API. |
+| **True AI adaptive programming** | Fitbod uses ML to adjust weight/volume based on performance + muscle recovery. Hero Mode has smart nudges and deload detection — good, not great. | Requires user history data at scale to train properly. |
+| **Wearable integration** | Heart rate, HRV, sleep from Apple Watch / Whoop / Garmin feeds into recovery decisions. | HealthKit stub already in codebase. Wire to cardioCommitSession/sleep when native. |
+| **Apple Watch / Wear OS app** | Logging sets from your wrist during a workout is a strong retention hook. | Needs native shell + significant extra dev. Long-term. |
+
+### Nice-to-have (polish tier)
+
+| Gap | Why it matters | Notes |
+|---|---|---|
+| **30-day / timed challenges** | Nike Training Club and others drive engagement with structured limited-time programs. | Could be built locally — no backend needed. |
+| **In-workout audio coaching** | TTS cues, rep counts, rest countdowns with voice. Hands-free in the gym. | Web Speech API available now. |
+| **Side-by-side progress photo comparison** | Body transformation is the #1 motivator. Showing before/after in one frame is powerful. | Photo storage already exists. Compare view is a UI addition only. |
+| **Better onboarding funnel** | The goal-builder is solid but onboarding benchmarks (What's your bench? How far can you run?) would make the starting weights and plan far more accurate from day one. | Builds on the existing cold-start fix (hmStartWeight). |
+| **Richer sound design** | WebAudio SFX engine exists but sounds are basic. A proper level-up fanfare, PR impact, and chest-open sound would sell the RPG feel hard. | Agreed deferred item — code-only, zero asset cost. |
+| **CSV / health app data export** | Power users want their data portable. Also a trust signal. | CSV export already partially built. |
