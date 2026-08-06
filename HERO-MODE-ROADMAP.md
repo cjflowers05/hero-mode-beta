@@ -130,9 +130,10 @@ Guild = culture and belonging ("Phoenix Order for life," like Hogwarts houses / 
 
 | Gap | Why it matters | Notes |
 |---|---|---|
-| **Exercise video / GIF demos** | Every major app (Strong, Hevy, Fitbod, Nike) shows how to do the movement. Beginners won't pay without this. | Could start with YouTube embeds keyed to each EX entry — no hosting cost. |
 | **Push notifications** | Workout reminders, streak alerts, quest pings are the #1 retention driver. | Blocked until Capacitor native shell ships to App Store. Infrastructure is already scaffolded. |
 | **Cross-device sync / cloud accounts** | Data is localStorage only — one phone swap = all history gone. Kills word-of-mouth. | Needs P2 backend (Supabase). Don't cross this line until ~100 daily users. |
+
+> ✅ **Exercise video demos** — already shipped. 206 guided videos in `/MoveKit_Videos/`. Streamed, not cached.
 
 ### Meaningful competitive gaps
 
