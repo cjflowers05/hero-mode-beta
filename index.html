@@ -7678,8 +7678,10 @@ function refreshAllDoneBtns() {
   });
 }
 
+let _hmSumDate = '';
 function showSessionSummary() {
   const today    = todayKey();
+  _hmSumDate = today;
   const log      = slLoad();
   const todayLog = log[today] || {};
   const prs      = slLoadPRs();
@@ -7756,6 +7758,9 @@ function showSessionSummary() {
       </div>
       ${prBlock}
       ${volDeltaHtml}
+      <textarea id="sess-sum-note" placeholder="How did it feel? (optional)" rows="2"
+        style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:8px 10px;resize:none;margin-bottom:10px;outline:none"
+        oninput="localStorage.setItem('hm-session-note-'+_hmSumDate, this.value)">${localStorage.getItem('hm-session-note-'+today)||''}</textarea>
       <button class="sess-sum-close" onclick="closeSessionSummary()">CLOSE</button>
     </div>`;
 
@@ -12082,14 +12087,17 @@ function renderSessionHistory() {
       return `<div class="sh-ex-row"><span class="sh-ex-name">${name}</span><span class="sh-ex-sets">${setsStr}</span></div>`;
     }).join('');
 
+    const note = localStorage.getItem('hm-session-note-' + date) || '';
+    const noteHtml = note ? `<div style="font-style:italic;font-size:11px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.05)">"${note}"</div>` : '';
+
     return `<div class="sh-row">
       <div class="sh-header" onclick="shToggle(${i})">
         <div class="sh-date">${lbl}<br><span style="color:var(--text3)">${dow}</span></div>
-        <div class="sh-name">${exNames}</div>
+        <div class="sh-name">${note ? '📝 ' : ''}${exNames}</div>
         <div class="sh-meta">${volStr}</div>
         <div class="sh-chevron" id="sh-chev-${i}">›</div>
       </div>
-      <div class="sh-detail" id="sh-det-${i}">${detailRows}</div>
+      <div class="sh-detail" id="sh-det-${i}">${detailRows}${noteHtml}</div>
     </div>`;
   }).join('');
 }
