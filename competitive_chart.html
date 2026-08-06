@@ -1,0 +1,774 @@
+<title>Hero Mode vs The Competition</title>
+<style>
+:root {
+  --bg: #0b0d13;
+  --surface: #12151e;
+  --elevated: #1a1e2b;
+  --border: #252838;
+  --hero-col: #111a2e;
+  --hero-accent: #3b82f6;
+  --hero-glow: rgba(59,130,246,0.15);
+  --gold: #f5a623;
+  --yes: #22c55e;
+  --partial: #f59e0b;
+  --no: #2e3347;
+  --no-text: #4b5470;
+  --text: #e8eaf2;
+  --text2: #8b92ab;
+  --text3: #474e68;
+  --section-bg: #0e1018;
+  --section-fg: #3b82f6;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #eef1f8;
+    --surface: #ffffff;
+    --elevated: #f4f6fb;
+    --border: #d5daea;
+    --hero-col: #eff5ff;
+    --hero-accent: #2563eb;
+    --hero-glow: rgba(37,99,235,0.10);
+    --gold: #b45309;
+    --yes: #16a34a;
+    --partial: #d97706;
+    --no: #e5e8f0;
+    --no-text: #9ca3af;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --section-bg: #e5e8f2;
+    --section-fg: #2563eb;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0d13; --surface: #12151e; --elevated: #1a1e2b;
+  --border: #252838; --hero-col: #111a2e; --hero-accent: #3b82f6;
+  --hero-glow: rgba(59,130,246,0.15); --gold: #f5a623;
+  --yes: #22c55e; --partial: #f59e0b; --no: #2e3347; --no-text: #4b5470;
+  --text: #e8eaf2; --text2: #8b92ab; --text3: #474e68;
+  --section-bg: #0e1018; --section-fg: #3b82f6;
+}
+:root[data-theme="light"] {
+  --bg: #eef1f8; --surface: #ffffff; --elevated: #f4f6fb;
+  --border: #d5daea; --hero-col: #eff5ff; --hero-accent: #2563eb;
+  --hero-glow: rgba(37,99,235,0.10); --gold: #b45309;
+  --yes: #16a34a; --partial: #d97706; --no: #e5e8f0; --no-text: #9ca3af;
+  --text: #111827; --text2: #4b5563; --text3: #9ca3af;
+  --section-bg: #e5e8f2; --section-fg: #2563eb;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  padding: 36px 20px 64px;
+  line-height: 1.45;
+}
+
+/* ── PAGE HEADER ── */
+.page-header { max-width: 980px; margin: 0 auto 28px; }
+
+.eyebrow {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: var(--hero-accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: clamp(28px, 5.5vw, 46px);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  line-height: 1;
+  color: var(--text);
+}
+h1 em { color: var(--hero-accent); font-style: normal; }
+
+.subtitle {
+  margin-top: 10px;
+  color: var(--text2);
+  font-size: 14px;
+  max-width: 540px;
+  line-height: 1.55;
+}
+
+/* ── LEGEND ── */
+.legend {
+  max-width: 980px;
+  margin: 0 auto 16px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text2);
+  align-items: center;
+}
+.li { display: flex; align-items: center; gap: 5px; }
+.dot-yes  { width:10px; height:10px; border-radius:50%; background:var(--yes); flex-shrink:0; }
+.dot-part { width:10px; height:10px; border-radius:50%; background:var(--partial); flex-shrink:0; }
+.dot-no   { width:10px; height:10px; border-radius:50%; background:var(--no); border:1px solid var(--border); flex-shrink:0; }
+.dot-star { width:10px; height:10px; border-radius:2px; background:var(--gold); flex-shrink:0; }
+
+/* ── TABLE WRAPPER ── */
+.table-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  min-width: 740px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+/* ── THEAD ── */
+thead tr {
+  background: var(--elevated);
+  border-bottom: 2px solid var(--border);
+}
+th {
+  padding: 14px 8px 12px;
+  text-align: center;
+  vertical-align: bottom;
+}
+th.f { text-align: left; padding-left: 18px; width: 196px; min-width: 160px; }
+
+.th-app { display: block; font-size: 12px; font-weight: 800; color: var(--text); letter-spacing: -.01em; }
+.th-cost { display: block; font-size: 10px; color: var(--text3); font-weight: 400; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+th.hero-th {
+  background: var(--hero-col);
+  border-left: 2px solid var(--hero-accent);
+  border-right: 2px solid var(--hero-accent);
+  box-shadow: inset 0 0 20px var(--hero-glow);
+}
+th.hero-th .th-app { color: var(--hero-accent); }
+th.hero-th .th-cost { color: var(--hero-accent); opacity: .7; }
+
+.you-badge {
+  display: inline-block;
+  background: var(--hero-accent);
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── SECTION ROWS ── */
+.sect td {
+  background: var(--section-bg);
+  color: var(--section-fg);
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding: 9px 18px 7px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.sect td.hero-sect {
+  background: color-mix(in srgb, var(--section-bg) 60%, var(--hero-accent) 40%);
+  border-left: 2px solid var(--hero-accent);
+  border-right: 2px solid var(--hero-accent);
+}
+
+/* ── DATA ROWS ── */
+tr.row { border-bottom: 1px solid var(--border); }
+tr.row:last-child { border-bottom: none; }
+tr.row:hover td { background: var(--elevated); }
+tr.row:hover td.hc { background: color-mix(in srgb, var(--hero-col) 75%, var(--hero-accent) 25%); }
+
+td {
+  padding: 9px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+td.fn {
+  text-align: left;
+  padding-left: 18px;
+  color: var(--text2);
+  font-size: 12px;
+}
+td.hc {
+  background: var(--hero-col);
+  border-left: 2px solid var(--hero-accent);
+  border-right: 2px solid var(--hero-accent);
+}
+
+/* ── ICONS ── */
+.y  { display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--yes); color:#fff; font-size:10px; font-weight:900; line-height:18px; }
+.p  { display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--partial); color:#fff; font-size:10px; font-weight:900; line-height:18px; }
+.n  { display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--no); color:var(--no-text); font-size:11px; font-weight:700; line-height:18px; }
+.yh { display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--hero-accent); color:#fff; font-size:10px; font-weight:900; line-height:18px; }
+.star {
+  display:inline-flex; align-items:center; gap:3px;
+  background: color-mix(in srgb, var(--gold) 15%, transparent);
+  border: 1px solid var(--gold);
+  border-radius:4px;
+  padding: 2px 6px;
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing:.04em;
+  white-space:nowrap;
+}
+
+/* ── SCORE BAR ── */
+.score-row td {
+  padding: 12px 8px;
+  background: var(--elevated);
+  border-top: 2px solid var(--border);
+}
+.score-row td.fn { color: var(--text); font-weight: 700; font-size: 12px; }
+.score-label { font-size: 11px; color: var(--text2); display:block; margin-bottom:4px; }
+.score-bar-wrap { height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.score-bar { height:100%; border-radius:3px; transition:width .4s; }
+.score-num { font-size:11px; font-weight:700; margin-top:3px; color:var(--text2); }
+td.hc .score-bar-wrap .score-bar { background: var(--hero-accent); }
+td:not(.hc) .score-bar-wrap .score-bar { background: var(--yes); }
+
+/* ── PRICING ── */
+.section-title {
+  max-width: 980px;
+  margin: 40px auto 14px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--hero-accent);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pricing-grid {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+}
+
+.pc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.pc.you {
+  border-color: var(--hero-accent);
+  background: var(--hero-col);
+  box-shadow: 0 0 0 1px var(--hero-accent), 0 6px 30px var(--hero-glow);
+}
+
+.pc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.pc-name { font-weight: 800; font-size: 13px; color: var(--text); }
+.pc-you-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  background: var(--hero-accent);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.tier {
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.tier-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+.tier-name { font-size: 11.5px; color: var(--text2); font-weight: 500; }
+.tier-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.tier-price.free { color: var(--yes); }
+.tier-note { font-size: 10.5px; color: var(--text3); line-height: 1.4; }
+
+/* ── FOOTNOTE ── */
+.footnote {
+  max-width: 980px;
+  margin: 22px auto 0;
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  line-height: 1.6;
+}
+</style>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="eyebrow">Competitive Analysis · August 2026</div>
+  <h1>Hero Mode <em>vs</em> The Field</h1>
+  <p class="subtitle">Top 5 workout apps by active users, compared across workouts, nutrition, wellness, gamification, and cost.</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="li"><span class="dot-yes"></span> Supported</span>
+  <span class="li"><span class="dot-part"></span> Partial / paywalled</span>
+  <span class="li"><span class="dot-no"></span> Not available</span>
+  <span class="li"><span class="dot-star"></span> Hero Mode exclusive</span>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+<table>
+<colgroup>
+  <col style="width:196px">
+  <col><col><col><col><col>
+  <col>
+</colgroup>
+<thead>
+<tr>
+  <th class="f"></th>
+  <th>
+    <span class="th-app">MyFitnessPal</span>
+    <span class="th-cost">Free / $19.99 mo</span>
+  </th>
+  <th>
+    <span class="th-app">Nike TC</span>
+    <span class="th-cost">Mostly free</span>
+  </th>
+  <th>
+    <span class="th-app">Peloton</span>
+    <span class="th-cost">$12.99–$44/mo</span>
+  </th>
+  <th>
+    <span class="th-app">Fitbod</span>
+    <span class="th-cost">Free / $12.99 mo</span>
+  </th>
+  <th>
+    <span class="th-app">Jefit</span>
+    <span class="th-cost">Free / $6.99 mo</span>
+  </th>
+  <th class="hero-th">
+    <span class="you-badge">You Are Here</span>
+    <span class="th-app">Hero Mode</span>
+    <span class="th-cost">Free (PWA)</span>
+  </th>
+</tr>
+</thead>
+<tbody>
+
+<!-- WORKOUTS -->
+<tr class="sect"><td colspan="6">Workouts</td><td class="hero-sect"></td></tr>
+
+<tr class="row">
+  <td class="fn">Goal-based plan generation</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="p">◑</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="p">◑</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Custom session logging</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Guided video instruction</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="p">◑</span></td>
+  <td class="hc"><span class="n">✕</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Specialty workout modes (Deck of Cards)</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">In-app rest timer</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Phase / periodization planning</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="p">◑</span></td>
+  <td><span class="p">◑</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+
+<!-- NUTRITION -->
+<tr class="sect"><td colspan="6">Nutrition</td><td class="hero-sect"></td></tr>
+
+<tr class="row">
+  <td class="fn">Calorie &amp; macro tracking</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Water intake logging</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Recipe browser</td>
+  <td><span class="p">◑</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Macro target calculator</td>
+  <td><span class="p">◑</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+
+<!-- WELLNESS -->
+<tr class="sect"><td colspan="6">Wellness</td><td class="hero-sect"></td></tr>
+
+<tr class="row">
+  <td class="fn">Body weight tracking</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Progress photos</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Sleep logging</td>
+  <td><span class="p">◑</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Soreness / recovery check-in</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Alcohol tracking</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Pet / dog walk tracker</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Vitamin &amp; supplement log</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+
+<!-- GAMIFICATION -->
+<tr class="sect"><td colspan="6">Gamification</td><td class="hero-sect"></td></tr>
+
+<tr class="row">
+  <td class="fn">XP &amp; hero leveling system</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Daily quests &amp; chest rewards</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Achievement badges</td>
+  <td><span class="p">◑</span></td>
+  <td><span class="p">◑</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Unlockable hero themes</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td class="hc"><span class="star">★ Only us</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Streak tracking</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+
+<!-- PLATFORM -->
+<tr class="sect"><td colspan="6">Platform</td><td class="hero-sect"></td></tr>
+
+<tr class="row">
+  <td class="fn">Works offline</td>
+  <td><span class="p">◑</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">No subscription to use core features</td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="p">◑</span></td>
+  <td class="hc"><span class="yh">✓</span></td>
+</tr>
+<tr class="row">
+  <td class="fn">Social / community features</td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="y">✓</span></td>
+  <td><span class="n">✕</span></td>
+  <td><span class="y">✓</span></td>
+  <td class="hc"><span class="n">✕</span></td>
+</tr>
+
+<!-- SCORE ROW -->
+<tr class="score-row">
+  <td class="fn">Feature coverage</td>
+  <td>
+    <span class="score-label">14 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:56%"></div></div>
+    <div class="score-num">56%</div>
+  </td>
+  <td>
+    <span class="score-label">8 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:32%"></div></div>
+    <div class="score-num">32%</div>
+  </td>
+  <td>
+    <span class="score-label">9 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:36%"></div></div>
+    <div class="score-num">36%</div>
+  </td>
+  <td>
+    <span class="score-label">11 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:44%"></div></div>
+    <div class="score-num">44%</div>
+  </td>
+  <td>
+    <span class="score-label">12 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:48%"></div></div>
+    <div class="score-num">48%</div>
+  </td>
+  <td class="hc">
+    <span class="score-label" style="color:var(--hero-accent)">24 / 25</span>
+    <div class="score-bar-wrap"><div class="score-bar" style="width:96%"></div></div>
+    <div class="score-num" style="color:var(--hero-accent);font-weight:800">96%</div>
+  </td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<div class="legend" style="margin-top:10px">
+  <span style="color:var(--text3);font-size:11px;font-style:italic">◑ = feature exists but limited in scope or gated behind a paid plan</span>
+</div>
+
+<!-- PRICING -->
+<div class="section-title">Tier Breakdown &amp; Pricing</div>
+
+<div class="pricing-grid">
+
+  <div class="pc">
+    <div class="pc-head"><span class="pc-name">MyFitnessPal</span></div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Free</span><span class="tier-price free">$0</span></div>
+      <div class="tier-note">Calorie tracking, food log, basic macros, exercise log, community forums</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Premium Monthly</span><span class="tier-price">$19.99/mo</span></div>
+      <div class="tier-note">Advanced macros, meal planning, guided plans, calorie goal adjust, no ads</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Premium Annual</span><span class="tier-price">$79.99/yr</span></div>
+      <div class="tier-note">Same as monthly — ~$6.67/mo billed once a year</div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="pc-head"><span class="pc-name">Nike Training Club</span></div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Free</span><span class="tier-price free">$0</span></div>
+      <div class="tier-note">190+ workouts across all levels and types — yoga, strength, endurance — no time limit on core library</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Premium Content</span><span class="tier-price">Varies</span></div>
+      <div class="tier-note">Select expert-led programs and series may require purchase; core offering remains largely free</div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="pc-head"><span class="pc-name">Peloton Digital</span></div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">App One</span><span class="tier-price">$12.99/mo</span></div>
+      <div class="tier-note">3 class types, limited library, no equipment required</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">App+</span><span class="tier-price">$24.00/mo</span></div>
+      <div class="tier-note">Full class library — cycling, strength, yoga, running, meditation, scenic routes</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">All-Access (w/ hardware)</span><span class="tier-price">$44.00/mo</span></div>
+      <div class="tier-note">Unlimited household members; Bike, Tread, or Row required</div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="pc-head"><span class="pc-name">Fitbod</span></div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Free Trial</span><span class="tier-price free">$0</span></div>
+      <div class="tier-note">3 workouts to try — no ongoing free tier after trial ends</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Monthly</span><span class="tier-price">$12.99/mo</span></div>
+      <div class="tier-note">AI workout generation, muscle recovery modeling, unlimited logging</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Annual</span><span class="tier-price">$79.99/yr</span></div>
+      <div class="tier-note">~$6.67/mo — same features as monthly</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Lifetime</span><span class="tier-price">$159.99</span></div>
+      <div class="tier-note">One-time purchase, all future updates included</div>
+    </div>
+  </div>
+
+  <div class="pc">
+    <div class="pc-head"><span class="pc-name">Jefit</span></div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Free</span><span class="tier-price free">$0</span></div>
+      <div class="tier-note">Basic workout tracking, community plans, exercise database, limited analytics</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Elite Monthly</span><span class="tier-price">$6.99/mo</span></div>
+      <div class="tier-note">Advanced analytics, custom plan builder, no ads, priority support</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Elite Annual</span><span class="tier-price">$53.99/yr</span></div>
+      <div class="tier-note">~$4.50/mo — best value among all competitors</div>
+    </div>
+  </div>
+
+  <div class="pc you">
+    <div class="pc-head">
+      <span class="pc-name">Hero Mode</span>
+      <span class="pc-you-badge">You</span>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Free — Everything</span><span class="tier-price free">$0</span></div>
+      <div class="tier-note">Full access to every feature: workouts, nutrition, wellness, gamification, dog walk. No account required. Installs as a PWA on any device.</div>
+    </div>
+    <div class="tier">
+      <div class="tier-top"><span class="tier-name">Premium (planned)</span><span class="tier-price" style="color:var(--hero-accent)">TBD</span></div>
+      <div class="tier-note">Cloud sync, social features, and advanced analytics slated for v2 — core app stays free</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="footnote">* Pricing as of August 2026. Competitor feature data based on publicly available information and may vary by region or plan version. ◑ indicates features available only on paid tiers or in notably limited form on free plans. Feature coverage score counts full ✓ as 1 point, partial ◑ as 0.5.</p>

@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v49'; // v49: Video reveals use object-fit:contain so full video is visible
+const CACHE_VERSION = 'hero-mode-v50'; // v50: Add HERO-MODE-DEV-GUIDE.md — comprehensive programmer reference
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
