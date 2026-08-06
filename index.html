@@ -522,6 +522,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .strength-line-wrap{position:relative;height:90px;margin-bottom:8px}
 .strength-line-svg{width:100%;height:90px;overflow:visible}
 .strength-line-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px}
+.auto-spark-row{margin-bottom:16px}
+.auto-spark-name{font-size:12px;color:var(--text);margin-bottom:2px;display:flex;justify-content:space-between;align-items:baseline}
+.auto-spark-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
+.auto-spark-svg{width:100%;height:52px;display:block;overflow:visible}
+.auto-spark-dates{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);margin-top:2px}
+
+/* Session summary overlay */
+.sess-sum-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .25s;pointer-events:none}
+.sess-sum-overlay.open{opacity:1;pointer-events:all}
+.sess-sum-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:24px 20px 20px;max-width:340px;width:100%;text-align:center}
+.sess-sum-icon{font-size:44px;margin-bottom:8px}
+.sess-sum-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;color:var(--gold);margin-bottom:4px}
+.sess-sum-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:20px}
+.sess-sum-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.sess-sum-stat{background:var(--bg3);border-radius:12px;padding:12px 8px}
+.sess-sum-stat-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;margin-bottom:3px}
+.sess-sum-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.sess-sum-prs{background:var(--bg3);border-radius:12px;padding:10px 12px;margin-bottom:16px;text-align:left;display:none}
+.sess-sum-prs-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.08em;margin-bottom:6px}
+.sess-sum-pr-row{font-size:12px;color:var(--text);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.sess-sum-pr-row:last-child{border-bottom:none}
+.sess-sum-vol{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px}
+.sess-sum-vol span{color:var(--text2)}
+.sess-sum-close{width:100%;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;cursor:pointer}
 
 .connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;opacity:0.55}
 .connect-card.connected{border-color:rgba(91,200,118,.35)}
@@ -4852,7 +4876,14 @@ document.addEventListener('DOMContentLoaded', () => {
       <div id="chart-pr-board"></div>
     </div>
 
-    <!-- Strength Progress -->
+    <!-- Auto sparklines for top lifts -->
+    <div class="chart-section">
+      <div class="chart-title">Your Top Lifts</div>
+      <div class="chart-sub">Weight trend — most-logged exercises</div>
+      <div id="chart-auto-sparklines"></div>
+    </div>
+
+    <!-- Strength Progress (manual pick) -->
     <div class="chart-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
         <div class="chart-title" style="margin-bottom:0">Strength Progress</div>
@@ -7535,6 +7566,7 @@ function toggleDayDone(daySlot, btn, event) {
     addCompletedSlot(todayKey(), daySlot);
     if (window.hmXP) hmXP('days', 50);
     if (window.hmSfx) hmSfx('done');
+    setTimeout(showSessionSummary, 350);
   }
   saveDB();
   refreshAllDoneBtns();
@@ -7551,6 +7583,94 @@ function refreshAllDoneBtns() {
     btn.classList.toggle('is-done', done);
   });
 }
+
+function showSessionSummary() {
+  const today    = todayKey();
+  const log      = slLoad();
+  const todayLog = log[today] || {};
+  const prs      = slLoadPRs();
+  const xpState  = typeof hmXPLoad === 'function' ? hmXPLoad() : null;
+
+  // Today's aggregate stats
+  let totalSets = 0, totalVol = 0;
+  Object.values(todayLog).forEach(sets => {
+    totalSets += sets.length;
+    sets.forEach(s => { totalVol += (s.w||0)*(s.r||0); });
+  });
+
+  // PRs set today
+  const todayPRs = Object.entries(prs)
+    .filter(([,pr]) => pr.date === today)
+    .map(([key]) => EX[key]?.name || key);
+
+  // XP earned today
+  const xpEarned = (xpState && xpState.xpDay && xpState.xpDay.date === today) ? xpState.xpDay.earned : 0;
+
+  // Volume vs previous session (find last non-today training day)
+  const prevDate = Object.keys(log).filter(d => d < today && Object.keys(log[d]).length).sort().pop();
+  let volDeltaHtml = '';
+  if (prevDate && totalVol > 0) {
+    let prevVol = 0;
+    Object.values(log[prevDate]).forEach(sets => sets.forEach(s => { prevVol += (s.w||0)*(s.r||0); }));
+    if (prevVol > 0) {
+      const pct  = Math.round(((totalVol - prevVol) / prevVol) * 100);
+      const sign = pct >= 0 ? '+' : '';
+      const col  = pct >= 0 ? '#5BC876' : '#E07060';
+      const d    = new Date(prevDate+'T12:00:00');
+      const lbl  = (d.getMonth()+1)+'/'+(d.getDate());
+      volDeltaHtml = `<div class="sess-sum-vol">Volume vs ${lbl}: <span style="color:${col}">${sign}${pct}%</span></div>`;
+    }
+  }
+
+  const msgs = ['Session locked in.','Work done.','Another one.','That\'s training.','Keep stacking.'];
+  const sub  = msgs[Math.floor(Math.random()*msgs.length)];
+
+  // Build overlay
+  let ov = document.getElementById('sess-sum-overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'sess-sum-overlay';
+    ov.className = 'sess-sum-overlay';
+    ov.onclick = e => { if (e.target === ov) closeSessionSummary(); };
+    document.body.appendChild(ov);
+  }
+
+  const prBlock = todayPRs.length ? `
+    <div class="sess-sum-prs" style="display:block">
+      <div class="sess-sum-prs-title">🏆 NEW PRS TODAY</div>
+      ${todayPRs.map(n=>`<div class="sess-sum-pr-row">${n}</div>`).join('')}
+    </div>` : '';
+
+  ov.innerHTML = `
+    <div class="sess-sum-card">
+      <div class="sess-sum-icon">💪</div>
+      <div class="sess-sum-title">Session Complete</div>
+      <div class="sess-sum-sub">${sub}</div>
+      <div class="sess-sum-stats">
+        <div class="sess-sum-stat">
+          <div class="sess-sum-stat-val" style="color:var(--gold)">${totalSets}</div>
+          <div class="sess-sum-stat-lbl">Sets</div>
+        </div>
+        <div class="sess-sum-stat">
+          <div class="sess-sum-stat-val" style="color:#5BC876">${todayPRs.length}</div>
+          <div class="sess-sum-stat-lbl">PRs</div>
+        </div>
+        <div class="sess-sum-stat">
+          <div class="sess-sum-stat-val" style="color:#5AAEE0">+${xpEarned}</div>
+          <div class="sess-sum-stat-lbl">XP</div>
+        </div>
+      </div>
+      ${prBlock}
+      ${volDeltaHtml}
+      <button class="sess-sum-close" onclick="closeSessionSummary()">CLOSE</button>
+    </div>`;
+
+  requestAnimationFrame(() => { ov.classList.add('open'); });
+}
+window.closeSessionSummary = function() {
+  const ov = document.getElementById('sess-sum-overlay');
+  if (ov) { ov.classList.remove('open'); setTimeout(() => ov.remove(), 280); }
+};
 
 function initDoneBtns() {
   // Each phase has 6 workout days (day-items). We assign slots p1-d0 … p3-d5.
@@ -11645,6 +11765,7 @@ function renderTrainingCharts() {
   renderTrainingHeatmap();
   renderMuscleVolumeChart();
   renderPRBoard();
+  renderAutoSparklines();
   populateStrengthExPicker();
   // Volume top chart
   const slLog = slLoad();
@@ -11824,6 +11945,75 @@ function renderStrengthChart(key) {
       ${sessions.length > 2 ? `<span style="color:var(--gold)">${sessions.length} sessions</span>` : ''}
       <span>${labels[labels.length-1]}</span>
     </div>`;
+}
+
+function renderAutoSparklines() {
+  const el = document.getElementById('chart-auto-sparklines');
+  if (!el) return;
+  const log = slLoad();
+
+  // Count sessions per exercise key
+  const sessCount = {};
+  Object.values(log).forEach(day => Object.keys(day).forEach(k => { sessCount[k] = (sessCount[k]||0)+1; }));
+  const topKeys = Object.entries(sessCount).sort((a,b)=>b[1]-a[1]).slice(0,4).map(e=>e[0])
+    .filter(k => slExType(k) === 'weighted');
+
+  if (!topKeys.length) {
+    el.innerHTML = '<div class="chart-empty">Log weighted exercises to see trends here.</div>';
+    return;
+  }
+
+  const W = 300, H = 52, PAD = 3;
+  el.innerHTML = topKeys.map(key => {
+    const sessions = Object.entries(log)
+      .filter(([,day]) => day[key]?.length)
+      .map(([date, day]) => ({
+        date,
+        maxW: Math.max(...day[key].map(s => s.w || 0))
+      }))
+      .sort((a,b) => a.date.localeCompare(b.date))
+      .slice(-12);
+
+    if (sessions.length < 2) return '';
+
+    const vals = sessions.map(s => s.maxW);
+    const minV = Math.min(...vals), maxV = Math.max(...vals);
+    const range = maxV - minV || 1;
+    const xStep = (W - PAD*2) / (sessions.length - 1);
+    const yFor  = v => H - PAD - ((v - minV) / range) * (H - PAD*2 - 12);
+    const pts   = sessions.map((s,i) => [PAD + i*xStep, yFor(s.maxW)]);
+    const line  = pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    const area  = line+` L${pts[pts.length-1][0].toFixed(1)},${H} L${PAD},${H} Z`;
+    const last  = sessions[sessions.length-1];
+    const first = sessions[0];
+    const delta = last.maxW - first.maxW;
+    const deltaStr = delta > 0 ? '+'+hmDispW(delta)+' '+hmUnitLbl() : delta < 0 ? hmDispW(delta)+' '+hmUnitLbl() : 'steady';
+    const deltaColor = delta > 0 ? '#5BC876' : delta < 0 ? '#E07060' : 'var(--text3)';
+    const d0 = new Date(first.date+'T12:00:00'), d1 = new Date(last.date+'T12:00:00');
+    const fmt = d => (d.getMonth()+1)+'/'+(d.getDate());
+
+    return `<div class="auto-spark-row">
+      <div class="auto-spark-name">
+        <span>${EX[key]?.name||key}</span>
+        <span class="auto-spark-meta" style="color:${deltaColor}">${deltaStr}</span>
+      </div>
+      <svg class="auto-spark-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="asg-${key}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="var(--gold)" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="${area}" fill="url(#asg-${key})"/>
+        <path d="${line}" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round"/>
+        ${pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===pts.length-1?3:1.8}"
+          fill="${i===pts.length-1?'var(--gold)':'var(--bg2)'}" stroke="var(--gold)" stroke-width="1.2"/>`).join('')}
+        <text x="${pts[pts.length-1][0].toFixed(1)}" y="${(pts[pts.length-1][1]-6).toFixed(1)}" text-anchor="middle"
+          font-family="DM Mono,monospace" font-size="8" fill="var(--gold)">${hmDispW(last.maxW)} ${hmUnitLbl()}</text>
+      </svg>
+      <div class="auto-spark-dates"><span>${fmt(d0)}</span><span>${sessions.length} sessions</span><span>${fmt(d1)}</span></div>
+    </div>`;
+  }).join('');
 }
 
 function renderCardioCharts() {
