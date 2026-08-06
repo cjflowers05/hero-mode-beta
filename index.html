@@ -22114,7 +22114,7 @@ function hmHeroFX(title, sub, emblem){
         ? '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">'
         : '<span style="font-size:120px">' + emblem + '</span>';
   fx.innerHTML =
-    '<video id="hm-anvil-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8">' +
+    '<video id="hm-anvil-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.9">' +
     '<source src="assets/ui/anvil_reveal.mp4" type="video/mp4"></video>' +
     '<div class="fx-emblem" style="position:relative;z-index:1">' + _fxEmbHtml + '</div>' +
     '<div class="fx-title" style="position:relative;z-index:1">' + title + '</div>' +
@@ -22450,7 +22450,7 @@ function hmBadgePop(b) {
     const av = document.createElement('div');
     av.id = 'hm-anvil-pop-overlay';
     av.style.cssText = 'position:fixed;inset:0;z-index:10900;background:#000;opacity:0;transition:opacity .2s;pointer-events:none';
-    av.innerHTML = '<video autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"><source src="assets/ui/anvil_reveal.mp4" type="video/mp4"></video>';
+    av.innerHTML = '<video autoplay muted playsinline style="width:100%;height:100%;object-fit:contain"><source src="assets/ui/anvil_reveal.mp4" type="video/mp4"></video>';
     document.body.appendChild(av);
     requestAnimationFrame(() => { av.style.opacity = '1'; });
     setTimeout(() => {
@@ -22807,7 +22807,7 @@ function hmOpenChest(){
   ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center';
   ov.innerHTML = `
     <div id="hm-chest-p1" style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <video id="hm-chest-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <video id="hm-chest-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
         <source src="assets/ui/chest_reveal.mp4" type="video/mp4">
       </video>
       <button id="hm-chest-open-btn" onclick="hmChestReveal()" style="position:absolute;bottom:calc(44px + env(safe-area-inset-bottom));background:var(--gold);border:none;border-radius:14px;padding:14px 48px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:#000;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0;animation:hmChestSlideUp .5s 1.2s ease-out forwards;z-index:1">CLAIM REWARD ▸</button>
