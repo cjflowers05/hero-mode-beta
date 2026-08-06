@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v47'; // v47: Video reveals — chest_reveal.mp4 for chests, anvil_reveal.mp4 for badges/trophies
+const CACHE_VERSION = 'hero-mode-v48'; // v48: Deck of Cards uses real card images from assets/ui/deck_cards/
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

@@ -766,9 +766,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dc-suit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .dc-suit-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:12px 10px;cursor:pointer;transition:border-color .15s}
 .dc-suit-card:hover{border-color:var(--border2)}
-.dc-suit-symbol{font-size:24px;margin-bottom:4px}
+.dc-suit-symbol{font-size:20px;margin-bottom:2px}
 .dc-suit-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--text3);margin-bottom:6px}
 .dc-suit-exname{font-size:13px;color:var(--text);font-weight:600}
+.dc-suit-img{width:60px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.35);display:block;margin:0 auto 5px}
+.dc-card-img{width:180px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.45);display:block;object-fit:contain}
 .dc-start-btn{width:100%;padding:16px;border-radius:14px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;cursor:pointer;margin-top:4px}
 /* Game screen */
 .dc-progress{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);text-align:center;margin-bottom:12px}
@@ -20775,7 +20777,8 @@ function _dcSetupHtml() {
     const ex = _dc.mapping[s.id];
     const name = (ex && ex.key && EX[ex.key]) ? EX[ex.key].name : (ex && ex.label) || s.name;
     return `<div class="dc-suit-card" onclick="dcPickEx('${s.id}')">
-      <div class="dc-suit-symbol" style="color:${s.color==='red'?'#C0392B':'#111'}">${s.sym}</div>
+      <img class="dc-suit-img" src="assets/ui/deck_cards/Ace_${s.id}.png" alt="${s.sym}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="dc-suit-symbol" style="color:${s.color==='red'?'#C0392B':'#111'};display:none">${s.sym}</div>
       <div class="dc-suit-name">${s.name}</div>
       <div class="dc-suit-exname">${name}</div>
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">tap to change</div>
@@ -20833,6 +20836,25 @@ window.dcStartGame = dcStartGame;
 
 function _dcCurrentCard() { return _dc ? _dc.deck[_dc.idx] : null; }
 
+function _dcCardImgSrc(val, suit) {
+  const faceNames = { J: 'Jack', Q: 'Queen', K: 'King', A: 'Ace' };
+  let name = faceNames[val] || val;
+  // Some spades face card filenames are lowercase
+  if (suit === 'spades' && (val === 'Q' || val === 'K')) name = name.toLowerCase();
+  return 'assets/ui/deck_cards/' + name + '_' + suit + '.png';
+}
+window._dcImgError = function(img) {
+  const s = DC_SUITS.find(s => s.id === img.dataset.suit);
+  if (!s) return;
+  const v = img.dataset.val;
+  const fb = document.createElement('div');
+  fb.className = 'dc-card ' + s.color;
+  fb.innerHTML = '<div class="dc-card-corner"><div class="dc-card-corner-val">' + v + '</div><div class="dc-card-corner-suit">' + s.sym + '</div></div>' +
+    '<div class="dc-card-center">' + s.sym + '</div>' +
+    '<div class="dc-card-corner dc-card-btm"><div class="dc-card-corner-val">' + v + '</div><div class="dc-card-corner-suit">' + s.sym + '</div></div>';
+  img.replaceWith(fb);
+};
+
 function _dcGameHtml() {
   const card = _dcCurrentCard();
   if (!card) return '';
@@ -20854,17 +20876,8 @@ function _dcGameHtml() {
   return `
     <div class="dc-progress">${_dc.idx + 1} of ${total} · ${remain - 1} remaining · ${mm}:${ss}</div>
     <div class="dc-card-wrap">
-      <div class="dc-card ${suit.color}">
-        <div class="dc-card-corner">
-          <div class="dc-card-corner-val">${card.val}</div>
-          <div class="dc-card-corner-suit">${suit.sym}</div>
-        </div>
-        <div class="dc-card-center">${suit.sym}</div>
-        <div class="dc-card-corner dc-card-btm">
-          <div class="dc-card-corner-val">${card.val}</div>
-          <div class="dc-card-corner-suit">${suit.sym}</div>
-        </div>
-      </div>
+      <img class="dc-card-img" src="${_dcCardImgSrc(card.val, card.suit)}" alt="${card.val} of ${card.suit}"
+           data-val="${card.val}" data-suit="${card.suit}" onerror="_dcImgError(this)">
     </div>
     <div class="dc-reps-label">${reps} REPS</div>
     <div class="dc-ex-label">${exName.toUpperCase()}</div>
