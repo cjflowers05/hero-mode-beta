@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v46'; // v46: Session notes — add a note from post-session summary, shown in history
+const CACHE_VERSION = 'hero-mode-v47'; // v47: Video reveals — chest_reveal.mp4 for chests, anvil_reveal.mp4 for badges/trophies
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

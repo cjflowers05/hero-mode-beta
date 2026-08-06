@@ -22088,14 +22088,11 @@ function hmHeroFX(title, sub, emblem){
   if (old) old.remove();
   const fx = document.createElement('div');
   fx.id = 'hero-fx';
-  // Reduced motion: keep the message, drop the pyrotechnics
-  const noMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let particles = '';
-  if (!noMotion) for (let i = 0; i < 20; i++) {
-    const a = (i / 20) * Math.PI * 2;
-    const d = 160 + Math.random() * 190;
-    particles += '<div class="fx-p" style="--dx:' + Math.round(Math.cos(a)*d) + 'px;--dy:' + Math.round(Math.sin(a)*d) + 'px;animation-delay:' + (0.42 + Math.random()*.1).toFixed(2) + 's"></div>';
-  }
+  // Override CSS animation so we control dismissal via video end
+  fx.style.animation = 'none';
+  fx.style.background = 'rgba(0,0,0,.92)';
+  fx.style.opacity = '0';
+  fx.style.transition = 'opacity .3s';
   const _fxEmbHtml = !emblem
     ? '<span style="font-size:120px">⚡</span>'
     : emblem.includes('/')
@@ -22103,12 +22100,27 @@ function hmHeroFX(title, sub, emblem){
       : /^[a-zA-Z]/.test(emblem)
         ? '<img src="assets/ui/emblem-' + emblem + '-lg.png" alt="" onerror="this.src=\'assets/ui/emblem-'+emblem+'.png\'">'
         : '<span style="font-size:120px">' + emblem + '</span>';
-  fx.innerHTML = (noMotion ? '' : '<div class="fx-ring"></div><div class="fx-ring r2"></div>') + particles +
-    '<div class="fx-emblem">' + _fxEmbHtml + '</div>' +
-    '<div class="fx-title">' + title + '</div>' +
-    (sub ? '<div class="fx-sub">' + sub + '</div>' : '');
+  fx.innerHTML =
+    '<video id="hm-anvil-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8">' +
+    '<source src="assets/ui/anvil_reveal.mp4" type="video/mp4"></video>' +
+    '<div class="fx-emblem" style="position:relative;z-index:1">' + _fxEmbHtml + '</div>' +
+    '<div class="fx-title" style="position:relative;z-index:1">' + title + '</div>' +
+    (sub ? '<div class="fx-sub" style="position:relative;z-index:1">' + sub + '</div>' : '');
   document.body.appendChild(fx);
-  setTimeout(() => fx.remove(), noMotion ? 1200 : 2700);
+  requestAnimationFrame(() => { fx.style.opacity = '1'; });
+  const _fxDismiss = () => {
+    if (!fx.parentNode) return;
+    fx.style.transition = 'opacity .5s';
+    fx.style.opacity = '0';
+    setTimeout(() => { if (fx.parentNode) fx.remove(); }, 500);
+  };
+  const vid = document.getElementById('hm-anvil-vid');
+  if (vid) {
+    vid.addEventListener('ended', _fxDismiss);
+    vid.addEventListener('error', () => setTimeout(_fxDismiss, 2200));
+  }
+  // Fallback: always close by 5s
+  setTimeout(_fxDismiss, 5000);
 }
 window.hmHeroFX = hmHeroFX;
 
@@ -22419,6 +22431,23 @@ window.hmXP = hmXP;
 function hmBadgePop(b) {
   const existing = document.getElementById('hm-badge-pop');
   if (existing) existing.remove();
+
+  // Brief anvil flash — only one at a time so rapid badges don't stack
+  if (!document.getElementById('hm-anvil-pop-overlay')) {
+    const av = document.createElement('div');
+    av.id = 'hm-anvil-pop-overlay';
+    av.style.cssText = 'position:fixed;inset:0;z-index:10900;background:#000;opacity:0;transition:opacity .2s;pointer-events:none';
+    av.innerHTML = '<video autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"><source src="assets/ui/anvil_reveal.mp4" type="video/mp4"></video>';
+    document.body.appendChild(av);
+    requestAnimationFrame(() => { av.style.opacity = '1'; });
+    setTimeout(() => {
+      av.style.transition = 'opacity .5s';
+      av.style.opacity = '0';
+      setTimeout(() => av.remove(), 500);
+    }, 1800);
+  }
+
+  // Badge toast slides in after the anvil strike moment
   const el = document.createElement('div');
   el.id = 'hm-badge-pop';
   el.style.cssText = 'position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(30px);z-index:11000;background:var(--bg3);border:1px solid var(--gold);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:88vw';
@@ -22427,15 +22456,15 @@ function hmBadgePop(b) {
     '<div style="font-size:15px;font-weight:700;color:var(--text)">' + b.name + '</div>' +
     (b.col ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:\'DM Mono\',monospace">' + b.col + '</div>' : '') + '</div>';
   document.body.appendChild(el);
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     el.style.opacity = '1';
     el.style.transform = 'translateX(-50%) translateY(0)';
-  });
+  }, 700);
   setTimeout(() => {
     el.style.opacity = '0';
     el.style.transform = 'translateX(-50%) translateY(20px)';
     setTimeout(() => el.remove(), 350);
-  }, 3200);
+  }, 700 + 3200);
 }
 
 // ── STORY CAMPAIGN — comic cut-scenes at level milestones ──
@@ -22759,25 +22788,25 @@ function hmOpenChest(){
   hmSfx('trophy');
   hmRenderQuests();
 
-  // Phase 1: closed chest reveal
+  // Phase 1: chest reveal video
   const ov = document.createElement('div');
   ov.id = 'hm-chest-overlay';
-  ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:rgba(0,0,0,.97);display:flex;flex-direction:column;align-items:center;justify-content:center';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:13000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center';
   ov.innerHTML = `
-    <div id="hm-chest-p1" style="text-align:center;padding:32px 24px;max-width:360px;opacity:0;transform:scale(.88);transition:opacity .35s,transform .35s">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.2em;margin-bottom:28px">⚔️ ALL QUESTS COMPLETE</div>
-      <div id="hm-chest-icon" style="font-size:104px;line-height:1;margin-bottom:22px;display:inline-block;animation:hmChestPulse 1.8s ease-in-out infinite">📦</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:8px">CHEST READY</div>
-      <div style="font-size:13px;color:var(--text3);margin-bottom:36px;line-height:1.5">Your reward is waiting inside</div>
-      <button id="hm-chest-open-btn" onclick="hmChestReveal()" style="background:var(--gold);border:none;border-radius:14px;padding:16px 52px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.08em;color:#000;cursor:pointer;-webkit-tap-highlight-color:transparent">OPEN THE CHEST</button>
+    <div id="hm-chest-p1" style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <video id="hm-chest-vid" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <source src="assets/ui/chest_reveal.mp4" type="video/mp4">
+      </video>
+      <button id="hm-chest-open-btn" onclick="hmChestReveal()" style="position:absolute;bottom:calc(44px + env(safe-area-inset-bottom));background:var(--gold);border:none;border-radius:14px;padding:14px 48px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:#000;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0;animation:hmChestSlideUp .5s 1.2s ease-out forwards;z-index:1">CLAIM REWARD ▸</button>
     </div>`;
   document.body.appendChild(ov);
-  requestAnimationFrame(() => {
-    const p1 = document.getElementById('hm-chest-p1');
-    if (p1) { p1.style.opacity = '1'; p1.style.transform = 'scale(1)'; }
-  });
-  // Auto-trigger after 4s if user doesn't tap
-  window._hmChestAutoTimer = setTimeout(() => { if (document.getElementById('hm-chest-overlay')) hmChestReveal(); }, 4000);
+  const _chestVid = document.getElementById('hm-chest-vid');
+  if (_chestVid) {
+    _chestVid.addEventListener('ended', () => { if (document.getElementById('hm-chest-overlay')) hmChestReveal(); });
+    _chestVid.addEventListener('error',  () => { if (document.getElementById('hm-chest-overlay')) hmChestReveal(); });
+  }
+  // Fallback auto-trigger at 8s
+  window._hmChestAutoTimer = setTimeout(() => { if (document.getElementById('hm-chest-overlay')) hmChestReveal(); }, 8000);
   ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
 }
 
