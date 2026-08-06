@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v50'; // v50: Add HERO-MODE-DEV-GUIDE.md — comprehensive programmer reference
+const CACHE_VERSION = 'hero-mode-v51'; // v51: Earn-to-advance phase progression — phases unlock via sessions/PRs, not calendar
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

@@ -220,6 +220,14 @@ const xp  = hmXPLoad();         // full XP state object
 4. `hmRenderTrain()` converts that plan to HTML and inserts it into `#tab-workout`
 5. `hmRefreshIntegrations()` re-runs all row-level logic after rendering (done buttons, swap buttons, log buttons, etc.)
 
+**Phase progression (earn-to-advance):**
+Phases no longer auto-advance on a calendar schedule. Each phase has unlock criteria tracked in `localStorage['hero-phase-state--{pid}']`:
+- Foundation → Build: 6 completed sessions since entering Foundation
+- Build → Peak: 8 sessions + any PR logged since entering Build
+- Bypass (same fanfare): available after 2 weeks in the phase regardless of criteria
+
+Key functions: `hmPhaseStateLoad()`, `hmPhaseStateSave(s)`, `hmPhaseProgress()`, `hmPhaseAdvance()`. Sessions are counted via `hmPhaseSessionCount(startDate)` reading `heromode_v2.completedDays` directly. PRs are checked via `hmPhasePRAfter(startDate)` reading `hero-prs` directly (not via Block 2 helpers — these functions run from Block 1).
+
 **To add a new goal type:**
 - Add a goal ID to the `#gp-goal` button group in the HTML
 - Add a split definition to `HM_SPLITS`
@@ -580,7 +588,7 @@ const CACHE_VERSION = 'hero-mode-v49'; // change this number on every deploy
 
 **Video files are NOT cached** by the service worker (the `if (url.pathname.includes('/MoveKit_Videos/'))` exemption — add any large video directories here to prevent cache quota exhaustion). The `assets/ui/deck_cards/` images ARE cached.
 
-**Current version:** v50 (as of 2026-08-06)
+**Current version:** v51 (as of 2026-08-06)
 
 **Dev gotcha:** if you forget to bump the SW version, existing users won't see your changes. See [Section 9](#9-key-dev-gotchas) for how to force-clear the cache during development.
 
