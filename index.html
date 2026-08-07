@@ -12690,15 +12690,18 @@ function ntMcApply() {
 }
 
 // ── WHAT'S NEW ──
-const HM_WN_KEY = 'hero-wn-seen-v6';
+const HM_WN_KEY = 'hero-wn-seen-v7';
 const HM_WHATS_NEW = [
+  { icon:'⏱', name:'Configurable Rest Timer', desc:'Set your default rest-timer duration in Settings → TRAINING. Choose Off, 0:45, 1:00, 1:30, 2:00, or 3:00 — the timer auto-starts after every logged set.' },
+  { icon:'📝', name:'Session Notes', desc:'A note card at the bottom of the Workout tab auto-saves per day. Jot down how the session went, what to focus on next time, or anything else.' },
+  { icon:'🛡', name:'Streak Shields', desc:'Earn up to 3 Streak Shields at XP milestones. If you miss a day and open the app, you\'ll be offered the chance to spend one shield and protect your streak.' },
+  { icon:'↗', name:'Share Your Workout', desc:'Tap ↗ Share Workout in the session-note card to generate a 1080×1080 summary card you can post to socials or send to friends.' },
+  { icon:'🎯', name:'Workout Check-in Timing', desc:'The mood & time check-in now appears exactly when you tap your first exercise of the day — not on app open.' },
   { icon:'🌸', name:'Signature Themes', desc:'Three new personal themes — Mom Mode, Dad Mode, and Forge — sit at the top of the theme picker with their own icons, colors, and activation flash.' },
   { icon:'⚙️', name:'Customize Your Tabs', desc:'Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide any section. Your layout is saved per device.' },
   { icon:'👆', name:'Swipe Between Tabs', desc:'Swipe left or right anywhere in the app to move between tabs — Today, Train, Log, Nutrition, Recipes, Wellness, and Progress.' },
   { icon:'🎁', name:'Chest Opening Moment', desc:'Completing all 3 daily quests now triggers a full-screen animated chest opening with confetti, a bonus XP callout, and a motivational message.' },
   { icon:'🏅', name:'Badge Unlock Card', desc:'Earning a badge now slides up a styled card notification — icon, name, and category — instead of a plain text toast.' },
-  { icon:'✏️', name:'Rename Your Hero', desc:'Tap the ✏️ pencil next to your hero name in the profile chip to rename your hero at any time.' },
-  { icon:'🦸', name:'Signature Icons Everywhere', desc:'Mom Mode, Dad Mode, and Forge icons now appear in the Trophy Case, rank pill, training banner, hero card, and level-up flash.' },
 ];
 
 function hmShowWhatsNew() {
@@ -23129,7 +23132,8 @@ const HM_TOUR_STEPS = [
   { sel:'#daily-quests',         emoji:'⚔️', title:'Daily Quests',       text:'Three missions a day. Complete them, claim the XP, and open the chest for a bonus. Small wins, every day.' },
   { sel:'#custom-workout-entry', emoji:'⚡', title:'Custom Sessions',    text:'Off-plan day? Build your own session from scratch or add extra exercises to today\'s workout.' },
   { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Theme',      text:'Toggle sound here, and tap the 🎨 next to it to change your hero theme — colors, emblem, and even the sound effects.' },
-  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, contact the developer, or send a feature request. The legal disclaimer also lives here.' },
+  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, set your default rest timer, and more. The legal disclaimer also lives here.' },
+  { sel:'#session-note-card',    emoji:'📝', title:'Session Notes',      text:'Leave a note about how your workout went — it auto-saves daily. Tap ↗ Share Workout to generate a shareable summary card. Streak Shields 🛡 are earned here too as you bank XP.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
   { sel:'.tab-bar',              emoji:'🧭', title:'Get Around',         text:'Train, Log, Nutrition, Recipes, Wellness, and Progress live along the bottom. Swipe left or right anywhere to switch tabs. Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide sections. Your awards and charts are under Progress. Go be a hero. 💪' },
 ];

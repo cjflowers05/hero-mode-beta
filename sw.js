@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v59'; // v59: Configurable rest timer, session notes, streak shields, share card
+const CACHE_VERSION = 'hero-mode-v60'; // v60: What's New v7, Tour steps updated, dev guide complete
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

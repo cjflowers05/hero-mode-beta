@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-07.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-07. Current SW version: v59.*
 
 ---
 
@@ -191,6 +191,13 @@ All data is stored in `localStorage`. Keys are prefixed `heromode-` or `hero-` (
 | `hero-recap-pref` | string | Daily scorecard timing: `'early'` (19:00), `'late'` (22:00, default), `'morning'` (07:00, shows yesterday) |
 | `hero-cw-today` | JSON object | Active custom workout add-on for today: `{ date, exercises:[keys], cardio:mins, cardioDone:bool }` |
 | `hero-phase-state--{profileId}` | JSON object | Earn-to-advance phase position: `{ phaseIdx, startDate }` |
+| `hero-rest-default` | string (int) | Auto-start rest timer duration in seconds after LOG SET: `0`=Off, `45`, `60`, `90` (default), `120`, `180` |
+| `hero-session-note-{YYYY-MM-DD}` | string | Free-text session note saved from the bottom of the Train tab; max 500 chars |
+| `hero-streak-freezes` | string (int) | Count of Streak Shields available (0–3); earned at XP milestones 500/1500/3000/5000/8000 |
+| `hero-sf-xp-last` | string (int) | XP total at last shield milestone check — prevents double-granting |
+| `hero-sf-offered` | string | Date (`YYYY-MM-DD`) the streak freeze banner was last shown — prevents daily re-nagging |
+| `hm-mood-{YYYY-MM-DD}` | string | Mood selection from pre-session check-in: `'locked'`/`'ok'`/`'low'`/`'sore'` |
+| `hm-time-{YYYY-MM-DD}` | string (int) | Available-time selection in minutes from pre-session check-in |
 
 **Reading log data in code:**
 ```js
@@ -249,8 +256,8 @@ Key functions: `hmPhaseStateLoad()`, `hmPhaseStateSave(s)`, `hmPhaseProgress()`,
 **What it does:** Handles the set-by-set logging sheet, PR detection, weight nudges, and saves everything to localStorage.
 
 **Where to find it:**
-- Open log sheet: `function openLogSheet(key)` — opens the bottom sheet for an exercise
-- Save a set: `function slLogSet(key, w, r)` — the core logging function, also fires XP + PR check
+- Open log sheet: `function openLogSheet(key)` — opens the bottom sheet for an exercise. On the **first call of the day** it gates on `hm-mood-{date}`: if the pre-session mood/time check-in hasn't been done yet, it stashes `window._slPendingKey = key`, calls `hmMoodCheck()`, and returns. After the user picks mood + time, `hmTimePick()` calls `openLogSheet(key)` again to complete the open.
+- Save a set: `function slLogSet()` — the core logging function; fires XP + PR check + auto-starts rest timer via `hmRestDefaultPref()` (returns the value of `hero-rest-default` in seconds; 0 = off)
 - Load all logs: `function slLoad()` — returns the entire log object
 - Load PRs: `function slLoadPRs()` — returns PR object
 - Smart overload nudge: `function slSmartNudge(key)` — analyzes recent sessions, returns `{type, newWeight, ...}` or null
@@ -303,6 +310,9 @@ Key functions: `hmPhaseStateLoad()`, `hmPhaseStateSave(s)`, `hmPhaseProgress()`,
 | Quest claimed | `hmClaimQuest()` | +25 XP |
 | Chest opened | `hmOpenChest()` | +50 XP |
 | Deck of Cards complete | `_dcSummaryHtml()` | +30 XP |
+| Custom workout finish | `cwFinishWorkout()` | +50 XP |
+
+**Streak Shields:** Earned automatically at XP milestones (500 / 1500 / 3000 / 5000 / 8000 XP), max 3 stored. On app open, `sfCheckAndOffer()` checks if yesterday had no activity — if so, shows a bottom banner offering to burn one shield. `sfUseFreeze()` calls `addCompletedSlot(ydKey, 'freeze')` to protect the streak. `sfCheckXPGrant(totalXP)` is called inside `hmXP()` after every save. Key functions: `sfLoad()`, `sfSave(n)`, `sfEarn()`, `sfUseFreeze()`, `sfCheckAndOffer()`, `sfUpdateDisplay()`.
 
 **Adding a new badge:**
 1. Add to `HM_AWARDS` array with `{id, name, ico, col, cond(s), trophy?}`
@@ -524,6 +534,41 @@ _dc = {
 
 **What it does:** Daily check-in flow for meals (text/voice parsed), water tracking, sleep logging, and macro calculations.
 
+---
+
+### 6.11a Session Notes
+
+**What it does:** A free-text note area at the bottom of the Workout tab, auto-saved per day. Users can jot down how the session felt, what they want to improve, etc.
+
+**Key localStorage:** `hero-session-note-{YYYY-MM-DD}`
+
+**Key functions (all in a dedicated `<script>` block after SW registration):**
+- `snLoad()` — returns today's note string from localStorage
+- `snSave(text)` — saves text to `hero-session-note-{date}`, updates the char counter
+- `snAutoResize(el)` — grows the textarea to fit its content
+- `snRenderNote()` — called from `showTab('workout')` — populates `#session-note-ta` and resizes it
+
+**UI elements:** `#session-note-card`, `#session-note-ta`, `#session-note-count` (e.g. "87 / 500")
+
+---
+
+### 6.11b Streak Shields
+
+**What it does:** Awards up to 3 "Streak Shield" tokens at XP milestones. If the user opens the app after missing a day, a banner offers to spend one shield to freeze yesterday's streak entry.
+
+**Key localStorage:**
+- `hero-streak-freezes` — integer 0–3, how many shields currently held
+- `hero-sf-xp-last` — XP total at the last shield award (prevents double-grants)
+- `hero-sf-offered` — ISO date string of the last day a shield was offered (prevents repeated prompts)
+
+**Key functions:**
+- `sfLoad()` / `sfSave(n)` — read/write `hero-streak-freezes`
+- `sfEarn()` — increment shields (max 3), show toast "Streak Shield earned!"
+- `sfUseFreeze()` — decrement shields, call `addCompletedSlot(ydKey, 'freeze')` to log a synthetic "freeze" slot
+- `sfCheckAndOffer()` — called 3 s after DOMContentLoaded; checks if yesterday was empty and shields > 0; shows bottom banner
+- `sfUpdateDisplay()` — refreshes `#sf-count-display` badge in the session-note card
+- `sfCheckXPGrant(totalXP)` — called inside `hmXP()` after every save; awards a shield at milestones [500, 1500, 3000, 5000, 8000]
+
 **Key functions:**
 - Check-in flow: `function openCheckin()` — starts the CI flow
 - Meal text parsing: `function ciParseMeals(text)` — natural language → food items
@@ -592,7 +637,7 @@ _dc = {
 
 ```js
 // sw.js
-const CACHE_VERSION = 'hero-mode-v49'; // change this number on every deploy
+const CACHE_VERSION = 'hero-mode-v59'; // change this number on every deploy
 ```
 
 **Convention for the comment:** briefly describe what changed in this version.
@@ -813,6 +858,8 @@ The `_dcCardImgSrc(val, suit)` function handles all casing quirks automatically.
 - `rb*` — recipe book functions
 - `dc*` or `_dc*` — deck of cards functions (`_dc` prefix = private/internal)
 - `sh*` — session history functions
+- `sn*` — session notes functions (`snLoad`, `snSave`, `snAutoResize`, `snRenderNote`)
+- `sf*` — streak freeze / shield functions (`sfLoad`, `sfSave`, `sfEarn`, `sfUseFreeze`, `sfCheckAndOffer`, `sfCheckXPGrant`, `sfUpdateDisplay`)
 - `render*` — renders a section of the UI into a DOM container
 - `open*` / `close*` — opens/closes a modal or overlay
 
@@ -828,7 +875,7 @@ The `_dcCardImgSrc(val, suit)` function handles all casing quirks automatically.
 - `.fx-*` — FX overlay elements (emblem, title, rings, particles)
 
 ### Service worker versions
-Format: `hero-mode-v{N}` where N is a sequential integer. Current: v49. Bump by 1 on every deploy.
+Format: `hero-mode-v{N}` where N is a sequential integer. Current: v59. Bump by 1 on every deploy.
 
 ---
 
