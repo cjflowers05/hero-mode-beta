@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-06.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-07.*
 
 ---
 
@@ -188,6 +188,9 @@ All data is stored in `localStorage`. Keys are prefixed `heromode-` or `hero-` (
 | `hm-train-layout` | JSON object | Train tab section visibility prefs |
 | `hm-pet-name` | string | User's pet mascot name |
 | `td-*` | various | Today tab layout customization prefs |
+| `hero-recap-pref` | string | Daily scorecard timing: `'early'` (19:00), `'late'` (22:00, default), `'morning'` (07:00, shows yesterday) |
+| `hero-cw-today` | JSON object | Active custom workout add-on for today: `{ date, exercises:[keys], cardio:mins, cardioDone:bool }` |
+| `hero-phase-state--{profileId}` | JSON object | Earn-to-advance phase position: `{ phaseIdx, startDate }` |
 
 **Reading log data in code:**
 ```js

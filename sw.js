@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v55'; // v55: Custom workouts fully logged — FINISH WORKOUT marks completedDays, awards XP, shows session summary
+const CACHE_VERSION = 'hero-mode-v56'; // v56: Fix custom-workout-entry flex layout broken by hmTrainLayoutApply clearing inline styles
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
