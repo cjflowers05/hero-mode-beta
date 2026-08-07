@@ -582,6 +582,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sess-sum-vol{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px}
 .sess-sum-vol span{color:var(--text2)}
 .sess-sum-close{width:100%;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;cursor:pointer}
+.hm-share-btn{display:inline-flex;align-items:center;gap:4px;padding:7px 13px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s}
+.hm-share-btn:active{opacity:.7}
+.hm-share-btn--dc{padding:12px 18px;font-size:13px;border-radius:12px}
+.hm-share-btn--sum{padding:14px 18px;border-radius:12px;font-size:16px}
 
 .connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;opacity:0.55}
 .connect-card.connected{border-color:rgba(91,200,118,.35)}
@@ -7954,7 +7958,10 @@ function showSessionSummary() {
       <textarea id="sess-sum-note" placeholder="How did it feel? (optional)" rows="2"
         style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:8px 10px;resize:none;margin-bottom:10px;outline:none"
         oninput="localStorage.setItem('hm-session-note-'+_hmSumDate, this.value)">${localStorage.getItem('hm-session-note-'+today)||''}</textarea>
-      <button class="sess-sum-close" onclick="closeSessionSummary()">CLOSE</button>
+      <div style="display:flex;gap:8px">
+        <button class="sess-sum-close" style="flex:1" onclick="closeSessionSummary()">CLOSE</button>
+        <button onclick="hmShare('workout','${today}')" class="hm-share-btn hm-share-btn--sum" title="Share workout">↗</button>
+      </div>
     </div>`;
 
   requestAnimationFrame(() => { ov.classList.add('open'); });
@@ -12290,7 +12297,7 @@ function renderSessionHistory() {
         <div class="sh-meta">${volStr}</div>
         <div class="sh-chevron" id="sh-chev-${i}">›</div>
       </div>
-      <div class="sh-detail" id="sh-det-${i}">${detailRows}${noteHtml}</div>
+      <div class="sh-detail" id="sh-det-${i}">${detailRows}${noteHtml}<div style="text-align:right;margin-top:10px"><button onclick="hmShare('history','${date}')" class="hm-share-btn">↗ Share</button></div></div>
     </div>`;
   }).join('');
 }
@@ -21174,6 +21181,9 @@ function _dcSummaryHtml() {
 
   if (window.hmXP) hmXP('cardio', 30);
 
+  // Store for share card
+  window._hmDcData = { totalReps: _dc.totalReps, timeStr, cards: _dc.done, skipped: _dc.skipped };
+
   return `
     <div class="dc-summary-icon">🏆</div>
     <div class="dc-summary-title">Deck Complete</div>
@@ -21197,7 +21207,10 @@ function _dcSummaryHtml() {
       </div>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:20px">${byEx}</div>
-    <button class="dc-start-btn" onclick="closeDeckWorkout()">CLOSE</button>`;
+    <div style="display:flex;gap:8px">
+      <button class="dc-start-btn" style="flex:1" onclick="closeDeckWorkout()">CLOSE</button>
+      <button onclick="hmShare('dc')" class="hm-share-btn hm-share-btn--dc">↗ Share</button>
+    </div>`;
 }
 
 window.openDeckWorkout = openDeckWorkout;
@@ -21781,105 +21794,301 @@ window.sfCheckAndOffer = sfCheckAndOffer;
 window.sfCheckXPGrant = sfCheckXPGrant;
 window.sfUpdateDisplay = sfUpdateDisplay;
 
-// ══ WORKOUT SHARE CARD ════════════════════════════════════════
-function hmShareWorkout() {
-  const W = 1080, H = 1080;
-  const canvas = document.createElement('canvas');
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
+// ══ SHARE SYSTEM v2 ═══════════════════════════════════════════
+// Unified bridge, workout export/import, deep-link detection.
+// Forward-compatible with Capacitor: set window.HMNativeBridge before boot.
+//
+//   Capacitor wiring (add in the native wrapper, not here):
+//   window.HMNativeBridge = {
+//     share: async ({ blob, filename, title, text }) => {
+//       const { Share } = await import('@capacitor/share');
+//       // convert blob → base64 or temp file path via Filesystem plugin, then:
+//       return Share.share({ title, text, dialogTitle: title });
+//     },
+//     onDeepLink: (cb) => {
+//       import('@capacitor/app').then(({ App }) =>
+//         App.addListener('appUrlOpen', data => cb(new URL(data.url)))
+//       );
+//     }
+//   };
 
-  // Background
-  ctx.fillStyle = '#0A0A08';
-  ctx.fillRect(0, 0, W, H);
+// ── Workout encode / decode ───────────────────────────────────
+function hmEncodeWorkout(dateKey) {
+  try {
+    const log  = (typeof slLoad === 'function') ? slLoad() : {};
+    const day  = log[dateKey] || {};
+    const exercises = Object.entries(day).map(([key, sets]) => ({
+      k: key,
+      n: (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key,
+      s: sets.map(s => ({ w: s.w || 0, r: s.r || 0 }))
+    }));
+    return btoa(JSON.stringify({ v: 1, d: dateKey, e: exercises }));
+  } catch(e) { return null; }
+}
+window.hmEncodeWorkout = hmEncodeWorkout;
 
-  // Gold top bar
-  const bar = ctx.createLinearGradient(0, 0, W, 0);
-  bar.addColorStop(0, '#C9A84C'); bar.addColorStop(1, '#F0C060');
-  ctx.fillStyle = bar; ctx.fillRect(0, 0, W, 10);
+function hmDecodeWorkout(b64) {
+  try { return JSON.parse(atob(b64)); } catch(e) { return null; }
+}
+window.hmDecodeWorkout = hmDecodeWorkout;
 
-  // App name
-  ctx.fillStyle = '#C9A84C';
-  ctx.font = 'bold 52px system-ui, sans-serif';
-  ctx.fillText('HERO MODE', 80, 110);
+function hmShareImportUrl(dateKey) {
+  const encoded = hmEncodeWorkout(dateKey);
+  if (!encoded) return 'https://heromode.app';
+  const prof    = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+  const ref     = (prof && prof.name) ? '&ref=' + encodeURIComponent(prof.name) : '';
+  return 'https://heromode.app/?import=' + encoded + ref;
+}
 
-  // Date
-  const now = new Date();
-  ctx.fillStyle = '#555';
-  ctx.font = '30px monospace';
-  ctx.fillText(now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}), 80, 160);
-
-  // Gather data
-  const sl = (typeof slLoad === 'function') ? slLoad() : {};
-  const dk = slToday();
-  const todayExs = sl[dk] || {};
-  const exKeys = Object.keys(todayExs);
-  const totalSets = exKeys.reduce((a, k) => a + todayExs[k].length, 0);
-  const totalVol  = exKeys.reduce((a, k) => a + todayExs[k].reduce((b, s) => b + (s.w||0)*(s.r||0), 0), 0);
-  const streak    = (typeof calcStreak === 'function') ? calcStreak() : 0;
-  const xpTotal   = (typeof hmXPLoad === 'function') ? (hmXPLoad().xp || 0) : 0;
-
-  // Big number
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 180px system-ui, sans-serif';
-  ctx.fillText(totalSets || '—', 80, 380);
-  ctx.fillStyle = '#C9A84C';
-  ctx.font = '34px monospace';
-  ctx.fillText('SETS LOGGED TODAY', 80, 430);
-
-  // Exercise breakdown
-  exKeys.slice(0, 5).forEach((key, i) => {
-    const exName = (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key;
-    const sets = todayExs[key];
-    const maxW = Math.max(...sets.map(s => s.w || 0));
-    const line = exName + ' · ' + sets.length + (sets.length > 1 ? ' sets' : ' set') + (maxW > 0 ? ' · ' + hmDispW(maxW) + ' ' + hmUnitLbl() : '');
-    ctx.fillStyle = i === 0 ? '#ddd' : '#666';
-    ctx.font = (i === 0 ? '32px' : '28px') + ' system-ui, sans-serif';
-    ctx.fillText(line, 80, 520 + i * 58);
-  });
-  if (exKeys.length > 5) {
-    ctx.fillStyle = '#444'; ctx.font = '26px monospace';
-    ctx.fillText('+ ' + (exKeys.length - 5) + ' more exercises', 80, 520 + 5 * 58);
+// ── Deep-link / import param detection ───────────────────────
+// Called on DOMContentLoaded. Checks URL ?import= for web;
+// the HMNativeBridge.onDeepLink stub handles native deep links.
+function hmCheckImportParam() {
+  const params = new URLSearchParams(window.location.search);
+  const b64    = params.get('import');
+  const ref    = params.get('ref');
+  if (b64) {
+    const payload = hmDecodeWorkout(b64);
+    if (payload) setTimeout(() => hmShowImportModal(payload, ref), 1400);
   }
+  if (window.HMNativeBridge && window.HMNativeBridge.onDeepLink) {
+    window.HMNativeBridge.onDeepLink(url => {
+      const p  = new URLSearchParams(url.search);
+      const ib = p.get('import');
+      if (ib) { const pl = hmDecodeWorkout(ib); if (pl) hmShowImportModal(pl, p.get('ref')); }
+    });
+  }
+}
+window.hmCheckImportParam = hmCheckImportParam;
 
-  // Stat bar
-  ctx.fillStyle = '#131310';
-  ctx.fillRect(0, 820, W, 210);
-  const stats = [
-    { val: streak + '🔥', lbl: 'DAY STREAK' },
-    { val: (totalVol > 0 ? (hmDispVol(totalVol) >= 1000 ? Math.round(hmDispVol(totalVol)/1000) + 'k' : Math.round(hmDispVol(totalVol))) : '—') + ' ' + hmUnitLbl(), lbl: 'TOTAL VOLUME' },
-    { val: xpTotal >= 1000 ? (xpTotal/1000).toFixed(1) + 'k' : String(xpTotal), lbl: 'TOTAL XP' },
-  ];
-  stats.forEach((s, i) => {
-    const x = 80 + i * 330;
-    ctx.fillStyle = '#C9A84C'; ctx.font = 'bold 54px system-ui, sans-serif';
-    ctx.fillText(s.val, x, 920);
-    ctx.fillStyle = '#444'; ctx.font = '22px monospace';
-    ctx.fillText(s.lbl, x, 960);
-  });
+// ── Import modal ─────────────────────────────────────────────
+window._hmImportPayload = null;
+function hmShowImportModal(payload, referrer) {
+  document.getElementById('hm-import-modal')?.remove();
+  window._hmImportPayload = payload;
+  const exercises = payload.e || [];
+  const exListHtml = exercises.map(ex => {
+    const sets = ex.s || [];
+    const maxW = Math.max(0, ...sets.map(s => s.w || 0));
+    return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px">
+      <span style="color:var(--text2)">${ex.n}</span>
+      <span style="font-family:'DM Mono',monospace;color:var(--text3)">${sets.length} set${sets.length!==1?'s':''}${maxW>0?' · '+maxW+(typeof hmUnitLbl==='function'?' '+hmUnitLbl():'lbs'):''}</span>
+    </div>`;
+  }).join('');
+  const refHtml = referrer
+    ? `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.1em;margin-bottom:10px">💪 SHARED BY ${referrer.toUpperCase()}</div>`
+    : '';
+  const modal = document.createElement('div');
+  modal.id = 'hm-import-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:24px 20px;max-width:340px;width:100%">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--gold);margin-bottom:4px">Workout Received</div>
+      ${refHtml}
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:12px">${payload.d || ''}</div>
+      <div style="margin-bottom:18px">${exListHtml||'<div style="color:var(--text3);font-size:12px">No exercises found.</div>'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="hmAcceptImport()" style="padding:12px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em;cursor:pointer">ADD TO SESSION</button>
+        <button onclick="document.getElementById('hm-import-modal').remove()" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:none;color:var(--text2);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer">Dismiss</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+window.hmShowImportModal = hmShowImportModal;
 
-  // Watermark
-  ctx.fillStyle = '#2a2a25'; ctx.font = '24px monospace';
-  ctx.fillText('heromode.app', 80, 1050);
+function hmAcceptImport() {
+  document.getElementById('hm-import-modal')?.remove();
+  const payload   = window._hmImportPayload;
+  window._hmImportPayload = null;
+  if (!payload) return;
+  const exercises = payload.e || [];
+  if (!exercises.length) { if (typeof showToast === 'function') showToast('No exercises to import', 'warn'); return; }
+  const today = (typeof slToday === 'function') ? slToday() : new Date().toISOString().slice(0,10);
+  const existing = (typeof cwTodayLoad === 'function') ? cwTodayLoad() : null;
+  const existingKeys = (existing && existing.date === today) ? (existing.exercises || []) : [];
+  const newKeys = exercises.map(e => e.k).filter(k => !existingKeys.includes(k));
+  if (typeof cwTodaySave === 'function') {
+    cwTodaySave({ date: today, exercises: [...existingKeys, ...newKeys], cardio: existing?.cardio || 0 });
+  }
+  if (typeof showTab === 'function') showTab('workout');
+  if (typeof cwRenderTodayAddon === 'function') cwRenderTodayAddon();
+  setTimeout(() => {
+    const el = document.getElementById('cw-today-addon');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+  if (typeof showToast === 'function') showToast('Workout added to your session!', 'success');
+}
+window.hmAcceptImport = hmAcceptImport;
 
-  // Share or download
-  canvas.toBlob(async blob => {
-    const file = new File([blob], 'hero-mode-workout.png', { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: 'Hero Mode Workout' }); return; } catch(e) {}
+// ── Share card builder ────────────────────────────────────────
+// context: 'workout' | 'history' | 'dc'
+// dateKey: YYYY-MM-DD string (unused for 'dc')
+// dcData:  { totalReps, timeStr, cards, skipped } — 'dc' context only
+function hmBuildShareCard(context, dateKey, dcData) {
+  return new Promise(resolve => {
+    const W = 1080, H = 1080;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    const GOLD = '#C9A84C', GOLD2 = '#F0C060', BG = '#0A0A08', BG2 = '#111109';
+
+    ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+
+    // Top accent bar
+    const topBar = ctx.createLinearGradient(0, 0, W, 0);
+    topBar.addColorStop(0, GOLD); topBar.addColorStop(1, GOLD2);
+    ctx.fillStyle = topBar; ctx.fillRect(0, 0, W, 8);
+
+    // Hero name + level
+    const prof = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+    const heroName  = (prof && prof.name) ? prof.name.toUpperCase() : 'HERO';
+    const xpState   = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+    const lvl       = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xpState.xp).lvl : 1;
+    const rank      = (typeof hmRankFor === 'function') ? hmRankFor(lvl) : '';
+
+    ctx.fillStyle = GOLD; ctx.font = 'bold 42px system-ui, sans-serif';
+    ctx.fillText('HERO MODE', 80, 85);
+    ctx.fillStyle = '#888'; ctx.font = '22px monospace';
+    ctx.fillText(heroName + (rank ? '  ·  ' + rank : ''), 80, 118);
+    ctx.fillStyle = '#333'; ctx.fillRect(0, 133, W, 1);
+
+    if (context === 'dc') {
+      const dc = dcData || {};
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 42px system-ui, sans-serif';
+      ctx.fillText('DECK OF CARDS', 80, 205);
+      ctx.fillStyle = GOLD; ctx.font = '26px monospace';
+      ctx.fillText('CHALLENGE COMPLETE', 80, 242);
+
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 190px system-ui, sans-serif';
+      ctx.fillText(String(dc.totalReps || '—'), 80, 470);
+      ctx.fillStyle = GOLD; ctx.font = '32px monospace';
+      ctx.fillText('TOTAL REPS', 80, 516);
+
+      [{ val: dc.timeStr || '—', lbl: 'TIME' },
+       { val: String(dc.cards  || 52), lbl: 'CARDS' },
+       { val: String(dc.skipped || 0), lbl: 'SKIPPED' }]
+      .forEach((s, i) => {
+        const x = 80 + i * 320;
+        ctx.fillStyle = BG2; ctx.fillRect(x - 12, 820, 290, 130);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 52px system-ui, sans-serif';
+        ctx.fillText(s.val, x, 896);
+        ctx.fillStyle = '#555'; ctx.font = '20px monospace';
+        ctx.fillText(s.lbl, x, 928);
+      });
+
+    } else {
+      const log = (typeof slLoad === 'function') ? slLoad() : {};
+      const day = log[dateKey] || {};
+      const exKeys    = Object.keys(day);
+      const totalSets = exKeys.reduce((a, k) => a + day[k].length, 0);
+      const totalVol  = exKeys.reduce((a, k) => a + day[k].reduce((b, s) => b + (s.w||0)*(s.r||0), 0), 0);
+      const streak    = (typeof calcStreak === 'function') ? calcStreak() : 0;
+
+      const d = new Date(dateKey + 'T12:00:00');
+      ctx.fillStyle = '#666'; ctx.font = '26px monospace';
+      ctx.fillText(d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}), 80, 184);
+
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 190px system-ui, sans-serif';
+      ctx.fillText(String(totalSets || '—'), 80, 410);
+      ctx.fillStyle = GOLD; ctx.font = '32px monospace';
+      ctx.fillText(context === 'history' ? 'SETS LOGGED' : 'SETS LOGGED TODAY', 80, 456);
+
+      exKeys.slice(0, 5).forEach((key, i) => {
+        const exName = (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key;
+        const sets   = day[key];
+        const maxW   = Math.max(0, ...sets.map(s => s.w || 0));
+        const dispW  = (typeof hmDispW === 'function') ? hmDispW(maxW) : maxW;
+        const unit   = (typeof hmUnitLbl === 'function') ? hmUnitLbl() : 'lbs';
+        const line   = exName + ' · ' + sets.length + (sets.length > 1 ? ' sets' : ' set') + (maxW > 0 ? ' · ' + dispW + ' ' + unit : '');
+        ctx.fillStyle = i === 0 ? '#ddd' : '#666';
+        ctx.font = (i === 0 ? '30px' : '26px') + ' system-ui, sans-serif';
+        ctx.fillText(line, 80, 540 + i * 52);
+      });
+      if (exKeys.length > 5) {
+        ctx.fillStyle = '#444'; ctx.font = '24px monospace';
+        ctx.fillText('+ ' + (exKeys.length - 5) + ' more exercises', 80, 540 + 5 * 52);
+      }
+
+      // Stat bar
+      ctx.fillStyle = BG2; ctx.fillRect(0, 820, W, 165);
+      const dispVol = (typeof hmDispVol === 'function') ? hmDispVol(totalVol) : totalVol;
+      const unit    = (typeof hmUnitLbl === 'function') ? hmUnitLbl() : 'lbs';
+      [{ val: streak + '🔥', lbl: 'STREAK' },
+       { val: (totalVol > 0 ? (dispVol >= 1000 ? Math.round(dispVol/1000)+'k' : Math.round(dispVol)) : '—') + ' ' + unit, lbl: 'VOLUME' },
+       { val: xpState.xp >= 1000 ? (xpState.xp/1000).toFixed(1)+'k' : String(xpState.xp), lbl: 'TOTAL XP' }]
+      .forEach((s, i) => {
+        const x = 80 + i * 320;
+        ctx.fillStyle = GOLD; ctx.font = 'bold 50px system-ui, sans-serif';
+        ctx.fillText(s.val, x, 914);
+        ctx.fillStyle = '#444'; ctx.font = '20px monospace';
+        ctx.fillText(s.lbl, x, 950);
+      });
     }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'hero-mode-workout.png'; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    // CTA strip — always at the bottom
+    const ctaBg = ctx.createLinearGradient(0, 980, 0, 1080);
+    ctaBg.addColorStop(0, '#161612'); ctaBg.addColorStop(1, '#0a0a08');
+    ctx.fillStyle = ctaBg; ctx.fillRect(0, 980, W, 100);
+    // thin gold rule above strip
+    ctx.fillStyle = GOLD; ctx.globalAlpha = 0.25;
+    ctx.fillRect(0, 980, W, 1); ctx.globalAlpha = 1;
+    ctx.fillStyle = GOLD; ctx.font = 'bold 24px monospace';
+    ctx.fillText('💪  Train with me on HERO MODE', 80, 1022);
+    ctx.fillStyle = '#444'; ctx.font = '20px monospace';
+    ctx.fillText('heromode.app', 80, 1057);
+
+    canvas.toBlob(resolve, 'image/png');
   });
 }
-window.hmShareWorkout = hmShareWorkout;
 
-// Init session note and streak check on load
+// ── Share bridge (swap innards for Capacitor later) ───────────
+async function hmShareBridge(blob, opts) {
+  // Native path: window.HMNativeBridge.share({ blob, ...opts })
+  if (window.HMNativeBridge && window.HMNativeBridge.share) {
+    await window.HMNativeBridge.share({ blob, ...opts });
+    return;
+  }
+  const file = new File([blob], opts.filename || 'hero-mode.png', { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: opts.title || 'Hero Mode', text: opts.text || '' }); return; } catch(e) {}
+  }
+  const url = URL.createObjectURL(blob);
+  const a   = document.createElement('a');
+  a.href = url; a.download = opts.filename || 'hero-mode.png'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ── Main share entry point ────────────────────────────────────
+// context: 'workout' | 'history' | 'dc'
+// dateKey: YYYY-MM-DD (omit to use today; ignored for 'dc')
+// dcData:  object for 'dc' context (stored in window._hmDcData by _dcSummaryHtml)
+async function hmShare(context, dateKey, dcData) {
+  context = context || 'workout';
+  dateKey = dateKey || ((typeof slToday === 'function') ? slToday() : new Date().toISOString().slice(0,10));
+  dcData  = dcData  || window._hmDcData || {};
+  if (typeof showToast === 'function') showToast('Building share card…', 'info');
+  const blob      = await hmBuildShareCard(context, dateKey, dcData);
+  const importUrl = context !== 'dc' ? hmShareImportUrl(dateKey) : 'https://heromode.app';
+  const prof      = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+  const tag       = (prof && prof.name) ? prof.name + ' · ' : '';
+  await hmShareBridge(blob, {
+    filename: 'hero-mode-' + context + '.png',
+    title:    'Hero Mode Workout',
+    text:     tag + 'Check out my workout on Hero Mode 💪  ' + importUrl,
+  });
+}
+window.hmShare = hmShare;
+
+// Backward-compat — old button in session-note card still works
+window.hmShareWorkout = () => hmShare('workout');
+
+// Init session note, streak check, and import detection on load
 document.addEventListener('DOMContentLoaded', function() {
   snRenderNote();
   sfUpdateDisplay();
   setTimeout(sfCheckAndOffer, 3000);
+  hmCheckImportParam();
 });
 </script>
 
