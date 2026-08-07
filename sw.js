@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v51'; // v51: Earn-to-advance phase progression — phases unlock via sessions/PRs, not calendar
+const CACHE_VERSION = 'hero-mode-v52'; // v52: Fix Deck of Cards suit tap — dcPickEx filter now uses SL_BODYWEIGHT set
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

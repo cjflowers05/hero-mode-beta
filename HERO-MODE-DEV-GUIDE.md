@@ -484,6 +484,8 @@ _dc = {
 
 **Suit defaults:** ♠ Push-Ups, ♥ Sit-Ups, ♦ Air Squats, ♣ Burpees. Users can tap any suit card to pick a different bodyweight exercise.
 
+**Exercise picker (`dcPickEx`):** Filters exercises for the suit picker using `SL_BODYWEIGHT.has(k) || (e.tag && e.tag.includes('Bodyweight'))`. Do NOT filter on `e.equip` or `e.tags` — EX entries use `e.tag` (a string like `"Full Body · Bodyweight"`), not an `equip` property or a `tags` array.
+
 ---
 
 ### 6.10 Gamification FX
