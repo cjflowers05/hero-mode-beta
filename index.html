@@ -12793,6 +12793,9 @@ function hmShowSettings() {
     + '<span>' + (lightMode ? '🌙' : '☀️') + ' Display Mode</span><span style="color:var(--text3)">' + (lightMode ? 'Light → Dark' : 'Dark → Light') + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(showThemePicker,300)">'
     + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">TRAINING</div>'
+    + '<div class="hm-settings-row" onclick="hmCycleRecapPref()">'
+    + '<span>🌙 Daily Scorecard</span><span id="hm-stg-recap-val" style="color:var(--text3)">' + ({ early:'Early (7pm)', late:'Late (10pm)', morning:'Morning' }[ciRecapPref()]) + '</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
     + '<div class="hm-settings-row" onclick="hmViewDisclaimer()">'
     + '<span>⚠️ Legal Disclaimer</span><span style="color:var(--text3)">›</span></div>'
@@ -12815,6 +12818,16 @@ function hmCloseSettings() {
   if (!ov) return;
   if (s) { s.style.transform = 'translateY(100%)'; setTimeout(() => ov.remove(), 320); }
   else ov.remove();
+}
+function hmCycleRecapPref() {
+  const next = { early:'late', late:'morning', morning:'early' };
+  const labels = { early:'Early (7pm)', late:'Late (10pm)', morning:'Morning' };
+  const cur = ciRecapPref();
+  const val = next[cur] || 'late';
+  localStorage.setItem('hero-recap-pref', val);
+  const el = document.getElementById('hm-stg-recap-val');
+  if (el) el.textContent = labels[val];
+  if (typeof showToast === 'function') showToast('Scorecard set to ' + labels[val], 'info');
 }
 function hmViewDisclaimer() {
   hmCloseSettings();
@@ -16607,9 +16620,19 @@ function ciSlotFilled(slot) {
   return false;
 }
 
+function ciRecapPref() { return localStorage.getItem('hero-recap-pref') || 'late'; }
 function ciGetPending() {
   const h = new Date().getHours();
-  return CI_SLOTS.find(s => h >= s.start && h < s.end && !ciIsDone(s.id) && !ciSlotFilled(s)) || null;
+  const pref = ciRecapPref();
+  return CI_SLOTS.find(s => {
+    let start = s.start, end = s.end;
+    if (s.id === 'recap') {
+      if (pref === 'early')        { start = 19; end = 24; }
+      else if (pref === 'morning') { start =  7; end = 12; }
+      else                         { start = 22; end = 24; } // 'late' default
+    }
+    return h >= start && h < end && !ciIsDone(s.id) && !ciSlotFilled(s);
+  }) || null;
 }
 
 // ── Show / close ───────────────────────────────────────────────
@@ -21272,6 +21295,20 @@ function cwSwapExercise(idx) {
   item.key    = item.altPool[item.altIdx];
   cwRenderSession();
 }
+function cwRemoveFromSession(idx) {
+  _cwSession.splice(idx, 1);
+  cwRenderSession();
+}
+window.cwRemoveFromSession = cwRemoveFromSession;
+
+function cwRemoveExercise(key) {
+  const d = cwTodayLoad();
+  if (!d) return;
+  d.exercises = d.exercises.filter(k => k !== key);
+  cwTodaySave(d);
+  cwRenderTodayAddon();
+}
+window.cwRemoveExercise = cwRemoveExercise;
 
 function cwRenderSession() {
   document.getElementById('cw-picker').style.display  = 'none';
@@ -21294,10 +21331,11 @@ function cwRenderSession() {
     if (!ex) return;
     const muscle = (SORE_EX_MAP[item.key] || [])[0] || '';
     const hasAlts = item.altPool.length > 0;
-    html += `<div class="cw-ex-card">
-      <div class="cw-ex-name">${ex.name}</div>
+    html += `<div class="cw-ex-card" style="position:relative">
+      <button onclick="cwRemoveFromSession(${idx})" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);font-size:16px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px" title="Remove">✕</button>
+      <div class="cw-ex-name" style="padding-right:24px">${ex.name}</div>
       <div class="cw-ex-tag">${muscle.toUpperCase()}${ex.tag ? ' · ' + ex.tag.toUpperCase() : ''}</div>
-      ${ex.cues && ex.cues[0] ? `<div class="cw-ex-cue">${ex.cues[0]}</div>` : ''}
+      ${ex.cues && ex.cues[0] ? `<div class="cw-ex-cue">${ex.cues[0].t || ex.cues[0]}</div>` : ''}
       <div class="cw-ex-actions">
         <button class="cw-log-btn" onclick="closeCustomWorkout();openLogSheet('${item.key}')">LOG SET</button>
         ${hasAlts ? `<button class="cw-swap-btn" onclick="cwSwapExercise(${idx})">↻ Swap</button>` : ''}
@@ -21380,6 +21418,7 @@ function cwRenderTodayAddon() {
         ${chips ? `<div>${chips}</div>` : `<div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${((SORE_EX_MAP[key]||[])[0]||'').toUpperCase()}</div>`}
       </div>
       <button onclick="openLogSheet('${key}')" style="padding:7px 14px;border-radius:8px;background:${has ? 'rgba(91,200,118,.12)' : 'var(--gold)'};border:${has ? '1px solid rgba(91,200,118,.35)' : 'none'};color:${has ? '#5BC876' : '#111'};font-family:'Bebas Neue',sans-serif;font-size:14px;cursor:pointer">${has ? '+' + sets.length : 'LOG'}</button>
+      <button onclick="cwRemoveExercise('${key}')" style="padding:7px 10px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text3);font-size:13px;cursor:pointer;line-height:1" title="Remove">✕</button>
     </div>`;
   });
   if (data.cardio) {
@@ -23429,46 +23468,53 @@ function renderTodayDashboard() {
 }
 
 // ── DAILY RECAP + COACH — evening scorecard with data-driven encouragement ──
-function hmRecapStats(){
+function hmRecapStats(dateOverride){
+  const todayFmt = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  const dk = dateOverride || todayFmt(new Date());
+  const isToday = !dateOverride;
   const st = { sets:0, workoutDone:false, cardioMin:0, water:0, meals:0, stretch:false, xpToday:0, streak:0, tomorrow:null };
-  const dk = (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'))(new Date());
   try {
-    const log = (typeof slLoad === 'function' ? slLoad() : {})[typeof slToday === 'function' ? slToday() : dk] || {};
+    const log = (typeof slLoad === 'function' ? slLoad() : {})[dk] || {};
     st.sets = Object.values(log).reduce((a, v) => a + v.length, 0);
     st.stretch = Object.keys(log).some(k => HM_STRETCH_KEYS.indexOf(k) !== -1);
   } catch(e) {}
-  try { st.workoutDone = typeof getCompletedSlots === 'function' && getCompletedSlots(todayKey()).length > 0; } catch(e) {}
+  try { st.workoutDone = typeof getCompletedSlots === 'function' && getCompletedSlots(dk).length > 0; } catch(e) {}
   try {
-    const dow = new Date().getDay();
+    const dkDate = new Date(dk + 'T12:00:00');
+    const dow = dkDate.getDay();
     let ph = 'ph1';
     const pill = document.querySelector('.phase-pill.active');
     if (pill) { const m = (pill.getAttribute('onclick') || '').match(/showPhase\('(\w+)'/); if (m) ph = m[1]; }
     st.isTrainingDay = dow !== 0 && !!((window.TODAY_PHASE_DAYS || {})[ph] || {})[dow];
   } catch(e) { st.isTrainingDay = false; }
-  try { st.bwLogged = typeof bwLoad === 'function' && !!bwLoad()[typeof slToday === 'function' ? slToday() : dk]; } catch(e) { st.bwLogged = false; }
+  try { st.bwLogged = typeof bwLoad === 'function' && !!bwLoad()[dk]; } catch(e) { st.bwLogged = false; }
   try {
-    const cd = (typeof loadCardioData === 'function' ? loadCardioData() : {})[new Date().toISOString().slice(0,10)] || [];
+    const cd = (typeof loadCardioData === 'function' ? loadCardioData() : {})[dk] || [];
     st.cardioMin = cd.reduce((a, s) => a + (s.duration || 0), 0);
   } catch(e) {}
-  try { st.water = typeof waterGet === 'function' ? waterGet() : 0; } catch(e) {}
-  try {
-    const day = (typeof ntDay === 'function' && typeof ntCurrentDate !== 'undefined') ? ntDay(ntCurrentDate) : null;
-    if (day && day.meals) st.meals = Object.values(day.meals).reduce((a, m) => a + m.length, 0);
-  } catch(e) {}
+  if (isToday) {
+    try { st.water = typeof waterGet === 'function' ? waterGet() : 0; } catch(e) {}
+    try {
+      const day = (typeof ntDay === 'function' && typeof ntCurrentDate !== 'undefined') ? ntDay(ntCurrentDate) : null;
+      if (day && day.meals) st.meals = Object.values(day.meals).reduce((a, m) => a + m.length, 0);
+    } catch(e) {}
+  }
   const s = hmXPLoad();
   st.xpToday = (s.xpDay && s.xpDay.date === dk) ? s.xpDay.earned : 0;
   try { st.streak = typeof calcStreak === 'function' ? calcStreak() : 0; } catch(e) {}
-  try {
-    const tDow = (new Date().getDay() + 1) % 7;
-    if (tDow === 0) st.tomorrow = 'Rest day — recovery is training too';
-    else {
-      let ph = 'ph1';
-      const pill = document.querySelector('.phase-pill.active');
-      if (pill) { const m = (pill.getAttribute('onclick') || '').match(/showPhase\('(\w+)'/); if (m) ph = m[1]; }
-      const meta = (window.TODAY_PHASE_DAYS || {})[ph];
-      st.tomorrow = meta && meta[tDow] ? meta[tDow].icon + ' ' + meta[tDow].name : 'Rest day — recovery is training too';
-    }
-  } catch(e) {}
+  if (isToday) {
+    try {
+      const tDow = (new Date().getDay() + 1) % 7;
+      if (tDow === 0) st.tomorrow = 'Rest day — recovery is training too';
+      else {
+        let ph = 'ph1';
+        const pill = document.querySelector('.phase-pill.active');
+        if (pill) { const m = (pill.getAttribute('onclick') || '').match(/showPhase\('(\w+)'/); if (m) ph = m[1]; }
+        const meta = (window.TODAY_PHASE_DAYS || {})[ph];
+        st.tomorrow = meta && meta[tDow] ? meta[tDow].icon + ' ' + meta[tDow].name : 'Rest day — recovery is training too';
+      }
+    } catch(e) {}
+  }
   return st;
 }
 
@@ -23533,20 +23579,28 @@ function hmCoachNote(st){
 }
 
 function renderCiRecap(slot){
-  const st = hmRecapStats();
+  const isMorning = ciRecapPref() === 'morning';
+  let dateKey = null, questionText = "Today's scorecard", dateLabel = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+  if (isMorning) {
+    const yd = new Date(); yd.setDate(yd.getDate() - 1);
+    dateKey = yd.getFullYear() + '-' + String(yd.getMonth()+1).padStart(2,'0') + '-' + String(yd.getDate()).padStart(2,'0');
+    dateLabel = yd.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+    questionText = "Yesterday's scorecard";
+  }
+  const st = hmRecapStats(dateKey);
   const prof = hmActiveProfile();
   const coachOn = prof.coachMsgs !== false;
   const tile = (v, l) => '<div class="tc-stat"><div class="tc-stat-val">' + v + '</div><div class="tc-stat-lbl">' + l + '</div></div>';
   return '<div class="ci-header"><div class="ci-emoji">' + slot.emoji + '</div>' +
     '<div class="ci-time-label">' + slot.label + '</div>' +
-    '<div class="ci-question">Today\'s scorecard, ' + prof.name + '</div>' +
-    '<div class="ci-sub">' + new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'}) + '</div></div>' +
+    '<div class="ci-question">' + questionText + ', ' + prof.name + '</div>' +
+    '<div class="ci-sub">' + dateLabel + '</div></div>' +
     '<div class="ci-body">' +
-    '<div class="tc-stats">' + tile('+' + st.xpToday, 'XP today') + tile(st.sets, 'Sets') + tile(st.cardioMin, 'Cardio min') + tile(st.streak, 'Streak') + '</div>' +
-    '<div class="tc-stats">' + tile(st.workoutDone ? '✓' : '—', 'Workout') + tile(st.water, 'Water') + tile(st.meals, 'Foods') + tile(st.stretch ? '✓' : '—', 'Stretch') + '</div>' +
+    '<div class="tc-stats">' + tile(st.xpToday ? '+' + st.xpToday : '—', 'XP') + tile(st.sets, 'Sets') + tile(st.cardioMin, 'Cardio min') + tile(st.streak, 'Streak') + '</div>' +
+    '<div class="tc-stats">' + tile(st.workoutDone ? '✓' : '—', 'Workout') + tile(isMorning ? '—' : st.water, 'Water') + tile(isMorning ? '—' : st.meals, 'Foods') + tile(st.stretch ? '✓' : '—', 'Stretch') + '</div>' +
     (coachOn ? '<div style="background:rgba(var(--accent-rgb),.06);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:13px;line-height:1.55;color:var(--text)">' + hmCoachNote(st) + '</div>' : '') +
-    (st.tomorrow ? '<div style="font-family:\'DM Mono\',monospace;font-size:10px;letter-spacing:.1em;color:var(--text3);margin-top:12px;text-transform:uppercase">Tomorrow · ' + st.tomorrow + '</div>' : '') +
-    '<button onclick="ciMarkDone(\'recap\');closeCi()" style="width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.05em;cursor:pointer">SEE YOU TOMORROW 💪</button>' +
+    (!isMorning && st.tomorrow ? '<div style="font-family:\'DM Mono\',monospace;font-size:10px;letter-spacing:.1em;color:var(--text3);margin-top:12px;text-transform:uppercase">Tomorrow · ' + st.tomorrow + '</div>' : '') +
+    '<button onclick="ciMarkDone(\'recap\');closeCi()" style="width:100%;margin-top:16px;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.05em;cursor:pointer">' + (isMorning ? 'LET\'S GO TODAY 💪' : 'SEE YOU TOMORROW 💪') + '</button>' +
     '</div>';
 }
 window.renderCiRecap = renderCiRecap;

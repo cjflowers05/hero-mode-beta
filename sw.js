@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v53'; // v53: Push daily recap scorecard to 22:00 — avoids interrupting late-evening workouts
+const CACHE_VERSION = 'hero-mode-v54'; // v54: Scorecard timing user setting; skip exercises in custom workout; cue text fix
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

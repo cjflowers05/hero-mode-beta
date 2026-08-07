@@ -528,6 +528,10 @@ _dc = {
 - Macro calculator: search `#macro-calc`
 - Recipe book: `function rbRenderGrid()`, `function rbAddRecipe()`, `rbToggleFav()`
 
+**Daily Recap / Scorecard slot:** Defined in `CI_SLOTS` as `id:'recap'`. Timing is user-configurable via `hero-recap-pref` in localStorage (`'early'`=19:00, `'late'`=22:00 default, `'morning'`=07:00 showing yesterday's data). The helper `ciRecapPref()` reads it; `ciGetPending()` applies it dynamically so the static `CI_SLOTS` array never needs editing. Toggle in Settings → TRAINING → Daily Scorecard. In morning mode, `renderCiRecap` computes yesterday's date key and passes it to `hmRecapStats(dateOverride)` — water/meals/tomorrow are omitted for past dates.
+
+**Custom workout remove:** `cwRemoveFromSession(idx)` removes an item from `_cwSession` and re-renders; `cwRemoveExercise(key)` removes a key from the saved today add-on and re-renders `cwRenderTodayAddon`. Both are exposed on `window`.
+
 **Check-in data structure** (stored inside the daily log):
 ```js
 // Part of localStorage['heromode-log']['YYYY-MM-DD']
