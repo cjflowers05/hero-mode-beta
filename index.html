@@ -776,7 +776,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dc-overlay.open{opacity:1;pointer-events:all}
 .dc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;flex-shrink:0}
 .dc-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--text)}
-.dc-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.dc-close{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
 .dc-body{flex:1;overflow-y:auto;padding:0 18px 24px}
 /* Setup screen */
 .dc-suit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
@@ -21087,6 +21087,9 @@ function _dcGameHtml() {
     </div>
     <div class="dc-totals">${totals}
       <div><div class="dc-total-val" style="color:var(--gold)">${_dc.totalReps}</div><div class="dc-total-lbl">TOTAL</div></div>
+    </div>
+    <div style="text-align:center;margin-top:18px">
+      <button onclick="closeDeckWorkout()" style="background:none;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;padding:12px 24px;-webkit-tap-highlight-color:transparent">✕ End Session</button>
     </div>`;
 }
 

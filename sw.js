@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v56'; // v56: Fix custom-workout-entry flex layout broken by hmTrainLayoutApply clearing inline styles
+const CACHE_VERSION = 'hero-mode-v57'; // v57: Deck of Cards — larger close button (44px), End Session link below game controls
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
