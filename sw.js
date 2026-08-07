@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v52'; // v52: Fix Deck of Cards suit tap — dcPickEx filter now uses SL_BODYWEIGHT set
+const CACHE_VERSION = 'hero-mode-v53'; // v53: Push daily recap scorecard to 22:00 — avoids interrupting late-evening workouts
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
