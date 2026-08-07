@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v58'; // v58: Mood/time check-in now fires on first exercise tap, not on briefing dismiss
+const CACHE_VERSION = 'hero-mode-v59'; // v59: Configurable rest timer, session notes, streak shields, share card
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

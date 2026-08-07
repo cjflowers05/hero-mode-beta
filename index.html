@@ -1921,6 +1921,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div id="hero-class-root" style="margin-bottom:16px"></div>
   <!-- GENERATED TRAINING PLAN -->
   <div id="train-plan-root"></div>
+  <!-- SESSION NOTE -->
+  <div id="session-note-card" style="margin-top:12px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px 16px">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">📝 Session Note</div>
+    <textarea id="session-note-ta" placeholder="How did the session go? Notes on form, energy, what to remember next time…" maxlength="500"
+      style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;line-height:1.5;padding:10px 12px;resize:none;outline:none;font-family:inherit;min-height:72px"
+      oninput="snAutoResize(this);snSave(this.value)" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)" id="session-note-count">0 / 500</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="sf-count-display" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)"></span>
+        <button onclick="hmShareWorkout()" style="padding:7px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.05em;cursor:pointer;-webkit-tap-highlight-color:transparent">↗ Share Workout</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- NUTRITION -->
@@ -6243,6 +6257,7 @@ function showTab(id,btn){
   if(id==='today'&&typeof renderTodayDashboard==='function')renderTodayDashboard();
   if(id==='workout'&&typeof renderTodayBanner==='function')renderTodayBanner();
   if(id==='workout'&&typeof hmTrainLayoutApply==='function')hmTrainLayoutApply();
+  if(id==='workout'&&typeof snRenderNote==='function')snRenderNote();
   if(id==='wellness'&&typeof hmWellnessLayoutApply==='function')hmWellnessLayoutApply();
   // First-time CUSTOMIZE hint pulse
   if(id==='workout'||id==='wellness'){
@@ -12795,6 +12810,8 @@ function hmShowSettings() {
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(showThemePicker,300)">'
     + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">TRAINING</div>'
+    + '<div class="hm-settings-row" onclick="hmCycleRestDefault()">'
+    + '<span>⏱ Rest Timer Default</span><span id="hm-stg-rest-val" style="color:var(--text3)">' + HM_REST_LABELS[hmRestDefaultPref()] + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCycleRecapPref()">'
     + '<span>🌙 Daily Scorecard</span><span id="hm-stg-recap-val" style="color:var(--text3)">' + ({ early:'Early (7pm)', late:'Late (10pm)', morning:'Morning' }[ciRecapPref()]) + '</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
@@ -12819,6 +12836,18 @@ function hmCloseSettings() {
   if (!ov) return;
   if (s) { s.style.transform = 'translateY(100%)'; setTimeout(() => ov.remove(), 320); }
   else ov.remove();
+}
+const HM_REST_OPTIONS = [0, 45, 60, 90, 120, 180];
+const HM_REST_LABELS  = { 0:'Off', 45:'0:45', 60:'1:00', 90:'1:30', 120:'2:00', 180:'3:00' };
+function hmRestDefaultPref() { return parseInt(localStorage.getItem('hero-rest-default') ?? '90'); }
+function hmCycleRestDefault() {
+  const cur  = hmRestDefaultPref();
+  const idx  = HM_REST_OPTIONS.indexOf(cur);
+  const next = HM_REST_OPTIONS[(idx + 1) % HM_REST_OPTIONS.length];
+  localStorage.setItem('hero-rest-default', next);
+  const el = document.getElementById('hm-stg-rest-val');
+  if (el) el.textContent = HM_REST_LABELS[next];
+  showToast('Rest timer default: ' + HM_REST_LABELS[next], 'info');
 }
 function hmCycleRecapPref() {
   const next = { early:'late', late:'morning', morning:'early' };
@@ -17987,8 +18016,9 @@ function slLogSet() {
     showToast('Set ' + setNum + ' — ' + hmDispW(w) + ' ' + hmUnitLbl() + ' × ' + r + ' reps ✓', 'success');
   }
 
-  // Auto-start rest timer (90 sec default; user can adjust)
-  if (typeof rtStart === 'function') rtStart(90);
+  // Auto-start rest timer using user's preferred duration (0 = off)
+  const restSecs = hmRestDefaultPref();
+  if (restSecs > 0 && typeof rtStart === 'function') rtStart(restSecs);
 
   slRenderSheet();
   slRefreshRow(slCurrentKey);
@@ -21656,6 +21686,200 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
 </script>
+
+<script>
+// ══ SESSION NOTES ══════════════════════════════════════════════
+const SN_KEY = 'hero-session-note';
+function snLoad(dateKey) { return localStorage.getItem(SN_KEY + '-' + (dateKey || slToday())) || ''; }
+function snSave(text) {
+  localStorage.setItem(SN_KEY + '-' + slToday(), text.trim());
+  const c = document.getElementById('session-note-count');
+  if (c) c.textContent = text.length + ' / 500';
+}
+function snAutoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+  const c = document.getElementById('session-note-count');
+  if (c) c.textContent = ta.value.length + ' / 500';
+}
+function snRenderNote() {
+  const ta = document.getElementById('session-note-ta');
+  if (!ta) return;
+  ta.value = snLoad();
+  snAutoResize(ta);
+}
+window.snAutoResize = snAutoResize;
+window.snSave = snSave;
+window.snRenderNote = snRenderNote;
+
+// ══ STREAK FREEZE (SHIELD) ═════════════════════════════════════
+const SF_KEY = 'hero-streak-freezes';
+function sfLoad() { return parseInt(localStorage.getItem(SF_KEY) || '0'); }
+function sfSave(n) { localStorage.setItem(SF_KEY, Math.max(0, n)); }
+function sfEarn() {
+  const cur = sfLoad();
+  if (cur >= 3) return; // max 3 stored
+  sfSave(cur + 1);
+  showToast('🛡️ Streak Shield earned! (' + (cur + 1) + '/3)', 'success');
+  sfUpdateDisplay();
+}
+function sfUpdateDisplay() {
+  const el = document.getElementById('sf-count-display');
+  const count = sfLoad();
+  if (el) el.textContent = count > 0 ? '🛡️ × ' + count : '';
+}
+function sfUseFreeze() {
+  const count = sfLoad();
+  if (count <= 0) { showToast('No shields available', 'warn'); return; }
+  const yd = new Date(); yd.setDate(yd.getDate() - 1);
+  const ydKey = yd.getFullYear() + '-' + String(yd.getMonth()+1).padStart(2,'0') + '-' + String(yd.getDate()).padStart(2,'0');
+  if (typeof addCompletedSlot === 'function') addCompletedSlot(ydKey, 'freeze');
+  if (typeof saveDB === 'function') saveDB();
+  sfSave(count - 1);
+  if (typeof renderTracker === 'function') renderTracker();
+  showToast('🛡️ Shield used — yesterday protected!', 'success');
+  document.getElementById('sf-banner')?.remove();
+  sfUpdateDisplay();
+}
+function sfCheckAndOffer() {
+  const count = sfLoad();
+  if (count <= 0) return;
+  const today = slToday();
+  if (localStorage.getItem('hero-sf-offered') === today) return;
+  const yd = new Date(); yd.setDate(yd.getDate() - 1);
+  const ydKey = yd.getFullYear() + '-' + String(yd.getMonth()+1).padStart(2,'0') + '-' + String(yd.getDate()).padStart(2,'0');
+  if (typeof getCompletedSlots === 'function' && getCompletedSlots(ydKey).length > 0) return;
+  localStorage.setItem('hero-sf-offered', today);
+  const banner = document.createElement('div');
+  banner.id = 'sf-banner';
+  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:420px;z-index:9500;background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.5)';
+  banner.innerHTML = '<div style="font-size:28px;flex-shrink:0">🛡️</div>'
+    + '<div style="flex:1"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:16px;color:var(--text)">Use a Streak Shield?</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:2px">Protect yesterday · ' + count + ' shield' + (count !== 1 ? 's' : '') + ' remaining</div></div>'
+    + '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
+    + '<button onclick="sfUseFreeze()" style="padding:8px 16px;background:var(--gold);border:none;border-radius:8px;font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:#0A0A08;cursor:pointer;-webkit-tap-highlight-color:transparent">USE IT</button>'
+    + '<button onclick="document.getElementById(\'sf-banner\').remove()" style="padding:4px;background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:\'DM Mono\',monospace">Skip</button></div>';
+  document.body.appendChild(banner);
+  setTimeout(() => banner.isConnected && banner.remove(), 14000);
+}
+// Grant shields at XP milestones (500, 1500, 3000 XP)
+function sfCheckXPGrant(totalXP) {
+  const milestones = [500, 1500, 3000, 5000, 8000];
+  const lastXP = parseInt(localStorage.getItem('hero-sf-xp-last') || '0');
+  const earned = milestones.filter(m => m > lastXP && m <= totalXP).length;
+  if (earned > 0) {
+    localStorage.setItem('hero-sf-xp-last', totalXP);
+    for (let i = 0; i < earned; i++) sfEarn();
+  }
+}
+window.sfLoad = sfLoad;
+window.sfUseFreeze = sfUseFreeze;
+window.sfCheckAndOffer = sfCheckAndOffer;
+window.sfCheckXPGrant = sfCheckXPGrant;
+window.sfUpdateDisplay = sfUpdateDisplay;
+
+// ══ WORKOUT SHARE CARD ════════════════════════════════════════
+function hmShareWorkout() {
+  const W = 1080, H = 1080;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0A0A08';
+  ctx.fillRect(0, 0, W, H);
+
+  // Gold top bar
+  const bar = ctx.createLinearGradient(0, 0, W, 0);
+  bar.addColorStop(0, '#C9A84C'); bar.addColorStop(1, '#F0C060');
+  ctx.fillStyle = bar; ctx.fillRect(0, 0, W, 10);
+
+  // App name
+  ctx.fillStyle = '#C9A84C';
+  ctx.font = 'bold 52px system-ui, sans-serif';
+  ctx.fillText('HERO MODE', 80, 110);
+
+  // Date
+  const now = new Date();
+  ctx.fillStyle = '#555';
+  ctx.font = '30px monospace';
+  ctx.fillText(now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}), 80, 160);
+
+  // Gather data
+  const sl = (typeof slLoad === 'function') ? slLoad() : {};
+  const dk = slToday();
+  const todayExs = sl[dk] || {};
+  const exKeys = Object.keys(todayExs);
+  const totalSets = exKeys.reduce((a, k) => a + todayExs[k].length, 0);
+  const totalVol  = exKeys.reduce((a, k) => a + todayExs[k].reduce((b, s) => b + (s.w||0)*(s.r||0), 0), 0);
+  const streak    = (typeof calcStreak === 'function') ? calcStreak() : 0;
+  const xpTotal   = (typeof hmXPLoad === 'function') ? (hmXPLoad().xp || 0) : 0;
+
+  // Big number
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 180px system-ui, sans-serif';
+  ctx.fillText(totalSets || '—', 80, 380);
+  ctx.fillStyle = '#C9A84C';
+  ctx.font = '34px monospace';
+  ctx.fillText('SETS LOGGED TODAY', 80, 430);
+
+  // Exercise breakdown
+  exKeys.slice(0, 5).forEach((key, i) => {
+    const exName = (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key;
+    const sets = todayExs[key];
+    const maxW = Math.max(...sets.map(s => s.w || 0));
+    const line = exName + ' · ' + sets.length + (sets.length > 1 ? ' sets' : ' set') + (maxW > 0 ? ' · ' + hmDispW(maxW) + ' ' + hmUnitLbl() : '');
+    ctx.fillStyle = i === 0 ? '#ddd' : '#666';
+    ctx.font = (i === 0 ? '32px' : '28px') + ' system-ui, sans-serif';
+    ctx.fillText(line, 80, 520 + i * 58);
+  });
+  if (exKeys.length > 5) {
+    ctx.fillStyle = '#444'; ctx.font = '26px monospace';
+    ctx.fillText('+ ' + (exKeys.length - 5) + ' more exercises', 80, 520 + 5 * 58);
+  }
+
+  // Stat bar
+  ctx.fillStyle = '#131310';
+  ctx.fillRect(0, 820, W, 210);
+  const stats = [
+    { val: streak + '🔥', lbl: 'DAY STREAK' },
+    { val: (totalVol > 0 ? (hmDispVol(totalVol) >= 1000 ? Math.round(hmDispVol(totalVol)/1000) + 'k' : Math.round(hmDispVol(totalVol))) : '—') + ' ' + hmUnitLbl(), lbl: 'TOTAL VOLUME' },
+    { val: xpTotal >= 1000 ? (xpTotal/1000).toFixed(1) + 'k' : String(xpTotal), lbl: 'TOTAL XP' },
+  ];
+  stats.forEach((s, i) => {
+    const x = 80 + i * 330;
+    ctx.fillStyle = '#C9A84C'; ctx.font = 'bold 54px system-ui, sans-serif';
+    ctx.fillText(s.val, x, 920);
+    ctx.fillStyle = '#444'; ctx.font = '22px monospace';
+    ctx.fillText(s.lbl, x, 960);
+  });
+
+  // Watermark
+  ctx.fillStyle = '#2a2a25'; ctx.font = '24px monospace';
+  ctx.fillText('heromode.app', 80, 1050);
+
+  // Share or download
+  canvas.toBlob(async blob => {
+    const file = new File([blob], 'hero-mode-workout.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: 'Hero Mode Workout' }); return; } catch(e) {}
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'hero-mode-workout.png'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+}
+window.hmShareWorkout = hmShareWorkout;
+
+// Init session note and streak check on load
+document.addEventListener('DOMContentLoaded', function() {
+  snRenderNote();
+  sfUpdateDisplay();
+  setTimeout(sfCheckAndOffer, 3000);
+});
+</script>
+
 <style>
 /* ── HERO IDENTITY: themed header, emblem, XP, badges, FX ── */
 .hero{background-image:linear-gradient(160deg,rgba(var(--accent-rgb),.14) 0%,var(--bg) 60%) !important;background-size:auto !important;background-color:var(--bg)}
@@ -22643,6 +22867,7 @@ function hmXP(kind, pts, meta){
   HM_BADGES.forEach(b => { try { if (!s.badges[b.id] && b.test(s)) { s.badges[b.id] = new Date().toISOString().slice(0,10); newAwards.push(b); } } catch(e) {} });
   hmXPSave(s);
   hmRenderXP();
+  if (typeof sfCheckXPGrant === 'function') sfCheckXPGrant(s.xp);
   // Live-refresh quest progress bars (debounced; claims re-enter here safely)
   if (!window._hmQuestTick) {
     window._hmQuestTick = true;
