@@ -409,8 +409,10 @@ Key functions: `hmPhaseStateLoad()`, `hmPhaseStateSave(s)`, `hmPhaseProgress()`,
 
 **What it does:** After marking a workout done, a post-session summary overlay appears showing stats. Users can add a note. Past sessions are shown in Session History on the Training tab.
 
+**Custom workout completion:** `cwFinishWorkout()` is the custom-session equivalent of `toggleDayDone()`. It calls `addCompletedSlot(today, 'custom-workout')` + `saveDB()` + `hmXP('days', 50)` + `showSessionSummary()`. This makes custom sessions fully count toward streaks, scorecard "Workout Done", and training history — same as plan sessions. The FINISH WORKOUT button appears in `cwRenderTodayAddon` once ≥1 exercise or cardio is marked done; it swaps to a "✓ WORKOUT LOGGED" badge after completion.
+
 **Where to find it:**
-- Show summary: `function showSessionSummary()` — called 350ms after `toggleDayDone()`
+- Show summary: `function showSessionSummary()` — called 350ms after `toggleDayDone()` or `cwFinishWorkout()`
 - Close summary: `window.closeSessionSummary()`
 - Session notes: saved to `localStorage['hm-session-note-{YYYY-MM-DD}']` via the textarea's `oninput`
 - Session history: `function renderSessionHistory()` — renders into `#chart-session-history`

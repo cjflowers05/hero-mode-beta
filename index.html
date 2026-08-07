@@ -21429,6 +21429,16 @@ function cwRenderTodayAddon() {
       <button onclick="cwToggleCardio()" style="padding:7px 14px;border-radius:8px;background:${cd ? 'rgba(91,200,118,.12)' : '#5BC876'};border:${cd ? '1px solid rgba(91,200,118,.35)' : 'none'};color:${cd ? '#5BC876' : '#111'};font-family:'Bebas Neue',sans-serif;font-size:14px;cursor:pointer">${cd ? 'UNDO' : 'DONE'}</button>
     </div>`;
   }
+  // Finish button — marks the day complete so it counts toward streak/scorecard/history
+  const alreadyDone = typeof getCompletedSlots === 'function' && getCompletedSlots(today).includes('custom-workout');
+  if (alreadyDone) {
+    html += `<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;background:rgba(91,200,118,.08);border:1px solid rgba(91,200,118,.3);margin-top:4px">
+      <span style="color:#5BC876;font-size:16px">✓</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;color:#5BC876">WORKOUT LOGGED</span>
+    </div>`;
+  } else if (doneEx > 0 || data.cardioDone) {
+    html += `<button onclick="cwFinishWorkout()" style="width:100%;margin-top:4px;padding:14px;border-radius:12px;border:none;background:var(--gold);color:#0A0A08;font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.08em;cursor:pointer;-webkit-tap-highlight-color:transparent">FINISH WORKOUT ⚡</button>`;
+  }
   el.innerHTML = html;
 }
 
@@ -21449,6 +21459,21 @@ function cwClearToday() {
   localStorage.removeItem(CW_TODAY_KEY);
   cwRenderTodayAddon();
 }
+
+function cwFinishWorkout() {
+  const today = todayKey();
+  if (typeof addCompletedSlot !== 'function') return;
+  if (getCompletedSlots(today).includes('custom-workout')) return; // already done
+  addCompletedSlot(today, 'custom-workout');
+  if (typeof saveDB === 'function') saveDB();
+  if (window.hmXP) hmXP('days', 50);
+  if (window.hmSfx) hmSfx('done');
+  if (typeof renderTracker === 'function') renderTracker();
+  if (typeof updateHeroStat === 'function') updateHeroStat();
+  cwRenderTodayAddon();
+  setTimeout(() => { if (typeof showSessionSummary === 'function') showSessionSummary(); }, 350);
+}
+window.cwFinishWorkout = cwFinishWorkout;
 
 // ── TRAIN TAB CARDIO WIDGET ───────────────────────
 function renderTrainCardioWidget() {
