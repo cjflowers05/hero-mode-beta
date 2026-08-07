@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v57'; // v57: Deck of Cards — larger close button (44px), End Session link below game controls
+const CACHE_VERSION = 'hero-mode-v58'; // v58: Mood/time check-in now fires on first exercise tap, not on briefing dismiss
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

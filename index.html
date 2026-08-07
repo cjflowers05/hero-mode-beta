@@ -3299,12 +3299,6 @@ window.hmSetDayMode = hmSetDayMode;
 
 // ── MOOD CHECK-IN (2-step: mood → time available) ─────────────
 function hmMoodCheck() {
-  hmCloseBriefing();
-  const todayDow = new Date().getDay();
-  let phId = 'ph1';
-  const pill = document.querySelector('.phase-pill.active');
-  if (pill) { const m = (pill.getAttribute('onclick')||'').match(/showPhase\('(\w+)'/); if (m) phId = m[1]; }
-  if (!((window.TODAY_PHASE_DAYS || {})[phId] || {})[todayDow]) return;
   if (localStorage.getItem('hm-mood-' + new Date().toISOString().slice(0,10))) return;
   const ov = document.createElement('div');
   ov.id = 'hm-mood-overlay';
@@ -3373,6 +3367,12 @@ function hmTimePick(mins) {
   const timeLabel = mins >= 99 ? '60+ min' : '~' + mins + ' min';
   const moodType = (mood === 'locked' || mood === 'ok') ? 'success' : 'info';
   showToast((moodMsgs[mood] || 'Let\'s go') + ' · ' + timeLabel + ' session', moodType);
+  // If triggered from the set log, reopen the exercise sheet now
+  if (window._slPendingKey) {
+    const k = window._slPendingKey;
+    window._slPendingKey = null;
+    setTimeout(function() { openLogSheet(k); }, 250);
+  }
 }
 window.hmMoodCheck = hmMoodCheck;
 window.hmMoodPick  = hmMoodPick;
@@ -12932,7 +12932,7 @@ function hmShowDailyBriefing() {
     + '</div>'
     + streakLine
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;color:var(--text2);letter-spacing:.06em;margin-bottom:20px">' + motiv + '</div>'
-    + '<button onclick="' + (_isTrainingDay ? 'hmMoodCheck()' : 'hmCloseBriefing()') + '" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">'
+    + '<button onclick="hmCloseBriefing()" style="width:100%;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:.1em;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">'
     + (_isTrainingDay ? "LET'S TRAIN →" : 'GOT IT →')
     + '</button>'
     + '</div>';
@@ -17834,6 +17834,12 @@ function slSaveFbNote() {
 }
 
 function openLogSheet(key) {
+  // First exercise tap of the day → show mood/time check-in first, then reopen
+  if (!localStorage.getItem('hm-mood-' + new Date().toISOString().slice(0,10))) {
+    window._slPendingKey = key;
+    hmMoodCheck();
+    return;
+  }
   slCurrentKey = key;
   const ex = EX[key] || {};
   document.getElementById('sl-ex-name').textContent = ex.name || key;
