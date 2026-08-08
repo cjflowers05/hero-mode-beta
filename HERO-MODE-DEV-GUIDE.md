@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-07. Current SW version: v59.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-08. Current SW version: v62.*
 
 ---
 
@@ -637,20 +637,65 @@ _dc = {
 
 ```js
 // sw.js
-const CACHE_VERSION = 'hero-mode-v59'; // change this number on every deploy
+const CACHE_VERSION = 'hero-mode-v62'; // change this number on every deploy
 ```
 
 **Convention for the comment:** briefly describe what changed in this version.
 
 **Video files are NOT cached** by the service worker (the `if (url.pathname.includes('/MoveKit_Videos/'))` exemption — add any large video directories here to prevent cache quota exhaustion). The `assets/ui/deck_cards/` images ARE cached.
 
-**Current version:** v51 (as of 2026-08-06)
+**Current version:** v62 (as of 2026-08-08)
 
 **Dev gotcha:** if you forget to bump the SW version, existing users won't see your changes. See [Section 9](#9-key-dev-gotchas) for how to force-clear the cache during development.
 
 ---
 
-### 6.15 Native / Capacitor Bridge
+### 6.15 Share System
+
+**What it does:** Lets users share their workout as an image card (via Web Share API or download fallback), and lets a recipient import that workout into their own Hero Mode. Designed to be a viral growth loop — the card looks like the session tracker UI, so it's authentic marketing material.
+
+**Share surfaces (↗ button appears in):**
+- Today's workout banner (Train tab) — primary pre/mid-workout share
+- Session history rows (History tab) — share any past workout
+- Session summary overlay (post-workout) — celebratory share moment
+- Deck of Cards end screen — DC-specific share
+
+**Key functions:**
+- `hmShare(context, dateKey, dcData)` — main entry point; builds card → bridge → share/download
+- `hmBuildShareCard(context, dateKey, dcData)` — returns `Promise<Blob>` (1080×1080 canvas PNG)
+  - `'workout'` context: reads workout name from `.today-banner-name`, exercises from `.session-ex-row` DOM elements; circles are gold+checked for logged sets, open for planned
+  - `'history'` context: reads from `slLoad()[dateKey]` log; shows sets + max weight per exercise
+  - `'dc'` context: shows total reps, time, cards done, skipped count
+- `hmShareBridge(blob, opts)` — tries `window.HMNativeBridge.share` (future Capacitor), then `navigator.share`, then triggers a download
+- `hmShareImportUrl(dateKey)` — encodes workout as `heromode.app/?import=<base64>&ref=<heroname>`
+- `hmEncodeWorkout(dateKey)` / `hmDecodeWorkout(b64)` — base64 JSON payload `{v:1, d:dateKey, e:[{k,n,s:[{w,r}]}]}`
+- `hmCheckImportParam()` — called on `DOMContentLoaded`; detects `?import=` URL param and triggers import modal; also hooks `window.HMNativeBridge.onDeepLink` for future native deep links
+- `hmShowImportModal(payload, referrer)` — shows "Workout Received" modal with accept/dismiss
+- `hmAcceptImport()` — calls `cwTodaySave()` + `cwRenderTodayAddon()` to add imported exercises to today's custom add-on
+
+**Capacitor bridge stub:**
+```js
+window.HMNativeBridge = {
+  share: async ({ blob, title, text, url }) => { /* native share sheet */ },
+  onDeepLink: (cb) => { /* register deep link handler */ }
+};
+```
+When adding Capacitor, wire `HMNativeBridge.share` to `@capacitor/share` and `HMNativeBridge.onDeepLink` to `@capacitor/app`'s `appUrlOpen` listener.
+
+**Import URL format:**
+```
+https://heromode.app/?import=<base64>&ref=<heroName>
+```
+Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, s: [{ w, r }] }] }))`
+
+**CSS classes for share buttons:** `.hm-share-btn` base + modifiers:
+- `.hm-share-btn--icon` — small icon button (banner, history rows)
+- `.hm-share-btn--dc` — medium, used on DC end screen
+- `.hm-share-btn--sum` — large, used on session summary overlay
+
+---
+
+### 6.17 Native / Capacitor Bridge
 
 **What it does:** Provides a `window.HeroNative` object that the app uses to call native device features. On web, all methods are no-ops. On a real native app, these would be wired to Capacitor plugins.
 

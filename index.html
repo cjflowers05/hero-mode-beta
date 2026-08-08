@@ -586,6 +586,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hm-share-btn:active{opacity:.7}
 .hm-share-btn--dc{padding:12px 18px;font-size:13px;border-radius:12px}
 .hm-share-btn--sum{padding:14px 18px;border-radius:12px;font-size:16px}
+.hm-share-btn--icon{padding:4px 8px;font-size:12px;border-radius:8px;flex-shrink:0}
 
 .connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;opacity:0.55}
 .connect-card.connected{border-color:rgba(91,200,118,.35)}
@@ -12295,9 +12296,10 @@ function renderSessionHistory() {
         <div class="sh-date">${lbl}<br><span style="color:var(--text3)">${dow}</span></div>
         <div class="sh-name">${note ? '📝 ' : ''}${exNames}</div>
         <div class="sh-meta">${volStr}</div>
+        <button onclick="hmShare('history','${date}');event.stopPropagation()" class="hm-share-btn hm-share-btn--icon" title="Share this session">↗</button>
         <div class="sh-chevron" id="sh-chev-${i}">›</div>
       </div>
-      <div class="sh-detail" id="sh-det-${i}">${detailRows}${noteHtml}<div style="text-align:right;margin-top:10px"><button onclick="hmShare('history','${date}')" class="hm-share-btn">↗ Share</button></div></div>
+      <div class="sh-detail" id="sh-det-${i}">${detailRows}${noteHtml}</div>
     </div>`;
   }).join('');
 }
@@ -19069,6 +19071,7 @@ function renderTodayBanner() {
         <div class="today-banner-focus">${day.focus}</div>
       </div>
       <div class="today-banner-edit" title="Edit your week" role="button" tabindex="0" aria-label="Edit your weekly schedule" onclick="hmOpenSchedule();event.stopPropagation()">🗓</div>
+      <button onclick="hmShare('workout');event.stopPropagation()" class="hm-share-btn hm-share-btn--icon" title="Share today's workout" style="margin-right:2px">↗</button>
       <div class="today-banner-chevron" id="session-chevron" style="transition:transform .2s">${_sessionOpen ? '▴' : '▾'}</div>
     </div>
     <div id="session-tracker-wrap" style="display:${_sessionOpen ? 'block' : 'none'}">
@@ -21922,121 +21925,224 @@ function hmAcceptImport() {
 window.hmAcceptImport = hmAcceptImport;
 
 // ── Share card builder ────────────────────────────────────────
+// Renders a 1080x1080 card that looks like the actual session tracker.
 // context: 'workout' | 'history' | 'dc'
-// dateKey: YYYY-MM-DD string (unused for 'dc')
-// dcData:  { totalReps, timeStr, cards, skipped } — 'dc' context only
 function hmBuildShareCard(context, dateKey, dcData) {
   return new Promise(resolve => {
     const W = 1080, H = 1080;
     const canvas = document.createElement('canvas');
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
-    const GOLD = '#C9A84C', GOLD2 = '#F0C060', BG = '#0A0A08', BG2 = '#111109';
 
+    // ── Palette (mirrors app dark theme) ─────────────
+    const BG      = '#0D1017';
+    const CARD    = '#12151E';
+    const GOLD    = '#C9A84C';
+    const GOLD2   = '#F0C060';
+    const WHITE   = '#E2E8F0';
+    const MUTED   = '#8892A4';
+    const DIM     = '#2A3040';
+    const TEAL    = '#4A9EBF';
+
+    // Profile data (available for all contexts)
+    const prof     = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+    const heroName = (prof && prof.name) ? prof.name.toUpperCase() : 'HERO';
+    const xpState  = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+    const lvl      = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xpState.xp).lvl : 1;
+    const rank     = (typeof hmRankFor === 'function') ? hmRankFor(lvl) : 'ROOKIE';
+    const streak   = (typeof calcStreak === 'function') ? calcStreak() : 0;
+
+    // ── Background ────────────────────────────────────
     ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
 
-    // Top accent bar
+    // Gold top bar
     const topBar = ctx.createLinearGradient(0, 0, W, 0);
     topBar.addColorStop(0, GOLD); topBar.addColorStop(1, GOLD2);
-    ctx.fillStyle = topBar; ctx.fillRect(0, 0, W, 8);
+    ctx.fillStyle = topBar; ctx.fillRect(0, 0, W, 7);
 
-    // Hero name + level
-    const prof = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
-    const heroName  = (prof && prof.name) ? prof.name.toUpperCase() : 'HERO';
-    const xpState   = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
-    const lvl       = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xpState.xp).lvl : 1;
-    const rank      = (typeof hmRankFor === 'function') ? hmRankFor(lvl) : '';
+    // ── Header row: HERO MODE badge + date ───────────
+    ctx.fillStyle = GOLD; ctx.font = 'bold 30px monospace';
+    ctx.fillText('HERO MODE', 80, 68);
 
-    ctx.fillStyle = GOLD; ctx.font = 'bold 42px system-ui, sans-serif';
-    ctx.fillText('HERO MODE', 80, 85);
-    ctx.fillStyle = '#888'; ctx.font = '22px monospace';
-    ctx.fillText(heroName + (rank ? '  ·  ' + rank : ''), 80, 118);
-    ctx.fillStyle = '#333'; ctx.fillRect(0, 133, W, 1);
+    const dk  = dateKey || ((typeof slToday === 'function') ? slToday() : new Date().toISOString().slice(0, 10));
+    const d   = new Date(dk + 'T12:00:00');
+    const dateLbl = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    ctx.fillStyle = MUTED; ctx.font = '26px monospace';
+    ctx.textAlign = 'right'; ctx.fillText(dateLbl, W - 80, 68); ctx.textAlign = 'left';
 
+    // Thin separator
+    ctx.fillStyle = DIM; ctx.fillRect(80, 85, W - 160, 1);
+
+    // ── DC context ────────────────────────────────────
     if (context === 'dc') {
       const dc = dcData || {};
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 42px system-ui, sans-serif';
-      ctx.fillText('DECK OF CARDS', 80, 205);
-      ctx.fillStyle = GOLD; ctx.font = '26px monospace';
-      ctx.fillText('CHALLENGE COMPLETE', 80, 242);
+      ctx.fillStyle = WHITE; ctx.font = 'bold 80px system-ui, sans-serif';
+      ctx.fillText('DECK OF CARDS', 80, 190);
+      ctx.fillStyle = GOLD; ctx.font = '30px monospace';
+      ctx.fillText('CHALLENGE COMPLETE', 80, 236);
 
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 190px system-ui, sans-serif';
-      ctx.fillText(String(dc.totalReps || '—'), 80, 470);
-      ctx.fillStyle = GOLD; ctx.font = '32px monospace';
-      ctx.fillText('TOTAL REPS', 80, 516);
+      ctx.fillStyle = DIM; ctx.fillRect(80, 260, W - 160, 1);
 
-      [{ val: dc.timeStr || '—', lbl: 'TIME' },
-       { val: String(dc.cards  || 52), lbl: 'CARDS' },
-       { val: String(dc.skipped || 0), lbl: 'SKIPPED' }]
-      .forEach((s, i) => {
+      ctx.fillStyle = WHITE; ctx.font = 'bold 200px system-ui, sans-serif';
+      ctx.fillText(String(dc.totalReps || 0), 80, 500);
+      ctx.fillStyle = GOLD; ctx.font = '34px monospace';
+      ctx.fillText('TOTAL REPS', 80, 548);
+
+      const dcStats = [
+        { val: dc.timeStr || '-', lbl: 'TIME' },
+        { val: String(dc.cards || 52), lbl: 'CARDS DONE' },
+        { val: String(dc.skipped || 0), lbl: 'SKIPPED' },
+      ];
+      dcStats.forEach((s, i) => {
         const x = 80 + i * 320;
-        ctx.fillStyle = BG2; ctx.fillRect(x - 12, 820, 290, 130);
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 52px system-ui, sans-serif';
-        ctx.fillText(s.val, x, 896);
-        ctx.fillStyle = '#555'; ctx.font = '20px monospace';
-        ctx.fillText(s.lbl, x, 928);
+        ctx.fillStyle = CARD; ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(x, 790, 290, 130, 16) : ctx.rect(x, 790, 290, 130);
+        ctx.fill();
+        ctx.fillStyle = WHITE; ctx.font = 'bold 56px system-ui, sans-serif';
+        ctx.fillText(s.val, x + 24, 868);
+        ctx.fillStyle = MUTED; ctx.font = '20px monospace';
+        ctx.fillText(s.lbl, x + 24, 900);
       });
 
     } else {
-      const log = (typeof slLoad === 'function') ? slLoad() : {};
-      const day = log[dateKey] || {};
-      const exKeys    = Object.keys(day);
-      const totalSets = exKeys.reduce((a, k) => a + day[k].length, 0);
-      const totalVol  = exKeys.reduce((a, k) => a + day[k].reduce((b, s) => b + (s.w||0)*(s.r||0), 0), 0);
-      const streak    = (typeof calcStreak === 'function') ? calcStreak() : 0;
+      // ── Workout / History context ─────────────────────
 
-      const d = new Date(dateKey + 'T12:00:00');
-      ctx.fillStyle = '#666'; ctx.font = '26px monospace';
-      ctx.fillText(d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}), 80, 184);
-
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 190px system-ui, sans-serif';
-      ctx.fillText(String(totalSets || '—'), 80, 410);
-      ctx.fillStyle = GOLD; ctx.font = '32px monospace';
-      ctx.fillText(context === 'history' ? 'SETS LOGGED' : 'SETS LOGGED TODAY', 80, 456);
-
-      exKeys.slice(0, 5).forEach((key, i) => {
-        const exName = (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key;
-        const sets   = day[key];
-        const maxW   = Math.max(0, ...sets.map(s => s.w || 0));
-        const dispW  = (typeof hmDispW === 'function') ? hmDispW(maxW) : maxW;
-        const unit   = (typeof hmUnitLbl === 'function') ? hmUnitLbl() : 'lbs';
-        const line   = exName + ' · ' + sets.length + (sets.length > 1 ? ' sets' : ' set') + (maxW > 0 ? ' · ' + dispW + ' ' + unit : '');
-        ctx.fillStyle = i === 0 ? '#ddd' : '#666';
-        ctx.font = (i === 0 ? '30px' : '26px') + ' system-ui, sans-serif';
-        ctx.fillText(line, 80, 540 + i * 52);
-      });
-      if (exKeys.length > 5) {
-        ctx.fillStyle = '#444'; ctx.font = '24px monospace';
-        ctx.fillText('+ ' + (exKeys.length - 5) + ' more exercises', 80, 540 + 5 * 52);
+      // Workout name — from DOM banner for 'workout', from date for 'history'
+      let woName = '', woFocus = '';
+      if (context === 'workout') {
+        const bannerEl = document.querySelector('.today-banner-name');
+        const full = bannerEl ? bannerEl.textContent.trim() : '';
+        const parts = full.split(' — '); // em-dash split
+        woName  = (parts[0] || 'WORKOUT').toUpperCase();
+        woFocus = parts[1] ? parts[1].toUpperCase() : '';
+      } else {
+        woName  = d.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+        woFocus = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
       }
 
-      // Stat bar
-      ctx.fillStyle = BG2; ctx.fillRect(0, 820, W, 165);
-      const dispVol = (typeof hmDispVol === 'function') ? hmDispVol(totalVol) : totalVol;
-      const unit    = (typeof hmUnitLbl === 'function') ? hmUnitLbl() : 'lbs';
-      [{ val: streak + '🔥', lbl: 'STREAK' },
-       { val: (totalVol > 0 ? (dispVol >= 1000 ? Math.round(dispVol/1000)+'k' : Math.round(dispVol)) : '—') + ' ' + unit, lbl: 'VOLUME' },
-       { val: xpState.xp >= 1000 ? (xpState.xp/1000).toFixed(1)+'k' : String(xpState.xp), lbl: 'TOTAL XP' }]
-      .forEach((s, i) => {
-        const x = 80 + i * 320;
-        ctx.fillStyle = GOLD; ctx.font = 'bold 50px system-ui, sans-serif';
-        ctx.fillText(s.val, x, 914);
-        ctx.fillStyle = '#444'; ctx.font = '20px monospace';
-        ctx.fillText(s.lbl, x, 950);
+      // Workout name — large
+      ctx.fillStyle = WHITE; ctx.font = 'bold 96px system-ui, sans-serif';
+      ctx.fillText(woName, 80, 190);
+      if (woFocus) {
+        ctx.fillStyle = GOLD; ctx.font = '34px system-ui, sans-serif';
+        ctx.fillText(woFocus, 80, 238);
+      }
+
+      ctx.fillStyle = DIM; ctx.fillRect(80, 262, W - 160, 1);
+
+      // ── Exercise list ────────────────────────────────
+      const log      = (typeof slLoad === 'function') ? slLoad() : {};
+      const dayLog   = log[dk] || {};
+      const CIRC_X   = 116;
+      const CIRC_R   = 16;
+      const NAME_X   = 154;
+      const ROW_H    = 82;
+      const LIST_TOP = 282;
+      const MAX_ROWS = 8;
+
+      // For 'workout': get exercises from session tracker DOM
+      // For 'history': get exercises from the log
+      let exercises = [];
+      if (context === 'workout') {
+        const domRows = Array.from(document.querySelectorAll('.session-ex-row'));
+        exercises = domRows.map(row => {
+          const info  = row.querySelector('.session-ex-info');
+          if (!info) return null;
+          const lines = info.innerText.trim().split('\n').map(l => l.trim()).filter(Boolean);
+          return { name: lines[0] || '', planStr: lines[1] || '' };
+        }).filter(Boolean);
+      } else {
+        exercises = Object.keys(dayLog).map(key => ({
+          name: (typeof EX !== 'undefined' && EX[key]) ? EX[key].name : key,
+          planStr: '',
+          logKey: key
+        }));
+      }
+
+      exercises.slice(0, MAX_ROWS).forEach((ex, i) => {
+        const y       = LIST_TOP + i * ROW_H;
+        const yCtr    = y + ROW_H / 2;
+
+        // Find logged sets
+        let loggedSets = [];
+        if (context === 'workout') {
+          const matchKey = Object.keys(dayLog).find(k => {
+            const n = (typeof EX !== 'undefined' && EX[k]) ? EX[k].name : k;
+            return n.toLowerCase() === ex.name.toLowerCase();
+          });
+          loggedSets = matchKey ? dayLog[matchKey] : [];
+        } else {
+          loggedSets = ex.logKey ? (dayLog[ex.logKey] || []) : [];
+        }
+        const isLogged = loggedSets.length > 0;
+
+        // Circle indicator
+        ctx.beginPath();
+        ctx.arc(CIRC_X, yCtr, CIRC_R, 0, Math.PI * 2);
+        if (isLogged) {
+          ctx.fillStyle = GOLD; ctx.fill();
+          // Checkmark
+          ctx.strokeStyle = BG; ctx.lineWidth = 3.5;
+          ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          ctx.beginPath();
+          ctx.moveTo(CIRC_X - 8, yCtr + 1);
+          ctx.lineTo(CIRC_X - 2, yCtr + 7);
+          ctx.lineTo(CIRC_X + 9, yCtr - 6);
+          ctx.stroke();
+        } else {
+          ctx.strokeStyle = '#2E3648'; ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Exercise name
+        ctx.fillStyle = isLogged ? WHITE : '#9AA3B2';
+        ctx.font = (isLogged ? 'bold ' : '') + '30px system-ui, sans-serif';
+        ctx.fillText(ex.name, NAME_X, yCtr + 2);
+
+        // Sets info
+        let setsStr = ex.planStr;
+        if (isLogged) {
+          const maxW = Math.max(0, ...loggedSets.map(s => s.w || 0));
+          const unit = (typeof hmUnitLbl === 'function') ? hmUnitLbl() : 'lbs';
+          const wStr = maxW > 0 ? '  ·  ' + (typeof hmDispW === 'function' ? hmDispW(maxW) : maxW) + ' ' + unit : '';
+          setsStr = loggedSets.length + (loggedSets.length === 1 ? ' set' : ' sets') + wStr;
+        }
+        ctx.fillStyle = isLogged ? GOLD : TEAL;
+        ctx.font = '22px monospace';
+        ctx.fillText(setsStr, NAME_X, yCtr + 28);
+
+        // Row separator (skip last)
+        if (i < Math.min(exercises.length, MAX_ROWS) - 1) {
+          ctx.fillStyle = DIM; ctx.fillRect(NAME_X, y + ROW_H - 2, W - NAME_X - 80, 1);
+        }
       });
+
+      if (exercises.length > MAX_ROWS) {
+        const overflowY = LIST_TOP + MAX_ROWS * ROW_H + 6;
+        ctx.fillStyle = MUTED; ctx.font = '24px monospace';
+        ctx.fillText('+ ' + (exercises.length - MAX_ROWS) + ' more exercises', NAME_X, overflowY);
+      }
+
+      // ── Profile / stats bar ────────────────────────
+      ctx.fillStyle = CARD; ctx.fillRect(0, 862, W, 98);
+      ctx.fillStyle = DIM; ctx.fillRect(0, 862, W, 1);
+
+      ctx.fillStyle = GOLD; ctx.font = 'bold 30px system-ui, sans-serif';
+      ctx.fillText(heroName, 80, 904);
+      ctx.fillStyle = MUTED; ctx.font = '22px monospace';
+      ctx.fillText(rank + '  ·  LVL ' + lvl + '  ·  ' + streak + ' day streak', 80, 936);
     }
 
-    // CTA strip — always at the bottom
-    const ctaBg = ctx.createLinearGradient(0, 980, 0, 1080);
-    ctaBg.addColorStop(0, '#161612'); ctaBg.addColorStop(1, '#0a0a08');
-    ctx.fillStyle = ctaBg; ctx.fillRect(0, 980, W, 100);
-    // thin gold rule above strip
-    ctx.fillStyle = GOLD; ctx.globalAlpha = 0.25;
-    ctx.fillRect(0, 980, W, 1); ctx.globalAlpha = 1;
-    ctx.fillStyle = GOLD; ctx.font = 'bold 24px monospace';
-    ctx.fillText('💪  Train with me on HERO MODE', 80, 1022);
-    ctx.fillStyle = '#444'; ctx.font = '20px monospace';
-    ctx.fillText('heromode.app', 80, 1057);
+    // ── CTA strip (all contexts) ──────────────────────
+    const ctaY  = 960;
+    ctx.fillStyle = '#0A0D14'; ctx.fillRect(0, ctaY, W, H - ctaY);
+    ctx.fillStyle = GOLD; ctx.globalAlpha = 0.2;
+    ctx.fillRect(0, ctaY, W, 1); ctx.globalAlpha = 1;
+
+    ctx.fillStyle = GOLD; ctx.font = 'bold 28px monospace';
+    ctx.fillText('💪  Train with me on HERO MODE', 80, ctaY + 42);
+    ctx.fillStyle = MUTED; ctx.font = '22px monospace';
+    ctx.fillText('heromode.app  ·  free to download', 80, ctaY + 80);
 
     canvas.toBlob(resolve, 'image/png');
   });
