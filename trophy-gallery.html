@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero Mode — Trophy & Badge Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; color: #eee; font-family: 'DM Sans', sans-serif; padding: 24px 16px; }
+  h2 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: .18em; color: #c9a84c; margin: 32px 0 14px; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 6px; }
+  h2:first-child { margin-top: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .item { background: #111118; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: 14px 10px 10px; text-align: center; }
+  .item img { width: 100%; height: auto; object-fit: contain; display: block; margin: 0 auto 8px; }
+  .item img.missing { opacity: .18; filter: grayscale(1); }
+  .name { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: .08em; color: #ddd; line-height: 1.2; margin-top: 6px; }
+  .cat-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .15em; color: #c9a84c; margin-bottom: 4px; text-transform: uppercase; }
+  .trophy-badge { border-color: rgba(201,168,76,.25); }
+  .desc { font-family: 'DM Mono', monospace; font-size: 9px; color: #555; letter-spacing: .04em; margin-top: 4px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<h2>TROPHIES (Gold-tier — shown in full FX on earn)</h2>
+<div class="grid" id="trophies-grid"></div>
+
+<h2>CONSISTENCY</h2>
+<div class="grid" id="consistency-grid"></div>
+
+<h2>STRENGTH</h2>
+<div class="grid" id="strength-grid"></div>
+
+<h2>VOLUME</h2>
+<div class="grid" id="volume-grid"></div>
+
+<h2>ENGINE</h2>
+<div class="grid" id="engine-grid"></div>
+
+<h2>NUTRITION</h2>
+<div class="grid" id="nutrition-grid"></div>
+
+<h2>BODY</h2>
+<div class="grid" id="body-grid"></div>
+
+<h2>RECOVERY</h2>
+<div class="grid" id="recovery-grid"></div>
+
+<h2>SPECIAL</h2>
+<div class="grid" id="special-grid"></div>
+
+<h2>LEVELS</h2>
+<div class="grid" id="levels-grid"></div>
+
+
+<script>
+const BADGES = [
+  // Consistency
+  { id:'first-day', name:'First Blood', cat:'Consistency', img:'trophies/first_blood_trophy.png', trophy:true },
+  { id:'day-10', name:'Ten Deep', cat:'Consistency', img:'trophies/10Deep_trophy.png' },
+  { id:'day-25', name:'25 Club', cat:'Consistency', img:'trophies/25_club_trophy.png' },
+  { id:'gym-rat', name:'Gym Rat', cat:'Consistency', img:'trophies/gym_rat_trophy.png' },
+  { id:'day-100', name:'Century', cat:'Consistency', img:'trophies/century_trophy.png', trophy:true },
+  { id:'gymreaper', name:'Gym Reaper', cat:'Consistency', img:'trophies/gymreaper_trophy.png', trophy:true },
+  { id:'streak-7', name:'Unbroken Week', cat:'Consistency', img:'trophies/unbroken_week_trophy.png' },
+  { id:'streak-14', name:'Fortnight Fury', cat:'Consistency', img:'trophies/fortnight_fury_trophy.png' },
+  { id:'streak-30', name:'Iron Month', cat:'Consistency', img:'trophies/iron_month_trophy.png', trophy:true },
+  { id:'login-7', name:'Regular', cat:'Consistency', img:'trophies/regular_trophy.png' },
+  { id:'login-30', name:'Devoted', cat:'Consistency', img:'trophies/devoted_trophy.png', trophy:true },
+  { id:'perfect-1', name:'Perfect Week', cat:'Consistency', img:'trophies/perfect_week_trophy.png' },
+  { id:'perfect-4', name:'Perfect Month', cat:'Consistency', img:'trophies/perfect_month_trophy.png', trophy:true },
+  { id:'graduate', name:'Program Graduate', cat:'Consistency', img:'trophies/program_graduate_trophy.png', trophy:true },
+  { id:'checkin-20', name:'Self Aware', cat:'Consistency', img:'trophies/self_aware_trophy.png' },
+  { id:'quests-25', name:'Quest Hunter', cat:'Consistency', img:'trophies/Quest_hunter_trophy.png' },
+  { id:'quests-100', name:'Grail Seeker', cat:'Consistency', img:'trophies/grail_seeker_trophy.png', trophy:true },
+  // Strength
+  { id:'pr-first', name:'Record Breaker', cat:'Strength', img:'trophies/record_breaker_trophy.png' },
+  { id:'pr-10', name:'PR Machine', cat:'Strength', img:'trophies/PR_machine_Trophy.png' },
+  { id:'pr-25', name:'PR Legend', cat:'Strength', img:'trophies/PR_legend_trophy.png', trophy:true },
+  { id:'club-225', name:'225 Bench Club', cat:'Strength', img:'trophies/225_bench_club_trophy.png', trophy:true, desc:'Bench press 225 lb' },
+  { id:'club-315', name:'315 Squat Club', cat:'Strength', img:'trophies/315_squat_club_trophy.png', trophy:true, desc:'Squat 315 lb' },
+  { id:'club-405', name:'405 Pull Club', cat:'Strength', img:'trophies/405_pull_club_trophy.png', trophy:true, desc:'Deadlift 405 lb' },
+  { id:'built-diff', name:'Built Different', cat:'Strength', img:'trophies/built_different_trophy.png', trophy:true, desc:'Earn all three strength clubs: 225 bench · 315 squat · 405 deadlift' },
+  // Volume
+  { id:'sets-100', name:'Volume Dealer', cat:'Volume', img:'trophies/volume_dealer_trophy.png' },
+  { id:'sets-1000', name:'Thousand Sets', cat:'Volume', img:'trophies/thousand_sets_trophy.png', trophy:true },
+  { id:'vol-100k', name:'Six Figures', cat:'Volume', img:'trophies/six_figures_trophy.png' },
+  { id:'vol-1m', name:'Million Pound Club', cat:'Volume', img:'trophies/million_pound_club_trophy.png', trophy:true },
+  // Engine
+  { id:'walk-10', name:'Pathfinder', cat:'Engine', img:'trophies/pathfinder_trophy.png' },
+  { id:'walk-50', name:'Trail Boss', cat:'Engine', img:'trophies/trail_boss_trophy.png' },
+  { id:'cardio-10', name:'Engine Builder', cat:'Engine', img:'trophies/engine_builder_trophy.png' },
+  { id:'cardio-50', name:'Cardio Machine', cat:'Engine', img:'trophies/cardio_machine_trophy.png', trophy:true },
+  // Nutrition
+  { id:'water-30', name:'Hydro Hero', cat:'Nutrition', img:'trophies/hydro_hero_trophy.png' },
+  { id:'recipe-10', name:'Home Cook', cat:'Nutrition', img:'trophies/home_cook_trophy.png' },
+  { id:'meals-100', name:'Meal Tracker', cat:'Nutrition', img:'trophies/meal_tracker_trophy.png' },
+  // Body
+  { id:'bw-30', name:'Scale Watcher', cat:'Body', img:'trophies/scale_watcher_trophy.png' },
+  { id:'meas-10', name:'Data Driven', cat:'Body', img:'trophies/data_driven_trophy.png' },
+  { id:'photos-5', name:'Progress Proof', cat:'Body', img:'trophies/progress_proof_trophy.png' },
+  // Recovery
+  { id:'zen-first', name:'Inner Peace', cat:'Recovery', img:'trophies/inner_peace_trophy.png' },
+  { id:'zen-50', name:'Bend Don\'t Break', cat:'Recovery', img:'trophies/bend_dont_break_trophy.png' },
+  { id:'zen-warrior', name:'Zen Warrior', cat:'Recovery', img:'trophies/zen_warrior_trophy.png', trophy:true },
+  // Special
+  { id:'early', name:'Early Bird', cat:'Special', img:'trophies/early_bird_trophy.png' },
+  { id:'night', name:'Night Owl', cat:'Special', img:'trophies/night_owl_trophy.png' },
+  { id:'weekend', name:'Weekend Warrior', cat:'Special', img:'trophies/weekend_warrior_trophy.png' },
+  { id:'comeback', name:'The Comeback', cat:'Special', img:'trophies/the_comeback_trophy.png', desc:'Return after 14+ days away' },
+  { id:'iron-will', name:'Iron Will', cat:'Special', img:'trophies/iron_will_trophy.png', trophy:true, desc:'Train through a low or sore mood check-in 5 times' },
+  // Levels
+  { id:'level-5', name:'Rising Hero', cat:'Levels', img:'trophies/rising_hero_trophy.png' },
+  { id:'level-10', name:'Apex', cat:'Levels', img:'trophies/apex_trophy.png' },
+  { id:'level-20', name:'Ascended', cat:'Levels', img:'trophies/ascended_trophy.png', trophy:true },
+];
+
+
+
+function card(b) {
+  const el = document.createElement('div');
+  el.className = 'item' + (b.trophy ? ' trophy-badge' : '');
+  if (b.trophy) {
+    const lbl = document.createElement('div');
+    lbl.className = 'cat-label';
+    lbl.textContent = '★ TROPHY';
+    el.appendChild(lbl);
+  }
+  const img = document.createElement('img');
+  img.src = 'assets/ui/' + b.img;
+  img.alt = b.name;
+  img.onerror = function() { this.classList.add('missing'); };
+  el.appendChild(img);
+  const name = document.createElement('div');
+  name.className = 'name';
+  name.textContent = b.name;
+  el.appendChild(name);
+  if (b.desc) {
+    const desc = document.createElement('div');
+    desc.className = 'desc';
+    desc.textContent = b.desc;
+    el.appendChild(desc);
+  }
+  return el;
+}
+
+// Trophies section
+const trophyGrid = document.getElementById('trophies-grid');
+BADGES.filter(b => b.trophy).forEach(b => trophyGrid.appendChild(card(b)));
+
+// Per-category sections
+const cats = ['Consistency','Strength','Volume','Engine','Nutrition','Body','Recovery','Special','Levels'];
+cats.forEach(cat => {
+  const grid = document.getElementById(cat.toLowerCase().replace(/ /g,'-') + '-grid') ||
+               document.getElementById(cat.toLowerCase() + '-grid');
+  if (!grid) return;
+  BADGES.filter(b => b.cat === cat).forEach(b => grid.appendChild(card(b)));
+});
+
+</script>
+</body>
+</html>

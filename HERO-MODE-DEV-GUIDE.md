@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v62.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v63.*
 
 ---
 
@@ -637,14 +637,14 @@ _dc = {
 
 ```js
 // sw.js
-const CACHE_VERSION = 'hero-mode-v62'; // change this number on every deploy
+const CACHE_VERSION = 'hero-mode-v63'; // change this number on every deploy
 ```
 
 **Convention for the comment:** briefly describe what changed in this version.
 
 **Video files are NOT cached** by the service worker (the `if (url.pathname.includes('/MoveKit_Videos/'))` exemption — add any large video directories here to prevent cache quota exhaustion). The `assets/ui/deck_cards/` images ARE cached.
 
-**Current version:** v62 (as of 2026-08-08)
+**Current version:** v63 (as of 2026-08-10)
 
 **Dev gotcha:** if you forget to bump the SW version, existing users won't see your changes. See [Section 9](#9-key-dev-gotchas) for how to force-clear the cache during development.
 
@@ -659,6 +659,7 @@ const CACHE_VERSION = 'hero-mode-v62'; // change this number on every deploy
 - Session history rows (History tab) — share any past workout
 - Session summary overlay (post-workout) — celebratory share moment
 - Deck of Cards end screen — DC-specific share
+- Hero Card back face (Today tab) — RPG identity card share
 
 **Key functions:**
 - `hmShare(context, dateKey, dcData)` — main entry point; builds card → bridge → share/download
@@ -666,6 +667,7 @@ const CACHE_VERSION = 'hero-mode-v62'; // change this number on every deploy
   - `'workout'` context: reads workout name from `.today-banner-name`, exercises from `.session-ex-row` DOM elements; circles are gold+checked for logged sets, open for planned
   - `'history'` context: reads from `slLoad()[dateKey]` log; shows sets + max weight per exercise
   - `'dc'` context: shows total reps, time, cards done, skipped count
+  - `'hero-card'` context: calls `hmBuildHeroCardCanvas()` → 1080×1080 RPG card PNG
 - `hmShareBridge(blob, opts)` — tries `window.HMNativeBridge.share` (future Capacitor), then `navigator.share`, then triggers a download
 - `hmShareImportUrl(dateKey)` — encodes workout as `heromode.app/?import=<base64>&ref=<heroname>`
 - `hmEncodeWorkout(dateKey)` / `hmDecodeWorkout(b64)` — base64 JSON payload `{v:1, d:dateKey, e:[{k,n,s:[{w,r}]}]}`
@@ -695,7 +697,58 @@ Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, 
 
 ---
 
-### 6.16 Premium Gate / Monetization Infrastructure
+### 6.16 Hero Card
+
+**What it does:** An RPG identity card on the Today dashboard that derives 5 stats from the user's real training data over the last 7 days. Has a 3D CSS flip animation — front shows identity/power, back shows stat bars, hero rating, and a share button.
+
+**Rarity tiers** (based on level):
+
+| Tier | Level Range | Color |
+|---|---|---|
+| Common | 0–9 | Grey `#9BA3AF` |
+| Uncommon | 10–19 | Green `#5BC876` |
+| Rare | 20–29 | Blue `#4A9EBF` |
+| Epic | 30–39 | Purple `#9B6FE8` |
+| Legendary | 40–59 | Gold `#E8A44A` |
+| Mythic | 60–89 | Pink-red `#E84A6F` (pulsing glow) |
+| Transcendent | 90+ | Warm white `#FFD9A0` |
+
+**Derived stats (7-day lookback):**
+- `STR` = `min(100, sets_done * 1.8 + recent_prs * 12)`
+- `END` = `min(100, cardio_minutes / 2.1)`
+- `VIT` = `min(100, min(streak,14)/14 * 55 + min(water,8)/8 * 45)`
+- `AGI` = `min(100, cardio_sessions * 13 + stretch_days * 9)`
+- `DIS` = `min(100, min(max_streak,30)/30 * 100)`
+
+**Power Score:** weighted average — `STR×0.25 + END×0.20 + VIT×0.20 + AGI×0.15 + DIS×0.20`
+
+**Hero Rating:** `min(99, round(40 + avg_stat * 0.59))` — shown as 0-99 + letter grade (C → S+)
+
+**Key functions:**
+- `hmRarityTier(lvl)` — returns `{ name, color, glow }` object
+- `hmDerivedStats()` — reads localStorage data and returns `{ STR, END, VIT, AGI, DIS }`
+- `hmPowerScore(stats)` — weighted power total
+- `hmHeroRating(stats)` / `hmHeroRatingGrade(r)` — numeric + letter grade
+- `renderHeroCard(el)` — builds front+back face HTML, injects into container element; called from `renderTodayDashboard()`
+- `hmBuildHeroCardCanvas()` — 1080×1080 canvas PNG for sharing (mirrors card design)
+
+**Today dashboard integration:** The card lives in `TODAY_SECTIONS` as `{ id:'td-herocard', label:'Hero Card', icon:'🃏' }`. `renderTodayDashboard()` injects `<div id="td-hero-card"></div>` when the section is visible, then calls `renderHeroCard()` on it.
+
+**Share integration:** `hmShare('hero-card')` calls `hmBuildHeroCardCanvas()` → `hmShareBridge()`. Share button is on the card's back face.
+
+**CSS 3D flip gotcha:** `backface-visibility: hidden` does not reliably suppress pointer events in Chromium. The back face intercepts clicks even when rotated away. Fix: explicit `pointer-events` control keyed on the `.hc-flipped` class:
+```css
+.hc-front { pointer-events: auto }
+.hc-back  { pointer-events: none }
+.hc-wrap.hc-flipped .hc-front { pointer-events: none }
+.hc-wrap.hc-flipped .hc-back  { pointer-events: auto }
+```
+
+**Pet/walk card auto-hide:** The Beau card in Today dashboard only renders when `localStorage.getItem('hm-pet-name') !== null || localStorage.getItem('hm-pet-photo') !== null`. If neither key is set (user hasn't configured a pet in Wellness), the card is omitted entirely.
+
+---
+
+### 6.17 Premium Gate / Monetization Infrastructure
 
 **What it does:** Provides the single source of truth for premium vs. free status, and the paywall UI. All premium feature gates read from one function — when RevenueCat is wired in, only that one function needs to change.
 

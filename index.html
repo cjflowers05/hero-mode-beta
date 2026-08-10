@@ -22173,6 +22173,18 @@ async function hmShare(context, dateKey, dcData) {
   context = context || 'workout';
   dateKey = dateKey || ((typeof slToday === 'function') ? slToday() : new Date().toISOString().slice(0,10));
   dcData  = dcData  || window._hmDcData || {};
+  if (context === 'hero-card') {
+    if (typeof showToast === 'function') showToast('Building hero card…', 'info');
+    const blob = await hmBuildHeroCardCanvas();
+    const prof = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+    const tag  = (prof && prof.name) ? prof.name + ' · ' : '';
+    await hmShareBridge(blob, {
+      filename: 'hero-mode-card.png',
+      title:    'My Hero Card',
+      text:     tag + 'Check out my Hero Card on Hero Mode 💪  heromode.app',
+    });
+    return;
+  }
   if (typeof showToast === 'function') showToast('Building share card…', 'info');
   const blob      = await hmBuildShareCard(context, dateKey, dcData);
   const importUrl = context !== 'dc' ? hmShareImportUrl(dateKey) : 'https://heromode.app';
@@ -22276,6 +22288,49 @@ document.addEventListener('DOMContentLoaded', function() {
 .td-stat{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center}
 .td-stat-val{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--text);letter-spacing:.02em;line-height:1}
 .td-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.08em;margin-top:3px}
+/* ── HERO CARD ── */
+.hc-section{margin-bottom:12px}
+.hc-section-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:8px}
+.hc-wrap{perspective:1000px;height:290px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-bottom:12px}
+.hc-inner{transform-style:preserve-3d;width:100%;height:100%;position:relative;transition:transform .65s cubic-bezier(.4,0,.2,1)}
+.hc-wrap.hc-flipped .hc-inner{transform:rotateY(180deg)}
+.hc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;border:2px solid var(--rarity-color,var(--gold));box-shadow:0 0 24px var(--rarity-glow,rgba(201,168,76,.25)),inset 0 0 40px rgba(0,0,0,.2);padding:15px 16px;background:linear-gradient(160deg,var(--bg2) 0%,var(--bg3) 100%);display:flex;flex-direction:column;overflow:hidden}
+.hc-front{transform:rotateY(0deg);pointer-events:auto}
+.hc-back{transform:rotateY(180deg);pointer-events:none}
+.hc-wrap.hc-flipped .hc-front{pointer-events:none}
+.hc-wrap.hc-flipped .hc-back{pointer-events:auto}
+.hc-rarity-pill{align-self:flex-start;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.16em;color:var(--rarity-color,var(--gold));border:1px solid var(--rarity-color,var(--gold));padding:2px 9px;border-radius:100px;opacity:.9;margin-bottom:10px;text-transform:uppercase}
+.hc-front-body{flex:1;display:flex;align-items:center;gap:14px;min-height:0}
+.hc-emblem{width:68px;height:68px;object-fit:contain;filter:drop-shadow(0 0 12px var(--rarity-glow,rgba(201,168,76,.5)));flex-shrink:0}
+.hc-front-text{flex:1;min-width:0}
+.hc-hero-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;color:var(--text);line-height:1}
+.hc-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--rarity-color,var(--gold));margin-top:3px;text-transform:uppercase}
+.hc-power-col{text-align:right;flex-shrink:0}
+.hc-power-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;color:var(--text3);margin-bottom:1px}
+.hc-power-val{font-family:'Bebas Neue',sans-serif;font-size:54px;color:var(--rarity-color,var(--gold));line-height:1;text-shadow:0 0 18px var(--rarity-glow,rgba(201,168,76,.4))}
+.hc-front-footer{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05)}
+.hc-lvl-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.05em}
+.hc-streak-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+.hc-flip-hint{margin-left:auto;font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);opacity:.55;letter-spacing:.05em}
+/* Hero Card — back face */
+.hc-back-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
+.hc-back-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em;color:var(--text);line-height:1}
+.hc-back-sub{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.08em;margin-top:2px;text-transform:uppercase}
+.hc-rating-badge{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);text-align:right;line-height:1;flex-shrink:0}
+.hc-rating-sub{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);text-align:right;letter-spacing:.05em;margin-top:1px}
+.hc-stats-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;color:var(--text3);margin-bottom:5px;text-transform:uppercase}
+.hc-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.hc-stat-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.05em;width:24px;flex-shrink:0}
+.hc-stat-bar-wrap{flex:1;height:5px;border-radius:3px;background:var(--bg3);border:1px solid var(--border);overflow:hidden}
+.hc-stat-bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.hc-stat-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);width:22px;text-align:right;flex-shrink:0}
+.hc-back-footer{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)}
+.hc-bf-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;color:var(--text3);margin-bottom:2px;text-transform:uppercase}
+.hc-bf-val{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text);letter-spacing:.03em}
+.hc-share-btn{width:100%;margin-top:8px;padding:8px;border-radius:9px;border:1px solid var(--rarity-color,var(--gold));background:transparent;color:var(--rarity-color,var(--gold));font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;cursor:pointer;transition:background .2s;flex-shrink:0}
+.hc-share-btn:active{background:rgba(201,168,76,.12)}
+@keyframes hc-glow-pulse{0%,100%{box-shadow:0 0 24px var(--rarity-glow)}50%{box-shadow:0 0 50px var(--rarity-glow),0 0 80px var(--rarity-glow)}}
+.hc-mythic .hc-face{animation:hc-glow-pulse 3s ease-in-out infinite}
 .td-qdots{display:flex;gap:7px;margin-top:8px}
 .td-qdot{width:11px;height:11px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:background .3s}
 .td-qdot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--accent-rgb),.4)}
@@ -23895,10 +23950,11 @@ function hmWellnessCustomizeOpen() {
 // ── TODAY DASHBOARD CUSTOMIZER ───────────────────────────────────────────────
 const TODAY_LAYOUT_KEY = 'hm-today-layout';
 const TODAY_SECTIONS = [
-  { id:'td-stats',   label:'Quick Stats',      icon:'📊', desc:'Water · XP · Streak at a glance' },
-  { id:'td-mission', label:"Today's Mission",  icon:'🗡️', desc:'Your workout or rest day' },
-  { id:'td-quests',  label:'Daily Quests',     icon:'🎯', desc:'3 daily challenges + chest reward' },
-  { id:'td-pet',     label:'Walk / Beau',      icon:'🐕', desc:'Pet walk status on your home screen' },
+  { id:'td-stats',    label:'Quick Stats',      icon:'📊', desc:'Water · XP · Streak at a glance' },
+  { id:'td-herocard', label:'Hero Card',         icon:'🃏', desc:'Your RPG identity card with derived stats' },
+  { id:'td-mission',  label:"Today's Mission",  icon:'🗡️', desc:'Your workout or rest day' },
+  { id:'td-quests',   label:'Daily Quests',     icon:'🎯', desc:'3 daily challenges + chest reward' },
+  { id:'td-pet',      label:'Walk / Beau',      icon:'🐕', desc:'Pet walk status on your home screen' },
 ];
 
 function hmTodayLayoutLoad() {
@@ -23953,6 +24009,293 @@ function hmTodayCustomizeOpen() {
 }
 window.hmTodayCustomizeOpen  = hmTodayCustomizeOpen;
 window.hmTodayToggleSection  = hmTodayToggleSection;
+
+// ── HERO CARD ───────────────────────────────────────────────────────────────
+function hmRarityTier(lvl) {
+  if (lvl >= 90) return { name:'Transcendent', color:'#FFD9A0', glow:'rgba(255,217,160,.7)' };
+  if (lvl >= 60) return { name:'Mythic',       color:'#E84A6F', glow:'rgba(232,74,111,.6)' };
+  if (lvl >= 40) return { name:'Legendary',    color:'#E8A44A', glow:'rgba(232,164,74,.55)' };
+  if (lvl >= 30) return { name:'Epic',         color:'#9B6FE8', glow:'rgba(155,111,232,.5)' };
+  if (lvl >= 20) return { name:'Rare',         color:'#4A9EBF', glow:'rgba(74,158,191,.4)' };
+  if (lvl >= 10) return { name:'Uncommon',     color:'#5BC876', glow:'rgba(91,200,118,.35)' };
+  return           { name:'Common',           color:'#9BA3AF', glow:'rgba(155,163,175,.2)' };
+}
+
+function hmDerivedStats() {
+  const now = new Date();
+  const days7 = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    days7.push(d.toISOString().slice(0, 10));
+  }
+
+  // STR — sets logged + PRs set this week
+  const log = (typeof slLoad === 'function') ? slLoad() : {};
+  const prs = (typeof slLoadPRs === 'function') ? slLoadPRs() : {};
+  let totalSets = 0;
+  days7.forEach(dk => {
+    const dayLog = log[dk] || {};
+    Object.values(dayLog).forEach(sets => { sets.forEach(s => { if (s && s.done) totalSets++; }); });
+  });
+  const recentPRs = Object.values(prs).filter(p => p && p.date && days7.includes(p.date)).length;
+  const STR = Math.min(100, Math.round(totalSets * 1.8 + recentPRs * 12));
+
+  // END — cardio minutes this week
+  let cardioMin = 0;
+  try {
+    const cd = (typeof loadCardioData === 'function') ? loadCardioData() : {};
+    days7.forEach(dk => { (cd[dk] || []).forEach(s => { cardioMin += (s.duration || 0); }); });
+  } catch(e) {}
+  const END = Math.min(100, Math.round(cardioMin / 2.1));
+
+  // VIT — streak + today's water as recovery proxy
+  const streak = (typeof calcStreak === 'function') ? calcStreak() : 0;
+  const water  = (typeof waterGet === 'function') ? waterGet() : 0;
+  const VIT = Math.min(100, Math.round(Math.min(streak, 14) / 14 * 55 + Math.min(water, 8) / 8 * 45));
+
+  // AGI — cardio sessions + stretch/yoga days
+  let cardioSessions = 0, stretchDays = 0;
+  try {
+    const cd = (typeof loadCardioData === 'function') ? loadCardioData() : {};
+    days7.forEach(dk => { if ((cd[dk] || []).length > 0) cardioSessions++; });
+    days7.forEach(dk => {
+      const dayLog = log[dk] || {};
+      if (Object.keys(dayLog).some(k => typeof HM_STRETCH_KEYS !== 'undefined' && HM_STRETCH_KEYS.includes(k))) stretchDays++;
+    });
+  } catch(e) {}
+  const AGI = Math.min(100, Math.round(cardioSessions * 13 + stretchDays * 9));
+
+  // DIS — streak (login + workout)
+  const xpDat = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+  const loginStreak = (xpDat.login && xpDat.login.streak) ? xpDat.login.streak : 0;
+  const DIS = Math.min(100, Math.round(Math.min(Math.max(streak, loginStreak), 30) / 30 * 100));
+
+  return { STR, END, VIT, AGI, DIS };
+}
+
+function hmPowerScore(stats) {
+  const { STR, END, VIT, AGI, DIS } = stats;
+  return Math.round(STR * 0.25 + END * 0.20 + VIT * 0.20 + AGI * 0.15 + DIS * 0.20);
+}
+
+function hmHeroRating(stats) {
+  const avg = (stats.STR + stats.END + stats.VIT + stats.AGI + stats.DIS) / 5;
+  return Math.min(99, Math.round(40 + avg * 0.59));
+}
+
+function hmHeroRatingGrade(r) {
+  if (r >= 95) return 'S+'; if (r >= 90) return 'S';  if (r >= 85) return 'A+';
+  if (r >= 80) return 'A';  if (r >= 75) return 'B+'; if (r >= 70) return 'B';
+  if (r >= 65) return 'C+'; return 'C';
+}
+
+function renderHeroCard(el) {
+  if (!el) return;
+  const xpData = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+  const lvlInfo = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xpData.xp) : { lvl: 1 };
+  const prof    = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+  const theme   = (typeof hmActiveTheme === 'function') ? hmActiveTheme() : null;
+  const rarity  = hmRarityTier(lvlInfo.lvl);
+  const stats   = hmDerivedStats();
+  const power   = hmPowerScore(stats);
+  const rating  = hmHeroRating(stats);
+  const grade   = hmHeroRatingGrade(rating);
+  const streak  = Math.max(
+    (typeof calcStreak === 'function') ? calcStreak() : 0,
+    (xpData.login && xpData.login.streak) ? xpData.login.streak : 0
+  );
+  const heroName = prof && prof.name ? prof.name.toUpperCase() : 'HERO';
+  const rankStr  = (typeof hmRankFor === 'function') ? hmRankFor(lvlInfo.lvl) : 'ROOKIE';
+  const titleId  = xpData.title || null;
+  const titleObj = titleId && typeof HM_TITLES !== 'undefined' ? HM_TITLES.find(t => t.id === titleId) : null;
+  const titleStr = titleObj ? titleObj.name.toUpperCase() : rankStr;
+  const emblSrc  = theme && typeof hmEmblSrc === 'function' ? hmEmblSrc(theme) : '';
+  const isMythic = lvlInfo.lvl >= 60;
+
+  const statBar = (label, val, color) =>
+    `<div class="hc-stat-row">
+      <div class="hc-stat-label">${label}</div>
+      <div class="hc-stat-bar-wrap"><div class="hc-stat-bar-fill" style="width:${val}%;background:${color}"></div></div>
+      <div class="hc-stat-num">${val}</div>
+    </div>`;
+
+  el.innerHTML = `
+    <div class="hc-section-lbl">HERO CARD · TAP TO FLIP</div>
+    <div class="hc-wrap${isMythic ? ' hc-mythic' : ''}" style="--rarity-color:${rarity.color};--rarity-glow:${rarity.glow}" onclick="this.classList.toggle('hc-flipped')">
+      <div class="hc-inner">
+        <div class="hc-face hc-front">
+          <div class="hc-rarity-pill">${rarity.name}</div>
+          <div class="hc-front-body">
+            ${emblSrc ? `<img class="hc-emblem" src="${emblSrc}" alt="" onerror="this.style.display='none'">` : ''}
+            <div class="hc-front-text">
+              <div class="hc-hero-name">${heroName}</div>
+              <div class="hc-title">${titleStr}</div>
+            </div>
+            <div class="hc-power-col">
+              <div class="hc-power-label">PWR</div>
+              <div class="hc-power-val">${power}</div>
+            </div>
+          </div>
+          <div class="hc-front-footer">
+            <div class="hc-lvl-badge">LVL ${lvlInfo.lvl}</div>
+            ${streak > 0 ? `<div class="hc-streak-badge">🔥 ${streak}</div>` : ''}
+            <div class="hc-flip-hint">tap to flip ›</div>
+          </div>
+        </div>
+        <div class="hc-face hc-back">
+          <div class="hc-back-header">
+            <div>
+              <div class="hc-back-name">${heroName}</div>
+              <div class="hc-back-sub">${rankStr} · LVL ${lvlInfo.lvl}</div>
+            </div>
+            <div>
+              <div class="hc-rating-badge">${grade}</div>
+              <div class="hc-rating-sub">RATING ${rating}</div>
+            </div>
+          </div>
+          <div class="hc-stats-lbl">DERIVED STATS · LAST 7 DAYS</div>
+          ${statBar('STR', stats.STR, '#E8A44A')}
+          ${statBar('END', stats.END, '#4A9EBF')}
+          ${statBar('VIT', stats.VIT, '#5BC876')}
+          ${statBar('AGI', stats.AGI, '#E84A6F')}
+          ${statBar('DIS', stats.DIS, '#C9A84C')}
+          <div class="hc-back-footer">
+            <div><div class="hc-bf-lbl">Total XP</div><div class="hc-bf-val">${(xpData.xp||0).toLocaleString()}</div></div>
+            <div><div class="hc-bf-lbl">Streak</div><div class="hc-bf-val">${streak} DAYS</div></div>
+            <div><div class="hc-bf-lbl">Hero Rating</div><div class="hc-bf-val">${grade} · ${rating}</div></div>
+          </div>
+          <button class="hc-share-btn" onclick="event.stopPropagation();hmShare('hero-card')">↗ SHARE HERO CARD</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+window.renderHeroCard = renderHeroCard;
+
+// ── HERO CARD canvas (for sharing) ──────────────────────────────────────────
+async function hmBuildHeroCardCanvas() {
+  const W = 1080, H = 1080;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const xpData  = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+  const lvlInfo = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xpData.xp) : { lvl: 1 };
+  const prof    = (typeof hmActiveProfile === 'function') ? hmActiveProfile() : null;
+  const theme   = (typeof hmActiveTheme === 'function') ? hmActiveTheme() : null;
+  const rarity  = hmRarityTier(lvlInfo.lvl);
+  const stats   = hmDerivedStats();
+  const power   = hmPowerScore(stats);
+  const rating  = hmHeroRating(stats);
+  const grade   = hmHeroRatingGrade(rating);
+  const streak  = Math.max(
+    (typeof calcStreak === 'function') ? calcStreak() : 0,
+    (xpData.login && xpData.login.streak) ? xpData.login.streak : 0
+  );
+  const heroName = prof && prof.name ? prof.name.toUpperCase() : 'HERO';
+  const rankStr  = (typeof hmRankFor === 'function') ? hmRankFor(lvlInfo.lvl) : 'ROOKIE';
+  const BG = '#0D1017', CARD = '#12151E', GOLD = '#C9A84C', MUTED = '#8892A4';
+  const RC = rarity.color;
+
+  // Background
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+
+  // Card with glow border
+  ctx.shadowColor = RC; ctx.shadowBlur = 50;
+  ctx.strokeStyle = RC; ctx.lineWidth = 4;
+  ctx.strokeRect(70, 70, W - 140, H - 140);
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = CARD;
+  ctx.fillRect(72, 72, W - 144, H - 144);
+
+  ctx.textAlign = 'center';
+
+  // Rarity label
+  ctx.fillStyle = RC; ctx.font = '26px monospace';
+  ctx.fillText('— ' + rarity.name.toUpperCase() + ' —', W / 2, 148);
+
+  // Try to draw emblem
+  const emblUrl = theme && typeof hmEmblSrc === 'function' ? hmEmblSrc(theme) : '';
+  let emblDrawn = false;
+  if (emblUrl) {
+    try {
+      await new Promise(res => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.shadowColor = RC; ctx.shadowBlur = 28;
+          ctx.drawImage(img, (W - 130) / 2, 175, 130, 130);
+          ctx.shadowBlur = 0;
+          emblDrawn = true; res();
+        };
+        img.onerror = res;
+        img.src = emblUrl;
+        setTimeout(res, 1500);
+      });
+    } catch(e) {}
+  }
+
+  const nameY = emblDrawn ? 370 : 215;
+
+  // Hero name
+  ctx.fillStyle = '#E2E8F0'; ctx.font = 'bold 96px system-ui, sans-serif';
+  ctx.fillText(heroName, W / 2, nameY);
+
+  // Rank + level
+  ctx.fillStyle = RC; ctx.font = '32px monospace';
+  ctx.fillText(rankStr + '  ·  LVL ' + lvlInfo.lvl, W / 2, nameY + 54);
+
+  // Power score
+  ctx.fillStyle = MUTED; ctx.font = '26px monospace';
+  ctx.fillText('POWER SCORE', W / 2, nameY + 114);
+  ctx.shadowColor = RC; ctx.shadowBlur = 32;
+  ctx.fillStyle = RC; ctx.font = 'bold 188px system-ui, sans-serif';
+  ctx.fillText(String(power), W / 2, nameY + 286);
+  ctx.shadowBlur = 0;
+
+  // Stats bars
+  const STATS_D = [
+    { label:'STR', val:stats.STR, color:'#E8A44A' },
+    { label:'END', val:stats.END, color:'#4A9EBF' },
+    { label:'VIT', val:stats.VIT, color:'#5BC876' },
+    { label:'AGI', val:stats.AGI, color:'#E84A6F' },
+    { label:'DIS', val:stats.DIS, color:GOLD },
+  ];
+  const barY0 = nameY + 318, BAR_H = 14, ROW = 34, BAR_X = 150, BAR_W = W - 300;
+  ctx.fillStyle = MUTED; ctx.font = '22px monospace'; ctx.textAlign = 'left';
+  ctx.fillText('DERIVED STATS — LAST 7 DAYS', BAR_X, barY0);
+  STATS_D.forEach((s, i) => {
+    const y = barY0 + 28 + i * ROW;
+    ctx.fillStyle = GOLD; ctx.font = 'bold 24px monospace';
+    ctx.fillText(s.label, BAR_X, y + 12);
+    ctx.fillStyle = '#1E2230'; ctx.fillRect(BAR_X + 68, y, BAR_W, BAR_H);
+    if (s.val > 0) { ctx.fillStyle = s.color; ctx.fillRect(BAR_X + 68, y, Math.round(BAR_W * s.val / 100), BAR_H); }
+    ctx.fillStyle = MUTED; ctx.font = '22px monospace'; ctx.textAlign = 'right';
+    ctx.fillText(String(s.val), BAR_X + 68 + BAR_W + 52, y + 12);
+    ctx.textAlign = 'left';
+  });
+
+  // Rating + streak
+  const rY = barY0 + 28 + 5 * ROW + 24;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = GOLD; ctx.font = 'bold 52px monospace';
+  ctx.fillText('HERO RATING  ' + grade + ' · ' + rating, W / 2, rY);
+  if (streak > 0) {
+    ctx.fillStyle = MUTED; ctx.font = '28px monospace';
+    ctx.fillText('🔥 ' + streak + '-day streak', W / 2, rY + 44);
+  }
+
+  // CTA
+  const ctaY = 950;
+  ctx.fillStyle = '#0A0D14'; ctx.fillRect(0, ctaY, W, H - ctaY);
+  ctx.fillStyle = GOLD; ctx.globalAlpha = .18; ctx.fillRect(0, ctaY, W, 1); ctx.globalAlpha = 1;
+  ctx.fillStyle = GOLD; ctx.font = 'bold 28px monospace';
+  ctx.fillText('💪  Train with me on HERO MODE', W / 2, ctaY + 42);
+  ctx.fillStyle = MUTED; ctx.font = '22px monospace';
+  ctx.fillText('heromode.app  ·  free to download', W / 2, ctaY + 78);
+
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
 
 // ── TODAY DASHBOARD ─────────────────────────────────────────────────────────
 function renderTodayDashboard() {
@@ -24033,11 +24376,15 @@ function renderTodayDashboard() {
       </div>`;
   } catch(e) { questBody = '<div class="td-label">Daily Quests</div>'; }
 
-  // Walk / pet
+  // Walk / pet — only show if user has explicitly set up a pet in Wellness
   let walkHtml = '';
   try {
-    const petName = localStorage.getItem('hm-pet-name') || 'Beau';
-    const petPhoto = localStorage.getItem('hm-pet-photo') || 'assets/ui/beau/hey.png';
+    const _petNameRaw  = localStorage.getItem('hm-pet-name');
+    const _petPhotoRaw = localStorage.getItem('hm-pet-photo');
+    const _petSetup    = _petNameRaw !== null || _petPhotoRaw !== null;
+    if (_petSetup) {
+    const petName = _petNameRaw || 'Beau';
+    const petPhoto = _petPhotoRaw || 'assets/ui/beau/hey.png';
     const walks = JSON.parse(localStorage.getItem(WALK_KEY_V2)||'[]');
 
     const todayDateKey = now.toISOString().slice(0,10);
@@ -24056,6 +24403,7 @@ function renderTodayDashboard() {
         <div class="td-chevron" style="${walked?'color:#5BC876':''}">›</div>
       </div>
     </div>`;
+    } // end _petSetup
   } catch(e) { walkHtml = ''; }
 
   // Water
@@ -24103,10 +24451,12 @@ function renderTodayDashboard() {
       <div class="td-stat"><div class="td-stat-val">⚡${xpToday>=1000?(xpToday/1000).toFixed(1)+'k':xpToday}</div><div class="td-stat-lbl">XP Today</div></div>
       <div class="td-stat"><div class="td-stat-val">🔥${streak}</div><div class="td-stat-lbl">Streak</div></div>
     </div>`:''}
+    ${_tdShow('td-herocard') ? '<div id="td-hero-card"></div>' : ''}
     ${_tdShow('td-mission')?`<div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>`:''}
     ${_tdShow('td-quests')?`<div class="td-card td-card-tap" onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))">${questBody}</div>`:''}
     ${_tdShow('td-pet')?walkHtml:''}
   `;
+  if (_tdShow('td-herocard')) renderHeroCard(document.getElementById('td-hero-card'));
 }
 
 // ── DAILY RECAP + COACH — evening scorecard with data-driven encouragement ──

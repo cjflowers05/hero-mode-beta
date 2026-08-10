@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v62'; // v62: Share card redesign — session tracker look, banner share button
+const CACHE_VERSION = 'hero-mode-v63'; // v63: Hero Card — RPG identity card with derived stats, flip animation, canvas share
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
