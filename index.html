@@ -12983,9 +12983,10 @@ function hmShowDailyBriefing() {
   ov.style.cssText = 'position:fixed;inset:0;z-index:18000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;opacity:0;transition:opacity .25s';
   ov.onclick = function(e) { if (e.target === ov) hmCloseBriefing(); };
 
+  const _briefPerf = hmIsPerformanceMode();
   ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:360px;padding:28px 22px 24px;text-align:center;cursor:default" onclick="event.stopPropagation()">'
-    + '<img src="' + hmEmblSrc(theme) + '" style="width:60px;height:60px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(var(--accent-rgb),.55))" onerror="this.style.display=\'none\'">'
-    + '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--gold);letter-spacing:.16em;margin-bottom:4px">' + dateStr + '</div>'
+    + (_briefPerf ? '' : '<img src="' + hmEmblSrc(theme) + '" style="width:60px;height:60px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(var(--accent-rgb),.55))" onerror="this.style.display=\'none\'">')
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:' + (_briefPerf ? 'var(--text3)' : 'var(--gold)') + ';letter-spacing:.16em;margin-bottom:4px">' + dateStr + '</div>'
     + '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px">' + heroName + ' · LVL ' + lvlInfo.lvl + '</div>'
     + '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:18px 14px;margin-bottom:14px">'
     + '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Today\'s Mission</div>'
@@ -22379,6 +22380,15 @@ body.perf-mode .hero-class-badge{display:none}
 body.perf-mode .phase-pill-wrap{display:none}
 body.perf-mode .hm-trophy-strip{display:none}
 body.perf-mode #badge-strip{display:none}
+/* Performance Mode — hero splash: clean/minimal, no emblem or fiery bg */
+body.perf-mode .hero{background:var(--bg)!important;background-image:none!important;border-bottom-color:var(--border2);padding-bottom:16px}
+body.perf-mode #hero-bg-layer{display:none}
+body.perf-mode #hero-emblem{display:none}
+body.perf-mode #profile-chip{display:none}
+body.perf-mode .hero::before{display:none}
+body.perf-mode .hero-eyebrow{color:var(--text3)}
+body.perf-mode .hero-title{font-size:clamp(32px,9vw,52px)}
+body.perf-mode .hero-title span{color:var(--text)}
 .td-qdots{display:flex;gap:7px;margin-top:8px}
 .td-qdot{width:11px;height:11px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:background .3s}
 .td-qdot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--accent-rgb),.4)}
