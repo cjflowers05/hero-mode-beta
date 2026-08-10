@@ -4207,7 +4207,13 @@ document.addEventListener('DOMContentLoaded', () => {
     <button onclick="nutriChangeDay(1)" style="width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
   </div>
 
-  <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')">✨ GUIDE</button></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
+    <div style="display:flex;gap:6px">
+      <button onclick="showTab('recipes', document.getElementById('nav-btn-fuel'))" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:6px 12px;cursor:pointer;min-height:34px">🍳 Recipe Book</button>
+      <button onclick="showTab('wellness', document.getElementById('nav-btn-fuel'))" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:6px 12px;cursor:pointer;min-height:34px">🌿 Wellness</button>
+    </div>
+    <button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')">✨ GUIDE</button>
+  </div>
   <!-- training / rest day toggle -->
   <div class="nt-day-type-row">
     <button class="nt-day-btn active" id="nt-btn-train" onclick="ntSetDayType('train')">🏋️ Training Day</button>
@@ -6234,17 +6240,9 @@ document.addEventListener('DOMContentLoaded', () => {
     <img src="assets/ui/nav-timer.png" class="nav-btn-img" alt="">
     Log
   </button>
-  <button class="nav-btn" onclick="showTab('nutri-tracker',this)">
+  <button class="nav-btn" onclick="showTab('nutri-tracker',this)" id="nav-btn-fuel">
     <img src="assets/ui/nav-nutrition.png" class="nav-btn-img" alt="">
-    Nutrition
-  </button>
-  <button class="nav-btn" onclick="showTab('recipes',this)">
-    <img src="assets/ui/nav-recipes.png" class="nav-btn-img" alt="">
-    Recipes
-  </button>
-  <button class="nav-btn" onclick="showTab('wellness',this)">
-    <img src="assets/ui/nav-health.png" class="nav-btn-img" alt="">
-    Wellness
+    Fuel
   </button>
   <button class="nav-btn" onclick="showTab('charts',this)">
     <img src="assets/ui/nav-achievements.png" class="nav-btn-img" alt="">
@@ -8207,7 +8205,10 @@ function renderTracker() {
     const hasLog = !!(grouped[date] && grouped[date].length);
     html += `<div class="log-date-row">
       <span class="log-date-label">${dlabel}</span>
-      ${hasLog ? `<span class="log-date-replay" onclick="openSessionReplay('${date}')">▶ Session</span>` : ''}
+      <span style="display:flex;align-items:center;gap:8px">
+        ${hasLog ? `<span class="log-date-replay" onclick="hmRepeatSession('${date}')" title="Repeat this session today">↺ Repeat</span>` : ''}
+        ${hasLog ? `<span class="log-date-replay" onclick="openSessionReplay('${date}')">▶ Session</span>` : ''}
+      </span>
     </div>`;
     if (skips[date]) {
       html += `<div class="log-skip-row">
@@ -12821,6 +12822,10 @@ function hmShowSettings() {
     + '<span>' + (lightMode ? '🌙' : '☀️') + ' Display Mode</span><span style="color:var(--text3)">' + (lightMode ? 'Light → Dark' : 'Dark → Light') + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(showThemePicker,300)">'
     + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
+    + '<div class="hm-settings-row" onclick="hmTogglePerformanceMode()" >'
+    + '<span>⚡ App Mode</span><span id="hm-stg-mode-val" style="color:var(--text3)">' + (hmIsPerformanceMode() ? 'Performance' : 'Hero Mode') + '</span></div>'
+    + '<div class="hm-settings-row" onclick="hmCloseSettings();showTab(\'wellness\',null)">'
+    + '<span>🌿 Wellness</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">TRAINING</div>'
     + '<div class="hm-settings-row" onclick="hmCycleRestDefault()">'
     + '<span>⏱ Rest Timer Default</span><span id="hm-stg-rest-val" style="color:var(--text3)">' + HM_REST_LABELS[hmRestDefaultPref()] + '</span></div>'
@@ -17707,6 +17712,22 @@ function slLoadPRs() { try { return JSON.parse(localStorage.getItem(SL_PR_KEY)||
 function slSavePRs(d){ localStorage.setItem(SL_PR_KEY, JSON.stringify(d)); }
 function slToday()   { return new Date().toISOString().slice(0,10); }
 
+function hmRepeatSession(date) {
+  const log = slLoad()[date];
+  if (!log) return;
+  const exKeys = Object.keys(log);
+  if (!exKeys.length) { if(typeof showToast==='function') showToast('No exercises in that session', 'info'); return; }
+  const today = slToday();
+  const existing = (typeof cwTodayLoad === 'function') ? cwTodayLoad() : null;
+  const existingKeys = (existing && existing.date === today) ? existing.exercises : [];
+  const newKeys = exKeys.filter(k => !existingKeys.includes(k));
+  if (!newKeys.length) { if(typeof showToast==='function') showToast('These exercises are already on today\'s plan', 'info'); return; }
+  if (typeof cwTodaySave === 'function') cwTodaySave({ date: today, exercises: [...existingKeys, ...newKeys], cardio: (existing && existing.date === today) ? (existing.cardio || null) : null });
+  if (typeof cwRenderTodayAddon === 'function') cwRenderTodayAddon();
+  if (typeof showToast === 'function') showToast(`${newKeys.length} exercise${newKeys.length>1?'s':''} added to today`, 'success');
+  showTab('workout', document.querySelector('[onclick*="workout"]'));
+}
+
 // Epley 1RM estimate
 function slEpley(w, r) { return r <= 1 ? w : Math.round(w * (1 + r / 30)); }
 
@@ -20679,6 +20700,7 @@ document.addEventListener('DOMContentLoaded', () => {
   waterUpdateHeader();    // Water intake header
   photoUpdateHeader();    // Progress photos header
   cwRenderTodayAddon();   // Custom workout add-ons for today
+  hmApplyMode();          // Apply performance/hero mode body class
   renderCardioProgram();  // Cardio program (Train tab)
   const _cpSaved = (() => { try { return JSON.parse(localStorage.getItem(CARDIO_PROG_KEY)); } catch(e) { return null; } })();
   if (_cpSaved) { _cpOpen.clear(); _cpOpen.add(_cpCurrentWeek(_cpSaved)); }
@@ -22331,6 +22353,13 @@ document.addEventListener('DOMContentLoaded', function() {
 .hc-share-btn:active{background:rgba(201,168,76,.12)}
 @keyframes hc-glow-pulse{0%,100%{box-shadow:0 0 24px var(--rarity-glow)}50%{box-shadow:0 0 50px var(--rarity-glow),0 0 80px var(--rarity-glow)}}
 .hc-mythic .hc-face{animation:hc-glow-pulse 3s ease-in-out infinite}
+/* ── Performance Mode ─ hide RPG chrome, show clean data ── */
+body.perf-mode .hc-wrap{display:none}
+body.perf-mode .td-qdots{display:none}
+body.perf-mode .hm-lvl-badge{display:none}
+body.perf-mode .hm-xp-bar-wrap{display:none}
+body.perf-mode .rarity-pill{display:none}
+body.perf-mode .td-stat-lbl{font-size:9px}
 .td-qdots{display:flex;gap:7px;margin-top:8px}
 .td-qdot{width:11px;height:11px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:background .3s}
 .td-qdot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--accent-rgb),.4)}
@@ -22639,6 +22668,18 @@ const HERO_THEMES = [
 // On web: always returns false (ads shown, no premium themes).
 // On native: set to true via receipt validation from RevenueCat / StoreKit / Billing.
 // To activate: call hmSetPremium(true) after a successful IAP purchase receipt.
+const HM_MODE_KEY = 'hm-app-mode';
+function hmIsPerformanceMode() { try { return localStorage.getItem(HM_MODE_KEY) === 'performance'; } catch(e) { return false; } }
+function hmApplyMode() { document.body.classList.toggle('perf-mode', hmIsPerformanceMode()); }
+function hmTogglePerformanceMode() {
+  const next = hmIsPerformanceMode() ? 'hero' : 'performance';
+  localStorage.setItem(HM_MODE_KEY, next);
+  hmApplyMode();
+  const el = document.getElementById('hm-stg-mode-val');
+  if (el) el.textContent = next === 'performance' ? 'Performance' : 'Hero Mode';
+  if (typeof renderTodayDashboard === 'function') renderTodayDashboard();
+}
+
 const HM_PREMIUM_KEY = 'hero-premium';
 function hmIsPremium() {
   try { return localStorage.getItem(HM_PREMIUM_KEY) === '1'; } catch(e) { return false; }
@@ -22679,7 +22720,7 @@ function hmShowUpgradeModal() {
         <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Ad-free training</div>
         <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Exclusive features as they ship</div>
       </div>
-      <button onclick="hmInitiatePurchase()" style="width:100%;padding:16px;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-weight:700;font-size:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.05em;margin-bottom:10px">UPGRADE · $4.99/MO</button>
+      <button onclick="hmInitiatePurchase()" style="width:100%;padding:16px;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-weight:700;font-size:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.05em;margin-bottom:10px">UPGRADE · $5.99/MO</button>
       <button onclick="hmRestorePurchase()" style="width:100%;padding:10px;background:transparent;color:var(--text3);font-size:13px;border:1px solid var(--border);border-radius:10px;cursor:pointer">Restore Purchase</button>
       <button onclick="document.getElementById('hm-upgrade-modal').remove()" style="margin-top:12px;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline">Not now</button>
     </div>`;
@@ -23958,7 +23999,11 @@ const TODAY_SECTIONS = [
 ];
 
 function hmTodayLayoutLoad() {
-  try { return JSON.parse(localStorage.getItem(TODAY_LAYOUT_KEY) || '{}'); } catch(e) { return {}; }
+  try {
+    const raw = localStorage.getItem(TODAY_LAYOUT_KEY);
+    if (!raw) return { 'td-herocard': false, 'td-pet': false };
+    return JSON.parse(raw);
+  } catch(e) { return { 'td-herocard': false, 'td-pet': false }; }
 }
 
 function hmTodayToggleSection(cb) {
@@ -24432,18 +24477,19 @@ function renderTodayDashboard() {
 
   const _tdLayout = hmTodayLayoutLoad();
   const _tdShow = id => _tdLayout[id] !== false;
+  const _perf = hmIsPerformanceMode();
 
   root.innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
       <img src="${hmEmblSrc(theme)}" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.45))" onerror="this.style.display='none'">
       <div style="flex:1;min-width:0">
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em">${dateStr.toUpperCase()}</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em;line-height:1.1">${heroName} · LVL ${lvlInfo.lvl}</div>
-        ${streak>0?`<div style="font-size:11px;color:var(--text3);margin-top:1px">🔥 ${streak}-day streak</div>`:''}
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em;line-height:1.1">${_perf ? heroName : `${heroName} · LVL ${lvlInfo.lvl}`}</div>
+        ${streak>0?`<div style="font-size:11px;color:var(--text3);margin-top:1px">${_perf ? `${streak}-day streak` : `🔥 ${streak}-day streak`}</div>`:''}
       </div>
       <div style="text-align:right;flex-shrink:0;max-width:38%">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.04em;line-height:1.25">${_motivL1}</div>
-        ${_motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.04em;line-height:1.25">${_perf ? (_isTrainingDay ? 'TRAINING DAY' : 'REST DAY') : _motivL1}</div>
+        ${!_perf && _motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
       </div>
     </div>
     ${_tdShow('td-stats')?`<div class="td-stats">
@@ -24451,12 +24497,13 @@ function renderTodayDashboard() {
       <div class="td-stat"><div class="td-stat-val">⚡${xpToday>=1000?(xpToday/1000).toFixed(1)+'k':xpToday}</div><div class="td-stat-lbl">XP Today</div></div>
       <div class="td-stat"><div class="td-stat-val">🔥${streak}</div><div class="td-stat-lbl">Streak</div></div>
     </div>`:''}
-    ${_tdShow('td-herocard') ? '<div id="td-hero-card"></div>' : ''}
+    ${(_tdShow('td-herocard') && !_perf) ? '<div id="td-hero-card"></div>' : ''}
     ${_tdShow('td-mission')?`<div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>`:''}
+    ${_offset===0&&!_trainedToday&&_isTrainingDay?`<button onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))" style="width:100%;padding:14px;background:var(--gold);color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.08em;border:none;border-radius:12px;cursor:pointer;margin-bottom:10px;margin-top:-4px">START WORKOUT →</button>`:''}
     ${_tdShow('td-quests')?`<div class="td-card td-card-tap" onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))">${questBody}</div>`:''}
     ${_tdShow('td-pet')?walkHtml:''}
   `;
-  if (_tdShow('td-herocard')) renderHeroCard(document.getElementById('td-hero-card'));
+  if (_tdShow('td-herocard') && !_perf) renderHeroCard(document.getElementById('td-hero-card'));
 }
 
 // ── DAILY RECAP + COACH — evening scorecard with data-driven encouragement ──
