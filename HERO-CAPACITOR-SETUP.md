@@ -4,12 +4,12 @@
 
 ---
 
-## Status as of 2026-07-27
+## Status as of 2026-08-10
 
 | Platform | Scaffolded | Buildable on this machine? | What's left |
 |---|---|---|---|
-| **Android** | ✅ `android/` project exists, synced | **Yes** — just needs Android Studio installed | Install Android Studio → open → Run |
-| **iOS** | ✅ `ios/` project exists, synced | **No — hard blocker** | Needs a Mac (see below). No workaround; Xcode is Apple-only. |
+| **Android** | ✅ `android/` project exists, synced, icons updated | **Yes** — just needs Android Studio installed | Install Android Studio → open → Run |
+| **iOS** | ✅ `ios/` project exists, synced, 1024×1024 icon set | **Yes — Mac available** | Clone repo on Mac → `npm install` → `npm run cap:ios` → Xcode |
 
 Both platforms use **`npm run cap:android`** / **`npm run cap:ios`** to re-sync the latest web code and open the native IDE — see below.
 
@@ -72,19 +72,27 @@ When you have Mac access:
 
 ## Wire the native features (the payoff)
 
-The app already calls into `window.HeroNative` — these are the hook points. Install the plugins and fill the `NATIVE TODO` stubs in the **HERO NATIVE BRIDGE** script block at the bottom of `index.html`.
+The app uses `window.HMNativeBridge` as its native interface. A no-op stub lives in `index.html`; the real implementation is in **`capacitor-bridge.js`** (project root), which imports real Capacitor plugins and overrides the stub. Add `'capacitor-bridge.js'` to the `FILES` array in `scripts/sync-www.js` when you're ready to enable it in native builds.
 
-| Feature | Plugin | Where it plugs in |
+**Already installed and wired in `capacitor-bridge.js`:**
+
+| Feature | Plugin | Bridge method |
 |---|---|---|
-| **Apple Health / Health Connect** | `@capacitor-community/health` (or `capacitor-health`) | `HeroNative.health.requestPermission()` + `syncToday()` → feed imported workouts to `cardioCommitSession()`, steps to the walk tracker, sleep to `ciSaveSleep()` |
-| **Push notifications** | `@capacitor/push-notifications` | `HeroNative.push.register()` — streak/quest reminders |
-| **Haptics** | `@capacitor/haptics` | `HeroNative.haptics.tap()` — already called-ready |
-| **Durable storage** | `@capacitor/preferences` | Optional: mirror critical keys (`heromode_*`, `hero-*`). *Note: localStorage in a native WKWebView is already durable — it is NOT subject to Safari's 7-day eviction, so this is a nice-to-have, not urgent.* |
-| **Status bar / splash** | `@capacitor/status-bar`, `@capacitor/splash-screen` | Dark theme already set in `capacitor.config.json`; the web splash screen (`#hero-splash` in `index.html`) already covers the "first paint" moment even without this plugin |
+| **Share sheet** | `@capacitor/share` v8.0.1 | `HMNativeBridge.share({blob, title, text, url})` |
+| **Deep links** (workout import) | `@capacitor/app` v8.1.1 | `HMNativeBridge.onDeepLink(cb)` — listens for `heromode://` URLs |
+| **Haptics** | `@capacitor/haptics` v8.0.2 | `HMNativeBridge.haptic('light'|'medium'|'heavy')` |
+| **Push notifications** | `@capacitor/push-notifications` v8.1.2 | `HMNativeBridge.push.register()` |
+| **Status bar** | `@capacitor/status-bar` v8.0.3 | `HMNativeBridge.setStatusBarDark()` — auto-called on load |
 
-The **"Sync Health"** card is already built — it stays hidden on web and auto-appears at the top of the Train tab when running natively (`HeroNative.mountHealthUI()`).
+**Still needs account setup before install:**
 
-Install any of these with e.g. `npm install @capacitor/haptics`, then re-run `npm run cap:sync`.
+| Feature | Plugin | Blocker |
+|---|---|---|
+| **Ads (free tier)** | `@capacitor-community/admob` | Needs Google AdMob account + App ID for each platform |
+| **IAP / subscriptions** | `@revenuecat/purchases-capacitor` | Needs RevenueCat account + App Store / Play Store product IDs |
+| **Apple Health / Health Connect** | `@capacitor-community/health` | Needs HealthKit entitlement (iOS) + Health Connect permission (Android) |
+
+Install any plugin with `npm install <plugin>`, then `npm run cap:sync`.
 
 ---
 
@@ -104,28 +112,66 @@ Free with the Apple Developer account, and the fastest way to get iPhones runnin
 ---
 
 ## Publish checklist (when ready)
-- App icons (have them ✅) + iOS screenshot set (per device size)
-- **Privacy policy URL** (required — especially with Health data)
-- App Store / Play Store privacy "nutrition label": declare what data you collect (health data is sensitive — declare honestly)
-- Age rating
-- **Apple's cut:** 15% under $1M/yr via the Small Business Program (enroll), else 30%. **Google's cut:** 15% under $1M/yr automatically, else 30%.
-- ⚠️ **HealthKit apps get extra scrutiny** — you must not use Health data for advertising, and must explain each data type's use. Read Apple's HealthKit review guidelines.
-- ⚠️ **The moment accounts/social/leaderboards ship:** privacy law kicks in (COPPA if under-13 users, GDPR/CCPA). Get real legal counsel then — see the Forge's Book 17.
+
+**Already done ✅**
+- All Android mipmap icons (mdpi → xxxhdpi, square + round + adaptive foreground)
+- iOS 1024×1024 icon in AppIcon.appiconset
+- Play Store 512×512 icon (`icon-play-store.png`)
+- `privacy-policy.html` written (entity name + email TBD — update before submission)
+- `store-listing.md` — full listing copy for both stores, screenshot shot list, Data Safety form answers
+- `capacitor.config.json` — deep-link scheme, status bar, splash screen, cleartext disabled
+- Premium gate stubs in index.html (ready for RevenueCat wiring)
+- Capacitor bridge (`capacitor-bridge.js`) written for Share, App, Haptics, Push, StatusBar
+
+**Still needed before submission ⬜**
+- [ ] Form the legal entity (HeroMode LLC or Inc.) — update `privacy-policy.html` with full name
+- [ ] Set up `contact_us@heromode.app` email inbox
+- [ ] Host `privacy-policy.html` at a stable public URL (GitHub Pages works — enable in repo settings)
+- [ ] Open Apple Developer account ($99/yr) + create app record in App Store Connect
+- [ ] Open Google Play Developer account ($25 one-time) + create app in Play Console
+- [ ] Set up AdMob account — add App IDs to iOS `Info.plist` and Android `AndroidManifest.xml`
+- [ ] Set up RevenueCat — wire `hmInitiatePurchase()` and `hmRestorePurchase()` in index.html
+- [ ] Add ATT permission usage description to iOS `Info.plist` (required for AdMob)
+- [ ] Take screenshots in the 8-scene shot list (see `store-listing.md`)
+- [ ] Sign release builds (iOS: Xcode signing + provisioning profile; Android: keystore)
+- [ ] Test on real device via TestFlight (iOS) or internal testing track (Android)
+
+⚠️ **Apple's cut:** 15% under $1M/yr via the Small Business Program (enroll after account creation), else 30%.  
+⚠️ **Google's cut:** 15% under $1M/yr automatically, else 30%.  
+⚠️ **HealthKit apps get extra scrutiny** — if you add HealthKit, Apple requires a justification for each data type. Don't add it until you're ready to explain the use case in the review notes.
 
 ---
 
 ## What's done vs. what's left
 
-- ✅ `HeroNative` bridge in `index.html` (inert on web, hook points for native)
-- ✅ Native-only "Sync Health" UI that self-mounts
-- ✅ `capacitor.config.json` (app id, dark theme, splash)
-- ✅ Manifest, service worker, icons, safe-area handling
+**Native scaffold**
+- ✅ `HMNativeBridge` stub in `index.html` (safe no-ops on web)
+- ✅ `capacitor-bridge.js` — real Capacitor plugin wiring (Share, App, Haptics, Push, StatusBar)
+- ✅ `capacitor.config.json` — app ID, deep-link scheme (`heromode://`), dark theme, splash
+- ✅ Manifest, service worker, safe-area handling
 - ✅ `www/` build folder + `scripts/sync-www.js` + npm scripts
-- ✅ `android/` project — real, synced, ready to open in Android Studio
-- ✅ `ios/` project — real, synced, ready to open in Xcode (needs a Mac to actually open)
-- ⬜ Install Android Studio → first real Android build
-- ⬜ Get Mac access → first real iOS build
-- ⬜ Wire native plugins (Health, push, haptics) once you're testing on real devices
-- ⬜ Dev/Play Store accounts when ready to distribute beyond your own devices
+- ✅ `android/` project — real, synced, all icon sizes current
+- ✅ `ios/` project — real, synced, 1024×1024 icon set
 
-*Android is one Android Studio install away. iOS is one Mac away. No app logic needs to change for either.*
+**Plugins installed**
+- ✅ `@capacitor/app` v8.1.1
+- ✅ `@capacitor/share` v8.0.1
+- ✅ `@capacitor/push-notifications` v8.1.2
+- ✅ `@capacitor/haptics` v8.0.2
+- ✅ `@capacitor/status-bar` v8.0.3
+
+**App store prep**
+- ✅ All icon sizes generated from master plate
+- ✅ `privacy-policy.html` — full cloud-data policy written
+- ✅ `store-listing.md` — all listing copy, screenshot shot list, submission checklists
+- ✅ Premium gate infrastructure in index.html
+
+**Still needed**
+- ⬜ Install Android Studio → first real Android build
+- ⬜ On Mac: `npm run cap:ios` → first real iOS build
+- ⬜ AdMob + RevenueCat accounts → wire IAP and ads
+- ⬜ Developer accounts (Apple $99/yr, Google $25 one-time)
+- ⬜ Legal entity + hosted privacy policy URL
+- ⬜ Screenshots → store submission
+
+*Android is one Android Studio install away. iOS: clone repo on Mac, `npm install`, `npm run cap:ios`.*

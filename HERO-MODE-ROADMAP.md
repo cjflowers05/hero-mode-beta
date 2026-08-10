@@ -14,15 +14,18 @@
 
 ---
 
-## Current state — v1 is feature-complete (local)
+## Current state — v1 feature-complete + app store ready (SW v62)
 
-Already shipped and working, all offline/localStorage:
+Shipped and working, all offline/localStorage for current PWA; cloud backend planned for native launch:
 
 - **Goal-driven plan generator** — 6 goal types incl. 🏁 Race/Endurance (2-mile → marathon → triathlon), phased periodization, equipment-aware, editable per exercise.
 - **Full tracking** — workouts, smart set logging + PRs, cardio (+ repeat-last), walks/GPS, nutrition (voice/text parse, never drops unknowns), recipes (favorite + reorder), measurements, progress photos, water, sleep/check-ins.
-- **Gamification** — XP/levels/ranks (Rookie→Immortal), ~45 awards across 9 categories incl. gold trophies, daily quests + chest, comic-book story cut-scenes, daily recap + AI-style coach, flexibility/Zen systems.
+- **Gamification** — XP/levels/ranks (Rookie→Immortal), ~45 awards across 9 categories incl. gold trophies, daily quests + chest, comic-book story cut-scenes, daily recap + AI-style coach, Streak Shields (freeze streak at XP milestones), flexibility/Zen systems.
 - **Identity** — 15 themes (emblem/pattern/sound each), profiles with photo avatars, equippable titles, level-gated avatar frames + locked themes, synthesized sound engine, activation/level-up FX.
-- **Ship-ready** — manifest.json, PWA icons, service worker (offline), backup nudge, first-run tour.
+- **Session tools** — Deck of Cards workout, rest timer (configurable), session notes (per-day journal), check-in timing moved to first exercise tap.
+- **Viral sharing** — workout share card system: session-tracker-style card (workout name + exercise list + circles) shareable via Web Share API or download. ↗ share buttons on banner, session summary, history rows, and Deck of Cards end screen. Workout import via URL param (`?import=<b64>`).
+- **Ship-ready (native)** — Capacitor scaffold (iOS + Android), all icon sizes generated, `privacy-policy.html` written, `store-listing.md` complete, premium gate infrastructure in place.
+- **Monetization architecture** — Free tier (AdMob ads) + Hero Mode Premium ($4.99/mo): `hmIsPremium()`, `hmShowUpgradeModal()`, `HM_PREMIUM_THEME_IDS` all wired; needs RevenueCat + AdMob account setup to go live.
 
 **Recommended before more building: get ~10 people using this daily.** Per the business plan, Phase 1 success = "100 people who use it every single day." Everything below is better designed after watching real users.
 
@@ -30,16 +33,26 @@ Already shipped and working, all offline/localStorage:
 
 ## Phasing model (tied to the business plan)
 
-| Phase | Gate | Theme | Infra cost |
-|---|---|---|---|
-| **Now** | 0 users | Polish local core, get first daily users | ~$0 |
-| **P1 — Hero Card** | still local | The shareable artifact (the moat + viral loop) | ~$0 |
-| **P2 — Accounts** | ~100 daily users | Login, cloud backup, cross-device sync | tens/mo |
-| **P3 — Social** | proven retention | Leaderboards, async PvP, friends | scales |
-| **P4 — Guilds & Wars** | community exists | Guild wars, community bosses, seasons | scales |
-| **P5 — Economy & IP** | brand | Gear collectibles, seasons reshape world, merch | — |
+| Phase | Gate | Theme | Infra cost | Status |
+|---|---|---|---|---|
+| **Now** | 0 users | Polish local core, get first daily users | ~$0 | ✅ Done |
+| **P0.5 — App Store** | 0 users | Submit to iOS App Store + Google Play | ~$125 one-time | 🔜 Ready to execute |
+| **P1 — Hero Card** | still local | The shareable artifact (the moat + viral loop) | ~$0 | ⬜ Next build |
+| **P2 — Accounts** | ~100 daily users | Login, cloud backend, cross-device sync, AdMob + IAP live | tens/mo | ⬜ |
+| **P3 — Social** | proven retention | Leaderboards, async PvP, friends | scales | ⬜ |
+| **P4 — Guilds & Wars** | community exists | Guild wars, community bosses, seasons | scales | ⬜ |
+| **P5 — Economy & IP** | brand | Gear collectibles, seasons reshape world, merch | — | ⬜ |
 
-**The line that costs money:** everything from P2 on needs a backend (Supabase suggested), accounts, and brings privacy/moderation obligations (especially with minors). Don't cross it until retention is proven locally.
+**P0.5 blockers before submitting:**
+1. Form legal entity (HeroMode LLC or Inc.)
+2. Set up `contact_us@heromode.app` inbox
+3. Host privacy policy at a stable URL
+4. Apple Developer account ($99/yr) + Google Play account ($25)
+5. AdMob account → App IDs in native manifests
+6. RevenueCat → wire `hmInitiatePurchase()` / `hmRestorePurchase()`
+7. Screenshots (see `store-listing.md` shot list)
+
+**The line that costs money:** everything from P2 on needs a backend (Supabase recommended), accounts, and brings privacy/moderation obligations (especially with minors). Don't cross it until retention is proven from the stores.
 
 ---
 

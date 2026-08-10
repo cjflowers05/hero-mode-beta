@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-08. Current SW version: v62.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v62.*
 
 ---
 
@@ -695,29 +695,88 @@ Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, 
 
 ---
 
+### 6.16 Premium Gate / Monetization Infrastructure
+
+**What it does:** Provides the single source of truth for premium vs. free status, and the paywall UI. All premium feature gates read from one function — when RevenueCat is wired in, only that one function needs to change.
+
+**Monetization model:** Free tier (AdMob ads) + Hero Mode Premium subscription ($4.99/mo).
+
+**Key constants and functions (search `HM_PREMIUM_KEY` in index.html):**
+
+| Symbol | Purpose |
+|---|---|
+| `HM_PREMIUM_KEY` | localStorage key `'hero-premium'` — `'1'` if premium |
+| `hmIsPremium()` | Returns `true` if user has premium; reads localStorage (web) or RevenueCat receipt (native) |
+| `hmSetPremium(val)` | Sets/clears premium flag — called after a successful IAP receipt |
+| `HM_PREMIUM_THEME_IDS` | Array of theme IDs gated behind premium: stormcaller, amazon, apex, phantom, nomad, sentinel, alpha |
+| `hmThemeIsAccessible(theme)` | Returns `true` if user can use a theme (checks both level-lock and premium gate) |
+| `hmShowUpgradeModal()` | Renders the paywall modal with upgrade button and restore purchase link |
+| `hmInitiatePurchase()` | Stub — wire to `RevenueCat.Purchases.purchasePackage()` when IAP is set up |
+| `hmRestorePurchase()` | Stub — wire to `RevenueCat.Purchases.restorePurchases()` |
+
+**To add a new premium feature:**
+1. Wrap the feature entry point with `if (!hmThemeIsAccessible(...))` or `if (!hmIsPremium())`
+2. Call `hmShowUpgradeModal()` for non-premium users instead of opening the feature
+3. No other changes needed — `hmIsPremium()` is the only gate
+
+**Wiring RevenueCat (when ready):**
+1. `npm install @revenuecat/purchases-capacitor`
+2. In `hmInitiatePurchase()`: call `Purchases.purchasePackage(pkg)` and on success call `hmSetPremium(true)`
+3. In `hmRestorePurchase()`: call `Purchases.restorePurchases()` and set premium status from result
+4. On app launch: call `Purchases.getCustomerInfo()` and sync premium status
+
+**Pricing (as of 2026-08-10):** $4.99/month. Annual option TBD. See `store-listing.md` for store listing copy.
+
+---
+
 ### 6.17 Native / Capacitor Bridge
 
-**What it does:** Provides a `window.HeroNative` object that the app uses to call native device features. On web, all methods are no-ops. On a real native app, these would be wired to Capacitor plugins.
+**What it does:** Provides `window.HMNativeBridge` — the interface between the app's JavaScript and native Capacitor APIs. On web, a no-op stub is defined inline in index.html. In the native shell, `capacitor-bridge.js` (a separate file, not bundled in index.html) overrides that stub with real Capacitor plugin calls.
 
-**Where to find it:** Block 3, search `window.HeroNative = {`
+**Stub (in index.html):** Search `window.HMNativeBridge = {` — defined early in the script block so all share/deep-link code can call it safely on web.
 
-**Current stubs (not yet wired to plugins):**
-- `HeroNative.health.requestPermission()` — request HealthKit/Health Connect access
-- `HeroNative.health.syncToday()` — sync today's workout/steps to the health app
-- `HeroNative.push.register()` — register for push notifications
-- `HeroNative.haptics.tap()` — haptic feedback on button press
+**Real implementation: `capacitor-bridge.js`** — imports `@capacitor/app`, `@capacitor/share`, `@capacitor/haptics`, `@capacitor/push-notifications`, `@capacitor/status-bar` and overrides the stub. This file is NOT included in index.html; it must be added to the native build only (add to `scripts/sync-www.js` FILES array when ready).
 
-**To activate native features:**
-1. Install the relevant Capacitor plugin (e.g. `@capacitor-community/health-kit`)
-2. Run `npm run cap:sync` to sync to native projects
-3. Replace the stub in `window.HeroNative` with the real plugin call
-4. Test in Android Studio or Xcode
+**Wired capabilities:**
 
-**Syncing to native projects:**
+| Method | Plugin | Description |
+|---|---|---|
+| `HMNativeBridge.share({blob, title, text, url})` | `@capacitor/share` | Native share sheet; converts blob to data URI |
+| `HMNativeBridge.onDeepLink(cb)` | `@capacitor/app` | Registers handler for `heromode://` deep links (workout import) |
+| `HMNativeBridge.haptic(style)` | `@capacitor/haptics` | Light/medium/heavy impact feedback |
+| `HMNativeBridge.push.register()` | `@capacitor/push-notifications` | Requests permission + registers for push |
+| `HMNativeBridge.setStatusBarDark()` | `@capacitor/status-bar` | Sets dark status bar + background color on launch |
+
+**Installed Capacitor packages:**
+```
+@capacitor/core           ^8.4.2
+@capacitor/android        ^8.4.2
+@capacitor/ios            ^8.4.2
+@capacitor/app            ^8.1.1
+@capacitor/share          ^8.0.1
+@capacitor/push-notifications ^8.1.2
+@capacitor/haptics        ^8.0.2
+@capacitor/status-bar     ^8.0.3
+```
+
+**Not yet installed (needs account setup first):**
+- `@capacitor-community/admob` — AdMob ads (needs AdMob App ID)
+- `@revenuecat/purchases-capacitor` — IAP/subscriptions (needs RevenueCat account)
+
+**Sync commands:**
 ```bash
 npm run sync-www   # copy root → www/
 npm run cap:sync   # sync www/ → android/ and ios/
+npm run cap:android   # sync + open Android Studio
+npm run cap:ios       # sync + open Xcode (Mac only)
 ```
+
+**Icon assets (generated 2026-08-10 from `hero_mode_plate.png` 1254×1254):**
+- Android mipmaps: mdpi(48) / hdpi(72) / xhdpi(96) / xxhdpi(144) / xxxhdpi(192) — square + round variants
+- Android adaptive foreground: `mipmap-anydpi-v26/ic_launcher_foreground.png`
+- iOS: `ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png` (1024×1024)
+- Play Store: `icon-play-store.png` (512×512)
+- To regenerate: `python scripts/gen-icons.py` (uses PIL — see the script for the source path)
 
 ---
 
