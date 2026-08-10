@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v64'; // v64: Simplification — Fuel nav, Performance Mode, Today defaults, Start Workout CTA, Repeat session, $5.99
+const CACHE_VERSION = 'hero-mode-v65'; // v65: Perf Mode banner — neutral style, no warrior emblem; global toggle across all profiles
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

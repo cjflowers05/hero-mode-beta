@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v63.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v65.*
 
 ---
 
@@ -644,7 +644,7 @@ const CACHE_VERSION = 'hero-mode-v63'; // change this number on every deploy
 
 **Video files are NOT cached** by the service worker (the `if (url.pathname.includes('/MoveKit_Videos/'))` exemption — add any large video directories here to prevent cache quota exhaustion). The `assets/ui/deck_cards/` images ARE cached.
 
-**Current version:** v63 (as of 2026-08-10)
+**Current version:** v65 (as of 2026-08-10)
 
 **Dev gotcha:** if you forget to bump the SW version, existing users won't see your changes. See [Section 9](#9-key-dev-gotchas) for how to force-clear the cache during development.
 
@@ -752,7 +752,7 @@ Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, 
 
 **What it does:** Provides the single source of truth for premium vs. free status, and the paywall UI. All premium feature gates read from one function — when RevenueCat is wired in, only that one function needs to change.
 
-**Monetization model:** Free tier (AdMob ads) + Hero Mode Premium subscription ($4.99/mo).
+**Monetization model:** Free tier (AdMob ads) + Hero Mode Premium subscription ($5.99/mo).
 
 **Key constants and functions (search `HM_PREMIUM_KEY` in index.html):**
 
@@ -778,7 +778,37 @@ Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, 
 3. In `hmRestorePurchase()`: call `Purchases.restorePurchases()` and set premium status from result
 4. On app launch: call `Purchases.getCustomerInfo()` and sync premium status
 
-**Pricing (as of 2026-08-10):** $4.99/month. Annual option TBD. See `store-listing.md` for store listing copy.
+**Pricing (as of 2026-08-10):** $5.99/month. Annual option TBD. See `store-listing.md` for store listing copy.
+
+---
+
+### 6.18 Performance Mode
+
+**What it does:** A global app-mode toggle that strips all RPG chrome and renders a clean, minimal UI optimized for athletes who want data without gamification.
+
+**Toggle:** Settings panel → ⚡ App Mode (cycles Hero Mode ↔ Performance). Stored in `localStorage` key `hm-app-mode`. Value is `'performance'` or `'hero'` (default).
+
+**Key functions (search `HM_MODE_KEY` in index.html):**
+
+| Function | Purpose |
+|---|---|
+| `hmIsPerformanceMode()` | Returns `true` if `hm-app-mode === 'performance'` |
+| `hmApplyMode()` | Toggles `body.perf-mode` CSS class to match stored mode |
+| `hmTogglePerformanceMode()` | Flips the mode, calls `hmApplyMode()`, re-renders Today dashboard |
+
+**CSS class:** `body.perf-mode` hides all RPG-only elements:
+- `.xp-wrap`, `.xp-row` — XP bar and row
+- `.hc-wrap` — Hero Card
+- `.td-qdots` — quest dots
+- `.hc-rarity-pill`, `.hero-class-badge`, `.phase-pill-wrap` — cosmetic badges
+- `.hm-trophy-strip`, `#badge-strip` — trophy and achievement strips
+- `.banner-hero-emblem` — warrior shield image in the Today banner
+
+**Today dashboard render path:** `renderTodayDashboard()` checks `hmIsPerformanceMode()` and renders a completely separate HTML tree in perf mode — DM Sans typography, grid stat tiles (Water / Streak / Level), blue `#2563EB` Start Workout button instead of gold RPG button.
+
+**Today workout banner:** `renderTodayBanner()` checks `hmIsPerformanceMode()`. In perf mode: adds class `today-banner--perf` (neutral `var(--bg2)` background, no gold gradient) and skips the `banner-hero-emblem` image. The session tracker and all functional content (day name, focus, session tracker) remain intact.
+
+**Global scope:** The mode is a single `localStorage` key, not tied to any profile. Toggling it from any profile applies to all profiles.
 
 ---
 
@@ -835,15 +865,17 @@ npm run cap:ios       # sync + open Xcode (Mac only)
 
 ## 7. Tab & Navigation Structure
 
-The app has five tabs in the bottom nav. Tab IDs and their content:
+The app has five tabs in the bottom nav (simplified from 7 in v64). Tab IDs and their content:
 
 | Tab button | Tab panel ID | Content |
 |---|---|---|
-| TODAY | `#tab-today` | Daily dashboard: streak, today's workout banner, today's mission, daily quests, pet, custom today layout |
+| TODAY | `#tab-today` | Daily dashboard: streak, today's workout banner, today's mission, daily quests, pet |
 | TRAIN | `#tab-workout` | Workout plan, chart views (training charts), custom session, deck of cards entry |
-| FOOD | `#tab-nutrition` | Meal check-in, recipe book, macro calculator, water tracker |
-| WELLNESS | `#tab-wellness` | Sleep, measurements, body photos, soreness map |
-| PROGRESS | `#tab-roadmap` | XP / level display, trophy case, weekly review, cardio programs |
+| LOG | `#tab-tracker` | Exercise log history, session replay, repeat-session |
+| FUEL | `#tab-nutri-tracker` | Water, macros, meal check-in; links to Recipe Book and Wellness |
+| PROGRESS | `#tab-charts` | XP / level display, trophy case, weekly review, cardio programs |
+
+**Recipes and Wellness access:** Recipe Book and Wellness are no longer top-level tabs. They are accessible via card links at the top of the Fuel tab, and Wellness also appears as a row in the Settings panel.
 
 **Switching tabs:** `function openTab(name)` — hides all tabs, shows the one matching `name`.
 
