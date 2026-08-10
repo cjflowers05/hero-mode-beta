@@ -4207,12 +4207,24 @@ document.addEventListener('DOMContentLoaded', () => {
     <button onclick="nutriChangeDay(1)" style="width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">›</button>
   </div>
 
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
-    <div style="display:flex;gap:6px">
-      <button onclick="showTab('recipes', document.getElementById('nav-btn-fuel'))" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:6px 12px;cursor:pointer;min-height:34px">🍳 Recipe Book</button>
-      <button onclick="showTab('wellness', document.getElementById('nav-btn-fuel'))" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:6px 12px;cursor:pointer;min-height:34px">🌿 Wellness</button>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <div onclick="showTab('recipes', document.querySelector('[onclick*=\'recipes\']') || document.getElementById('nav-btn-fuel'))" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent" onmouseenter="this.style.borderColor='var(--gold)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <span style="font-size:20px;flex-shrink:0">🍳</span>
+      <div style="min-width:0">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.05em;color:var(--text);line-height:1.1">Recipe Book</div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px">Browse &amp; generate</div>
+      </div>
+      <span style="margin-left:auto;color:var(--text3);font-size:16px;flex-shrink:0">›</span>
     </div>
-    <button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')">✨ GUIDE</button>
+    <div onclick="showTab('wellness', null)" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent" onmouseenter="this.style.borderColor='var(--gold)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <span style="font-size:20px;flex-shrink:0">🌿</span>
+      <div style="min-width:0">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.05em;color:var(--text);line-height:1.1">Wellness</div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px">Health &amp; habits</div>
+      </div>
+      <span style="margin-left:auto;color:var(--text3);font-size:16px;flex-shrink:0">›</span>
+    </div>
+    <button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')" style="flex-shrink:0;align-self:center">✨</button>
   </div>
   <!-- training / rest day toggle -->
   <div class="nt-day-type-row">
