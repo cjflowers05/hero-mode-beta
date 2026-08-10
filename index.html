@@ -22579,6 +22579,69 @@ const HERO_THEMES = [
     vars:{'--gold':'#9D4EDD','--gold-dim':'#5A1F8A','--bg':'#08060D','--bg2':'#0E0A16','--bg3':'#150F1F','--bg4':'#1C1428','--text':'#EDE8F5','--text2':'#9B8DB0','--text3':'#6D5F82','--border':'rgba(157,78,221,0.14)','--border2':'rgba(157,78,221,0.30)','--accent-rgb':'157,78,221'} },
 ];
 
+// ── PREMIUM / MONETIZATION GATE ──────────────────────────────────
+// hmIsPremium() is the single truth gate for premium features.
+// On web: always returns false (ads shown, no premium themes).
+// On native: set to true via receipt validation from RevenueCat / StoreKit / Billing.
+// To activate: call hmSetPremium(true) after a successful IAP purchase receipt.
+const HM_PREMIUM_KEY = 'hero-premium';
+function hmIsPremium() {
+  try { return localStorage.getItem(HM_PREMIUM_KEY) === '1'; } catch(e) { return false; }
+}
+function hmSetPremium(val) {
+  try {
+    if (val) localStorage.setItem(HM_PREMIUM_KEY, '1');
+    else localStorage.removeItem(HM_PREMIUM_KEY);
+  } catch(e) {}
+}
+
+// Premium theme IDs — locked behind subscription regardless of level
+// (Level-lock still applies for free users; premium bypasses the level gate)
+const HM_PREMIUM_THEME_IDS = ['stormcaller', 'amazon', 'apex', 'phantom', 'nomad', 'sentinel', 'alpha'];
+
+function hmThemeIsAccessible(theme) {
+  const xp  = (typeof hmXPLoad === 'function') ? hmXPLoad() : { xp: 0 };
+  const lvl = (typeof hmLevelInfo === 'function') ? hmLevelInfo(xp.xp).lvl : 1;
+  if (hmIsPremium()) return true;
+  if (theme.lock && lvl < theme.lock) return false;
+  if (HM_PREMIUM_THEME_IDS.includes(theme.id)) return false;
+  return true;
+}
+
+function hmShowUpgradeModal() {
+  const existing = document.getElementById('hm-upgrade-modal');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'hm-upgrade-modal';
+  el.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px';
+  el.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:400px;width:100%;padding:32px 28px;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">⚡</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:.06em;margin-bottom:8px">HERO MODE PREMIUM</div>
+      <div style="color:var(--text2);font-size:15px;margin-bottom:24px;line-height:1.6">Unlock all hero themes, go ad-free, and support the app.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+        <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> All ${HM_PREMIUM_THEME_IDS.length}+ premium hero themes</div>
+        <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Ad-free training</div>
+        <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Exclusive features as they ship</div>
+      </div>
+      <button onclick="hmInitiatePurchase()" style="width:100%;padding:16px;background:var(--gold);color:#000;font-family:'DM Mono',monospace;font-weight:700;font-size:16px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.05em;margin-bottom:10px">UPGRADE · $4.99/MO</button>
+      <button onclick="hmRestorePurchase()" style="width:100%;padding:10px;background:transparent;color:var(--text3);font-size:13px;border:1px solid var(--border);border-radius:10px;cursor:pointer">Restore Purchase</button>
+      <button onclick="document.getElementById('hm-upgrade-modal').remove()" style="margin-top:12px;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline">Not now</button>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+function hmInitiatePurchase() {
+  // TODO: Call RevenueCat Purchases.purchasePackage() or native StoreKit/Billing
+  // On web: show a message
+  if (typeof showToast === 'function') showToast('Purchase not available on web — install the app', 'info');
+}
+
+function hmRestorePurchase() {
+  // TODO: Call RevenueCat Purchases.restorePurchases()
+  if (typeof showToast === 'function') showToast('Restore not available on web — install the app', 'info');
+}
+
 // ── PROFILES — each hero owns their theme, XP, badges, and plan ──
 const HM_PROFILES_KEY = 'hero-profiles';
 const HM_HERO_PORTRAITS = [

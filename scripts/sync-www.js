@@ -7,7 +7,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const WWW = path.join(ROOT, 'www');
-const FILES = ['index.html', 'manifest.json', 'sw.js', 'icon-512.png', 'icon-192.png', 'icon-180.png'];
+const FILES = ['index.html', 'manifest.json', 'sw.js', 'icon-512.png', 'icon-192.png', 'icon-180.png', 'privacy-policy.html'];
 
 fs.mkdirSync(WWW, { recursive: true });
 for (const f of FILES) {

@@ -10,12 +10,23 @@
     "cap:ios": "npm run sync-www && npx cap sync ios && npx cap open ios"
   },
   "keywords": [],
-  "author": "",
+  "author": "Cody Flowers",
   "license": "ISC",
   "dependencies": {
     "@capacitor/android": "^8.4.2",
+    "@capacitor/app": "^8.1.1",
     "@capacitor/cli": "^8.4.2",
     "@capacitor/core": "^8.4.2",
-    "@capacitor/ios": "^8.4.2"
+    "@capacitor/ios": "^8.4.2",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/push-notifications": "^8.1.2",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3"
+  },
+  "devDependencies": {},
+  "_notes": {
+    "ads": "Add @capacitor-community/admob when AdMob account is ready. Bundle ID must match capacitor.config.json appId.",
+    "iap": "Add com.revenuecat.purchases:purchases-capacitor (RevenueCat) OR native Google Billing / StoreKit. RevenueCat recommended for unified iOS+Android IAP.",
+    "analytics": "Add @capacitor-firebase/analytics if Firebase is set up for crash reporting + funnel analysis."
   }
 }
