@@ -10,112 +10,399 @@
       --text: #1a1a2e;
       --muted: #555577;
       --gold: #b8900a;
+      --gold-light: #d4a820;
       --border: #e0e0ee;
-      --card: #f8f8fc;
+      --card: #f7f7fb;
+      --tag-bg: #f0ede0;
+      --tag-text: #7a5c00;
     }
     @media (prefers-color-scheme: dark) {
-      :root { --bg: #0D1017; --text: #E2E8F0; --muted: #8892A4; --gold: #C9A84C; --border: #1E2433; --card: #12151E; }
+      :root {
+        --bg: #0D1017;
+        --text: #E2E8F0;
+        --muted: #8892A4;
+        --gold: #C9A84C;
+        --gold-light: #E0C060;
+        --border: #1E2433;
+        --card: #12151E;
+        --tag-bg: #1E1A08;
+        --tag-text: #C9A84C;
+      }
     }
+    :root[data-theme="dark"] {
+      --bg: #0D1017; --text: #E2E8F0; --muted: #8892A4; --gold: #C9A84C;
+      --gold-light: #E0C060; --border: #1E2433; --card: #12151E;
+      --tag-bg: #1E1A08; --tag-text: #C9A84C;
+    }
+    :root[data-theme="light"] {
+      --bg: #ffffff; --text: #1a1a2e; --muted: #555577; --gold: #b8900a;
+      --gold-light: #d4a820; --border: #e0e0ee; --card: #f7f7fb;
+      --tag-bg: #f0ede0; --tag-text: #7a5c00;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; font-size: 16px; line-height: 1.7; background: var(--bg); color: var(--text); padding: 24px 16px 64px; }
-    .wrap { max-width: 720px; margin: 0 auto; }
-    header { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 32px; }
-    header h1 { font-size: 28px; font-weight: 800; letter-spacing: .02em; }
-    header .sub { color: var(--muted); font-size: 13px; margin-top: 6px; font-family: monospace; }
-    h2 { font-size: 18px; font-weight: 700; margin: 36px 0 10px; color: var(--gold); letter-spacing: .04em; text-transform: uppercase; }
-    p { margin-bottom: 14px; color: var(--text); }
-    ul { padding-left: 22px; margin-bottom: 14px; }
-    ul li { margin-bottom: 6px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin: 18px 0; }
-    .card p { margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 16px; line-height: 1.75;
+      background: var(--bg); color: var(--text);
+      padding: 32px 20px 80px;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    header { margin-bottom: 40px; }
+    .header-logo {
+      font-family: monospace; font-size: 13px; font-weight: 700;
+      letter-spacing: .14em; color: var(--gold); text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    header h1 { font-size: 36px; font-weight: 800; letter-spacing: -.01em; margin-bottom: 8px; }
+    .header-meta { color: var(--muted); font-size: 13px; font-family: monospace; }
+    .header-bar { height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 2px; margin-top: 20px; }
+
+    .toc {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 26px; margin: 28px 0 40px;
+    }
+    .toc-title { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: monospace; margin-bottom: 14px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 4px; font-size: 14px; }
+    .toc a { color: var(--gold); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    h2 {
+      font-size: 17px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--gold);
+      margin: 48px 0 14px; padding-top: 4px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+    p { margin-bottom: 14px; }
+    ul, ol { padding-left: 22px; margin-bottom: 14px; }
+    li { margin-bottom: 7px; }
+
+    .callout {
+      background: var(--card); border-left: 3px solid var(--gold);
+      border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 20px 0;
+    }
+    .callout p { margin: 0; }
+    .callout strong { color: var(--gold); }
+
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 14px; }
+    th { background: var(--card); text-align: left; padding: 10px 14px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-family: monospace; border-bottom: 2px solid var(--border); }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+
+    .tag { display: inline-block; background: var(--tag-bg); color: var(--tag-text); font-size: 11px; font-family: monospace; font-weight: 700; letter-spacing: .06em; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
+
     a { color: var(--gold); text-decoration: underline; }
-    footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+    footer {
+      margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--muted); line-height: 1.6;
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
+    <div class="header-logo">Hero Mode</div>
     <h1>Privacy Policy</h1>
-    <div class="sub">Hero Mode · Last updated: August 8, 2026 · Effective: August 8, 2026</div>
+    <div class="header-meta">HeroMode &nbsp;·&nbsp; Effective: August 8, 2026 &nbsp;·&nbsp; Last updated: August 8, 2026</div>
+    <div class="header-bar"></div>
   </header>
 
-  <div class="card">
-    <p><strong>Short version:</strong> Hero Mode stores all of your workout data locally on your device. We do not operate a backend server, do not collect personal information ourselves, and do not sell your data. The free tier includes ads served by Google AdMob, which has its own data practices described below.</p>
+  <div class="callout">
+    <p><strong>Plain-language summary:</strong> Hero Mode collects your workout data, account information, and app usage signals so we can back up your progress, power personalized training recommendations, and improve the app. We use industry-standard encryption, never sell your data to third parties, and give you full control to export or delete everything at any time.</p>
   </div>
 
-  <h2>1. Who We Are</h2>
-  <p>Hero Mode is developed and published by Cody Flowers ("we," "us," "our"). For privacy questions, contact us at <a href="mailto:cody.flowers@mymail.champlain.edu">cody.flowers@mymail.champlain.edu</a>.</p>
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#s1">Who We Are</a></li>
+      <li><a href="#s2">Data We Collect</a></li>
+      <li><a href="#s3">How We Use Your Data</a></li>
+      <li><a href="#s4">How We Store Your Data</a></li>
+      <li><a href="#s5">How We Secure Your Data</a></li>
+      <li><a href="#s6">Third-Party Services</a></li>
+      <li><a href="#s7">Advertising</a></li>
+      <li><a href="#s8">In-App Purchases &amp; Subscriptions</a></li>
+      <li><a href="#s9">Data Sharing</a></li>
+      <li><a href="#s10">Data Retention &amp; Deletion</a></li>
+      <li><a href="#s11">Your Rights</a></li>
+      <li><a href="#s12">Children's Privacy</a></li>
+      <li><a href="#s13">Changes to This Policy</a></li>
+      <li><a href="#s14">Contact Us</a></li>
+    </ol>
+  </nav>
 
-  <h2>2. Data We Collect and Store</h2>
-  <p>Hero Mode stores the following data <strong>exclusively on your device</strong> using your device's local storage. This data is never transmitted to our servers (we have none) or sold to third parties.</p>
+  <!-- 1 -->
+  <h2 id="s1">1. Who We Are</h2>
+  <p>Hero Mode is developed and operated by <strong>HeroMode</strong> ("we," "us," "our"). This Privacy Policy explains how we collect, use, store, secure, and share information about you when you use the Hero Mode mobile application and any related services (collectively, the "Service").</p>
+  <p>By using the Service, you agree to the collection and use of information in accordance with this policy.</p>
+
+  <!-- 2 -->
+  <h2 id="s2">2. Data We Collect</h2>
+  <p>We collect the following categories of information when you use Hero Mode:</p>
+
+  <h3>2.1 Account &amp; Identity Data</h3>
+  <table>
+    <tr><th>Data</th><th>Why we collect it</th></tr>
+    <tr><td>Email address</td><td>Account creation, login, password recovery, and important service communications</td></tr>
+    <tr><td>Display name / Hero name</td><td>Your in-app identity and profile</td></tr>
+    <tr><td>Password</td><td>Authentication — stored as a cryptographic hash (bcrypt), never in plain text</td></tr>
+    <tr><td>Profile photo (optional)</td><td>Personalizing your hero profile</td></tr>
+    <tr><td>Account creation date</td><td>Subscription eligibility and account management</td></tr>
+  </table>
+
+  <h3>2.2 Fitness &amp; Workout Data</h3>
+  <table>
+    <tr><th>Data</th><th>Why we collect it</th></tr>
+    <tr><td>Exercise logs (exercise, sets, reps, weight, date)</td><td>Cloud backup, cross-device sync, and progress tracking</td></tr>
+    <tr><td>Workout plans and schedule</td><td>Personalized plan generation and scheduling</td></tr>
+    <tr><td>Cardio sessions (type, duration, distance)</td><td>Tracking cardiovascular training progress</td></tr>
+    <tr><td>Session notes</td><td>Your personal training journal, synced across devices</td></tr>
+    <tr><td>XP, levels, ranks, streaks, and badges</td><td>Gamification progression and motivation features</td></tr>
+    <tr><td>Goals (muscle gain, fat loss, strength, endurance)</td><td>Generating appropriate training plans</td></tr>
+  </table>
+
+  <h3>2.3 Nutrition &amp; Wellness Data (Optional)</h3>
+  <p>If you use Hero Mode's check-in features, we may collect:</p>
   <ul>
-    <li><strong>Workout logs</strong> — exercise names, set counts, weight, and reps you record during sessions</li>
-    <li><strong>Profile</strong> — the name you choose for your hero identity, selected theme, and XP/level progression</li>
-    <li><strong>Training preferences</strong> — your weekly schedule, goals (muscle, strength, fat loss, endurance), and session settings</li>
-    <li><strong>Nutrition check-ins</strong> — meal descriptions, water intake, and mood notes you optionally log</li>
-    <li><strong>Session notes</strong> — free-text notes you write at the end of a session</li>
-    <li><strong>App settings</strong> — theme, rest timer duration, unit system (lbs/kg), and notification preferences</li>
+    <li>Meal descriptions and nutrition estimates you log</li>
+    <li>Water intake</li>
+    <li>Mood and energy ratings</li>
+    <li>Sleep duration</li>
   </ul>
-  <p>You can delete all this data at any time by clearing the app's storage through your device settings, or by uninstalling the app.</p>
+  <p>This data is collected only when you actively enter it. You can disable check-in features at any time in Settings.</p>
 
-  <h2>3. Data We Do Not Collect</h2>
+  <h3>2.4 Device &amp; Technical Data</h3>
+  <table>
+    <tr><th>Data</th><th>Why we collect it</th></tr>
+    <tr><td>Device type, model, OS, and version</td><td>Compatibility, bug diagnosis, and optimizing the experience</td></tr>
+    <tr><td>App version</td><td>Ensuring features work correctly on your version</td></tr>
+    <tr><td>Push notification token</td><td>Delivering workout reminders you configure</td></tr>
+    <tr><td>IP address</td><td>Security, fraud prevention, and general region detection (not stored long-term)</td></tr>
+    <tr><td>Crash logs and error reports</td><td>Diagnosing and fixing bugs</td></tr>
+  </table>
+
+  <h3>2.5 Usage &amp; Analytics Data</h3>
+  <p>We collect aggregated signals about how you interact with the app:</p>
   <ul>
-    <li>We do not require account creation or email address</li>
-    <li>We do not collect your location</li>
-    <li>We do not access your camera, microphone, or contacts</li>
-    <li>We do not collect health data from Apple Health, Google Fit, or any health platform (future integration would require explicit opt-in and is not active)</li>
-    <li>We do not track your behavior across other apps or websites</li>
+    <li>Which features you use and how often</li>
+    <li>Session length and frequency</li>
+    <li>Which exercises and workouts are most popular (aggregate, not individual)</li>
+    <li>Screens visited and navigation patterns</li>
   </ul>
+  <p>This data is used to improve the app and is analyzed at an aggregate level, not used to profile individual users.</p>
 
-  <h2>4. Advertising (Free Tier)</h2>
-  <p>The free version of Hero Mode displays ads served by <strong>Google AdMob</strong>. To serve relevant ads, AdMob may collect and use:</p>
+  <!-- 3 -->
+  <h2 id="s3">3. How We Use Your Data</h2>
+  <p>We use the data we collect for the following purposes:</p>
+
+  <h3>3.1 Core Service</h3>
   <ul>
-    <li>Your device's advertising identifier (IDFA on iOS, GAID on Android)</li>
-    <li>IP address (used to infer general location)</li>
-    <li>Device type, OS version, and app usage signals</li>
+    <li><strong>Cross-device sync &amp; backup</strong> — your workout history, progress, and settings are saved to the cloud so you never lose data and can access your account from any device</li>
+    <li><strong>Personalized training plans</strong> — your goals, schedule, and fitness history power the workout generator and smart progression suggestions</li>
+    <li><strong>Account management</strong> — login, password recovery, and subscription management</li>
+    <li><strong>Notifications</strong> — workout reminders and milestone alerts you opt into</li>
   </ul>
-  <p>This data is collected and processed by Google under their own Privacy Policy. You can review Google's data practices at <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
-  <p>On iOS, AdMob will ask for your App Tracking Transparency (ATT) permission before using your IDFA for personalized ads. You can deny this permission to receive non-personalized ads instead. On Android, you can opt out of ad personalization in your device settings under Google → Ads.</p>
-  <p><strong>Hero Mode Premium subscribers</strong> do not see ads.</p>
 
-  <h2>5. In-App Purchases and Subscriptions</h2>
-  <p>Hero Mode offers an optional <strong>Hero Mode Premium</strong> subscription. All payment processing is handled entirely by Apple (App Store) or Google (Play Store). We never see, store, or process your payment card information. Your subscription status is verified through the platform's receipt validation API.</p>
-  <p>Subscription management (cancel, upgrade, restore purchases) is handled through your Apple ID or Google Play account settings.</p>
-
-  <h2>6. Push Notifications</h2>
-  <p>If you opt in to push notifications, your device generates a push token that is sent to our notification service provider. This token is used only to deliver workout reminders and motivational messages you have configured. You can withdraw consent at any time through your device's notification settings for Hero Mode.</p>
-
-  <h2>7. Workout Sharing</h2>
-  <p>Hero Mode lets you share a workout image card using your device's native share sheet. The image is generated on your device; we do not upload it to any server. If you share it to a social platform, that platform's privacy policy governs what happens to the image.</p>
-  <p>The optional "import workout" feature encodes workout data as a URL parameter. No server is involved — the data travels directly in the URL between devices.</p>
-
-  <h2>8. Children's Privacy</h2>
-  <p>Hero Mode is not directed to children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe a child under 13 has provided information through the app, please contact us so we can take appropriate action.</p>
-
-  <h2>9. Data Security</h2>
-  <p>Because all workout data is stored locally on your device, it is protected by your device's built-in security (screen lock, device encryption). We have no access to this data and cannot retrieve it if your device is lost.</p>
-
-  <h2>10. Data Retention and Deletion</h2>
-  <p>Your data is retained on your device for as long as you have the app installed. To delete your data:</p>
+  <h3>3.2 App Improvement</h3>
   <ul>
-    <li><strong>All data:</strong> Uninstall the app, or go to your device Settings → Hero Mode → Clear Storage</li>
-    <li><strong>Specific logs:</strong> Use the in-app History tab to delete individual session records</li>
+    <li>Analyzing aggregate usage patterns to prioritize features and fix friction points</li>
+    <li>Identifying popular exercise pairings to improve plan generation</li>
+    <li>Crash reporting and performance monitoring</li>
+    <li>A/B testing new features (always privacy-preserving and opt-outable)</li>
   </ul>
 
-  <h2>11. Changes to This Policy</h2>
-  <p>We may update this Privacy Policy when we add new features (such as cloud sync or new third-party integrations). When we make material changes, we will update the "Last updated" date at the top of this page and notify you within the app on your next launch.</p>
+  <h3>3.3 Communication</h3>
+  <ul>
+    <li>Sending account-related emails (verification, password reset, subscription receipts)</li>
+    <li>Sending app update and feature announcements (opt-in only)</li>
+    <li>Responding to support requests</li>
+  </ul>
 
-  <h2>12. Your Rights</h2>
-  <p>Depending on your location, you may have rights under GDPR, CCPA, or other privacy laws to access, correct, or delete your personal data. Since all data is stored locally on your device, you have full direct control over it. For any questions or requests, contact us at the address below.</p>
+  <h3>3.4 Safety &amp; Legal</h3>
+  <ul>
+    <li>Detecting and preventing fraud, abuse, or unauthorized account access</li>
+    <li>Complying with legal obligations</li>
+  </ul>
 
-  <h2>13. Contact Us</h2>
-  <p>Hero Mode<br>
-  Developed by Cody Flowers<br>
-  <a href="mailto:cody.flowers@mymail.champlain.edu">cody.flowers@mymail.champlain.edu</a></p>
+  <p>We do <strong>not</strong> use your fitness data for advertising targeting, sell your data to data brokers, or share your personal workout history with any third party for their commercial use.</p>
+
+  <!-- 4 -->
+  <h2 id="s4">4. How We Store Your Data</h2>
+
+  <h3>4.1 Cloud Infrastructure</h3>
+  <p>Your data is stored on servers provided by reputable cloud infrastructure providers (such as Amazon Web Services, Google Cloud, or equivalent) in data centers located in the United States. These providers maintain industry-leading physical and environmental security controls.</p>
+
+  <h3>4.2 Database Architecture</h3>
+  <p>Workout logs, account information, and progress data are stored in encrypted databases. Sensitive fields — such as passwords — are hashed and never stored in recoverable form. Personal data is logically separated from analytics data.</p>
+
+  <h3>4.3 Data Residency</h3>
+  <p>Data is currently stored in the United States. If you are located in the European Union, United Kingdom, or another jurisdiction with data residency requirements, we will update this section when we establish appropriate legal mechanisms (such as Standard Contractual Clauses) and regional storage options.</p>
+
+  <h3>4.4 Backups</h3>
+  <p>We maintain encrypted, redundant backups of user data to prevent data loss. Backup data is subject to the same security and access controls as live data.</p>
+
+  <!-- 5 -->
+  <h2 id="s5">5. How We Secure Your Data</h2>
+  <p>We take data security seriously and apply multiple layers of protection:</p>
+
+  <table>
+    <tr><th>Control</th><th>Description</th></tr>
+    <tr>
+      <td><span class="tag">TRANSIT</span> Encryption in transit</td>
+      <td>All data between your device and our servers is encrypted using TLS 1.2 or higher. We enforce HTTPS-only connections.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">REST</span> Encryption at rest</td>
+      <td>All data stored on our servers is encrypted at rest using AES-256 or equivalent industry-standard encryption.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">AUTH</span> Password hashing</td>
+      <td>Passwords are hashed with bcrypt before storage. We never store or transmit passwords in plain text.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">ACCESS</span> Access controls</td>
+      <td>Access to production data is restricted to authorized personnel on a need-to-know basis. Administrative access requires multi-factor authentication.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">AUDIT</span> Security logging</td>
+      <td>All access to user data is logged and audited. Unusual access patterns trigger alerts.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">BREACH</span> Incident response</td>
+      <td>We maintain a data breach response plan. In the event of a breach affecting your data, we will notify you in accordance with applicable law (typically within 72 hours for GDPR-regulated users).</td>
+    </tr>
+  </table>
+
+  <p>No method of transmission over the internet or electronic storage is 100% secure. While we use commercially reasonable safeguards, we cannot guarantee absolute security.</p>
+
+  <!-- 6 -->
+  <h2 id="s6">6. Third-Party Services</h2>
+  <p>We use the following third-party services, each of which may receive limited data necessary to perform their function:</p>
+
+  <table>
+    <tr><th>Service</th><th>Purpose</th><th>Data shared</th></tr>
+    <tr>
+      <td><strong>Google AdMob</strong></td>
+      <td>Ad serving (free tier only)</td>
+      <td>Advertising ID, device info, IP address</td>
+    </tr>
+    <tr>
+      <td><strong>RevenueCat</strong> (or equivalent)</td>
+      <td>Subscription &amp; IAP management</td>
+      <td>User ID, purchase receipt, subscription status</td>
+    </tr>
+    <tr>
+      <td><strong>Cloud infrastructure provider</strong></td>
+      <td>Hosting, database, storage</td>
+      <td>All stored user data (processed on our behalf under data processing agreement)</td>
+    </tr>
+    <tr>
+      <td><strong>Crash reporting service</strong></td>
+      <td>Bug detection and diagnosis</td>
+      <td>Device info, app state at crash time, anonymized user ID</td>
+    </tr>
+    <tr>
+      <td><strong>Email delivery service</strong></td>
+      <td>Transactional emails (account, receipts)</td>
+      <td>Email address, name</td>
+    </tr>
+  </table>
+
+  <p>All third-party service providers are contractually required to use your data only for the purpose of providing services to us, not for their own commercial purposes.</p>
+
+  <!-- 7 -->
+  <h2 id="s7">7. Advertising</h2>
+  <p>The free version of Hero Mode displays ads served by <strong>Google AdMob</strong>. AdMob may collect your device advertising identifier (IDFA on iOS, GAID on Android), IP address, and device signals to serve relevant ads.</p>
+  <p>On iOS, we will present an App Tracking Transparency (ATT) prompt before AdMob accesses your IDFA. You can deny tracking and still receive non-personalized ads. On Android, you can opt out of ad personalization in your device settings under Google → Ads.</p>
+  <p><strong>Hero Mode Premium subscribers do not see ads</strong> and AdMob does not collect advertising identifiers from Premium users.</p>
+  <p>For more information on Google's data practices: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
+
+  <!-- 8 -->
+  <h2 id="s8">8. In-App Purchases &amp; Subscriptions</h2>
+  <p>Hero Mode offers a Premium subscription. All payment processing is handled by Apple (App Store) or Google (Play Store). <strong>We never see, receive, or store your payment card information.</strong></p>
+  <p>We receive confirmation of your subscription status and an anonymized subscriber ID from the platform, which we use to unlock Premium features. Subscription management — including cancellation — is done through your Apple ID or Google account settings.</p>
+
+  <!-- 9 -->
+  <h2 id="s9">9. Data Sharing</h2>
+  <p>We do not sell your personal data. We do not share your personal workout data with advertisers. We share data only in the following limited circumstances:</p>
+  <ul>
+    <li><strong>Service providers</strong> — as described in Section 6, only for the purpose of operating the Service</li>
+    <li><strong>Legal requirements</strong> — if required by law, court order, or a valid governmental request</li>
+    <li><strong>Protection of rights</strong> — to prevent fraud, enforce our Terms of Service, or protect the safety of users</li>
+    <li><strong>Business transfers</strong> — if HeroMode is acquired or merges with another company, your data may transfer as part of that transaction. We will notify you before your data becomes subject to a different privacy policy.</li>
+    <li><strong>With your consent</strong> — for any sharing beyond the above, we will ask for your explicit consent first</li>
+  </ul>
+
+  <!-- 10 -->
+  <h2 id="s10">10. Data Retention &amp; Deletion</h2>
+  <p>We retain your data for as long as your account is active. Specific retention periods:</p>
+  <table>
+    <tr><th>Data type</th><th>Retention</th></tr>
+    <tr><td>Account and workout data</td><td>Until account deletion, plus 30 days in backup before permanent removal</td></tr>
+    <tr><td>Crash logs and error reports</td><td>90 days</td></tr>
+    <tr><td>Aggregate analytics</td><td>Indefinitely (anonymized — cannot be linked to you)</td></tr>
+    <tr><td>IP address logs</td><td>30 days for security purposes</td></tr>
+  </table>
+
+  <h3>How to delete your data</h3>
+  <ul>
+    <li><strong>Individual records</strong> — delete specific workout sessions from the History tab within the app</li>
+    <li><strong>Full account deletion</strong> — go to Settings → Account → Delete Account. This permanently deletes all your data within 30 days. This action cannot be undone.</li>
+    <li><strong>Data export</strong> — request a copy of all your data by emailing <a href="mailto:contact_us@heromode.app">contact_us@heromode.app</a></li>
+  </ul>
+
+  <!-- 11 -->
+  <h2 id="s11">11. Your Rights</h2>
+  <p>Depending on your location, you may have the following rights:</p>
+
+  <h3>All Users</h3>
+  <ul>
+    <li><strong>Access</strong> — request a copy of the personal data we hold about you</li>
+    <li><strong>Correction</strong> — update inaccurate data (most data is editable within the app)</li>
+    <li><strong>Deletion</strong> — request deletion of your account and all associated data</li>
+    <li><strong>Portability</strong> — request your data in a machine-readable format</li>
+    <li><strong>Opt-out of marketing</strong> — unsubscribe from any marketing emails at any time</li>
+  </ul>
+
+  <h3>European Union / UK Users (GDPR / UK GDPR)</h3>
+  <p>Our legal basis for processing your data is: <strong>performance of a contract</strong> (for account and workout data needed to provide the Service), <strong>legitimate interests</strong> (for crash reporting and aggregate analytics), and <strong>consent</strong> (for marketing communications and advertising identifiers).</p>
+  <p>You have the additional right to <strong>object</strong> to processing based on legitimate interests, and to <strong>restrict</strong> processing in certain circumstances. To exercise any GDPR right, contact us at <a href="mailto:contact_us@heromode.app">contact_us@heromode.app</a>.</p>
+
+  <h3>California Users (CCPA)</h3>
+  <p>California residents have the right to know what personal information we collect and how it is used, to request deletion, to opt out of the sale of personal information (we do not sell personal information), and to not be discriminated against for exercising privacy rights.</p>
+
+  <!-- 12 -->
+  <h2 id="s12">12. Children's Privacy</h2>
+  <p>Hero Mode is not directed to children under 13 years of age (under 16 in the EU/UK). We do not knowingly collect personal information from children under these ages. If we become aware that we have collected data from a child below the applicable age threshold, we will delete that data promptly. If you believe a child has provided us with personal information, contact us at <a href="mailto:contact_us@heromode.app">contact_us@heromode.app</a>.</p>
+
+  <!-- 13 -->
+  <h2 id="s13">13. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy as the Service evolves — particularly as we add cloud sync, social features, or new third-party integrations. When we make material changes, we will:</p>
+  <ul>
+    <li>Update the "Last updated" date at the top of this page</li>
+    <li>Display a notice within the app on your next launch</li>
+    <li>For significant changes, send an email notification to your registered address</li>
+  </ul>
+  <p>Continued use of the Service after changes take effect constitutes acceptance of the revised policy.</p>
+
+  <!-- 14 -->
+  <h2 id="s14">14. Contact Us</h2>
+  <p>For privacy questions, data requests, or to exercise your rights:</p>
+  <p>
+    <strong>HeroMode</strong><br>
+    Email: <a href="mailto:contact_us@heromode.app">contact_us@heromode.app</a><br>
+    Website: <a href="https://heromode.app" target="_blank" rel="noopener">heromode.app</a>
+  </p>
+  <p>We will respond to all verifiable requests within 30 days (or as required by applicable law).</p>
 
   <footer>
-    Hero Mode Privacy Policy · Effective August 8, 2026 · This policy applies to the Hero Mode iOS and Android apps and the heromode.app web app.
+    &copy; 2026 HeroMode. All rights reserved.<br>
+    This Privacy Policy applies to the Hero Mode iOS app, Android app, and web app at heromode.app.
   </footer>
 
 </div>
