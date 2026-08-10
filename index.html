@@ -22368,10 +22368,13 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ── Performance Mode ─ hide RPG chrome, show clean data ── */
 body.perf-mode .hc-wrap{display:none}
 body.perf-mode .td-qdots{display:none}
-body.perf-mode .hm-lvl-badge{display:none}
-body.perf-mode .hm-xp-bar-wrap{display:none}
-body.perf-mode .rarity-pill{display:none}
-body.perf-mode .td-stat-lbl{font-size:9px}
+body.perf-mode .xp-wrap{display:none}
+body.perf-mode .xp-row{display:none}
+body.perf-mode .hc-rarity-pill{display:none}
+body.perf-mode .hero-class-badge{display:none}
+body.perf-mode .phase-pill-wrap{display:none}
+body.perf-mode .hm-trophy-strip{display:none}
+body.perf-mode #badge-strip{display:none}
 .td-qdots{display:flex;gap:7px;margin-top:8px}
 .td-qdot{width:11px;height:11px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:background .3s}
 .td-qdot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(var(--accent-rgb),.4)}
@@ -24491,17 +24494,50 @@ function renderTodayDashboard() {
   const _tdShow = id => _tdLayout[id] !== false;
   const _perf = hmIsPerformanceMode();
 
-  root.innerHTML = `
+  const _perfHeader = _perf ? `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase">${dateStr}</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1.1;margin-top:2px">${heroName}</div>
+        ${streak>0?`<div style="font-size:12px;color:var(--text2);margin-top:3px">${streak}-day streak</div>`:''}
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--text2);text-transform:uppercase">${_isTrainingDay ? (_trainedToday ? 'Done' : 'Training Day') : 'Rest Day'}</div>
+        ${_isTrainingDay&&!_trainedToday?`<div style="font-size:11px;color:var(--text3);margin-top:2px">Make it count</div>`:''}
+        ${_trainedToday?`<div style="font-size:11px;color:var(--text3);margin-top:2px">Well done</div>`:''}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:var(--text)">💧${water}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace">Water</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:var(--text)">${streak}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace">Streak</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:var(--text)">${lvlInfo.lvl}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace">Level</div>
+      </div>
+    </div>` : '';
+
+  root.innerHTML = _perf ? `
+    ${_perfHeader}
+    ${_tdShow('td-mission')?`<div class="td-card${_offset===0?' td-card-tap':''}" ${_offset===0?"onclick=\"showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))\"":""}>${missionHtml}</div>`:''}
+    ${_offset===0&&!_trainedToday&&_isTrainingDay?`<button onclick="showTab('workout',document.querySelector('[onclick*=\\'workout\\']'))" style="width:100%;padding:14px;background:#2563EB;color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;border:none;border-radius:12px;cursor:pointer;margin-bottom:10px;margin-top:-4px;letter-spacing:.02em">Start Workout →</button>`:''}
+    ${_tdShow('td-pet')?walkHtml:''}
+  ` : `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
       <img src="${hmEmblSrc(theme)}" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.45))" onerror="this.style.display='none'">
       <div style="flex:1;min-width:0">
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.12em">${dateStr.toUpperCase()}</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em;line-height:1.1">${_perf ? heroName : `${heroName} · LVL ${lvlInfo.lvl}`}</div>
-        ${streak>0?`<div style="font-size:11px;color:var(--text3);margin-top:1px">${_perf ? `${streak}-day streak` : `🔥 ${streak}-day streak`}</div>`:''}
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--text);letter-spacing:.04em;line-height:1.1">${heroName} · LVL ${lvlInfo.lvl}</div>
+        ${streak>0?`<div style="font-size:11px;color:var(--text3);margin-top:1px">🔥 ${streak}-day streak</div>`:''}
       </div>
       <div style="text-align:right;flex-shrink:0;max-width:38%">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.04em;line-height:1.25">${_perf ? (_isTrainingDay ? 'TRAINING DAY' : 'REST DAY') : _motivL1}</div>
-        ${!_perf && _motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.04em;line-height:1.25">${_motivL1}</div>
+        ${_motivL2?`<div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text3);letter-spacing:.04em;line-height:1.25">${_motivL2}</div>`:''}
       </div>
     </div>
     ${_tdShow('td-stats')?`<div class="td-stats">
