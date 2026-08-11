@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v65'; // v65: Perf Mode banner — neutral style, no warrior emblem; global toggle across all profiles
+const CACHE_VERSION = 'hero-mode-v66'; // v66: Guide updates — Perf Mode, 5-tab nav, Fuel/Wellness/Log/Repeat in all three guide systems
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
