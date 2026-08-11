@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v67'; // v67: Themes renamed "skins" in all user-facing UI text
+const CACHE_VERSION = 'hero-mode-v68'; // v68: Wellness back as standalone nav tab; Fuel = macros+recipes only
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

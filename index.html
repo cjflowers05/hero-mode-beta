@@ -4219,14 +4219,6 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <span style="margin-left:auto;color:var(--text3);font-size:16px;flex-shrink:0">›</span>
     </div>
-    <div onclick="showTab('wellness', null)" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent" onmouseenter="this.style.borderColor='var(--gold)'" onmouseleave="this.style.borderColor='var(--border)'">
-      <span style="font-size:20px;flex-shrink:0">🌿</span>
-      <div style="min-width:0">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.05em;color:var(--text);line-height:1.1">Wellness</div>
-        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:1px">Health &amp; habits</div>
-      </div>
-      <span style="margin-left:auto;color:var(--text3);font-size:16px;flex-shrink:0">›</span>
-    </div>
     <button class="section-guide-btn" onclick="hmStartSectionTour('nutri-tracker')" style="flex-shrink:0;align-self:center">✨</button>
   </div>
   <!-- training / rest day toggle -->
@@ -6258,6 +6250,10 @@ document.addEventListener('DOMContentLoaded', () => {
   <button class="nav-btn" onclick="showTab('nutri-tracker',this)" id="nav-btn-fuel">
     <img src="assets/ui/nav-nutrition.png" class="nav-btn-img" alt="">
     Fuel
+  </button>
+  <button class="nav-btn" onclick="showTab('wellness',this)">
+    <img src="assets/ui/nav-health.png" class="nav-btn-img" alt="">
+    Wellness
   </button>
   <button class="nav-btn" onclick="showTab('charts',this)">
     <img src="assets/ui/nav-achievements.png" class="nav-btn-img" alt="">
@@ -12839,8 +12835,6 @@ function hmShowSettings() {
     + '<span>🎨 Change Skin</span><span style="color:var(--text3)">›</span></div>'
     + '<div class="hm-settings-row" onclick="hmTogglePerformanceMode()" >'
     + '<span>⚡ App Mode</span><span id="hm-stg-mode-val" style="color:var(--text3)">' + (hmIsPerformanceMode() ? 'Performance' : 'Hero Mode') + '</span></div>'
-    + '<div class="hm-settings-row" onclick="hmCloseSettings();showTab(\'wellness\',null)">'
-    + '<span>🌿 Wellness</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">TRAINING</div>'
     + '<div class="hm-settings-row" onclick="hmCycleRestDefault()">'
     + '<span>⏱ Rest Timer Default</span><span id="hm-stg-rest-val" style="color:var(--text3)">' + HM_REST_LABELS[hmRestDefaultPref()] + '</span></div>'
@@ -13114,7 +13108,7 @@ const HM_TUTORIAL_STEPS = [
   { emoji:'🗡️', title:'Your Dashboard', desc:'Your home base. See today\'s workout, your streak, stat tiles, and today\'s mission at a glance. Tap the workout banner to open the session tracker and log your sets.', tip:'The banner updates daily — tap it to track your session in real time.' },
   { emoji:'⚙️', title:'Build Your Plan', desc:'Fill in your goals, equipment, schedule, and experience level — Hero Mode generates a personalized multi-phase training plan built around you.', tip:'Scroll the Train tab to the GOALS form. You can rebuild your plan anytime.' },
   { emoji:'💪', title:'Train', desc:'Log sets and reps from your generated plan. Swap any exercise with ⇄, add custom sessions, and track cardio. Hit the blue Start Workout button on Today to jump straight in.', tip:'Every logged session earns XP toward your next level.' },
-  { emoji:'🥦', title:'Fuel', desc:'The Fuel tab tracks water, daily macros, and meals. Tap Recipe Book to browse and generate recipes, or Wellness to log sleep, soreness, and body data.', tip:'Hit protein every day — it\'s the number that moves results.' },
+  { emoji:'🥦', title:'Fuel', desc:'The Fuel tab tracks water, daily macros, and meals. Tap Recipe Book to browse and generate recipes. Wellness has its own tab for sleep, soreness, and body data.', tip:'Hit protein every day — it\'s the number that moves results.' },
   { emoji:'🏆', title:'Trophy Case', desc:'Earn badges by hitting milestones — streak days, XP totals, nutrition logs, and more. Level up to unlock new hero portraits and titles.', tip:'Tap your profile chip in the plan header to open your Trophy Case.' },
   { emoji:'📊', title:'Log & Progress', desc:'The Log tab shows your full session history — tap any date to replay a session or hit ↺ Repeat to add those exercises back to today. Progress shows all your charts and trends.', tip:'The Log tab replay lets you review every set, weight, and PR from any session.' },
   { emoji:'🎨', title:'Make It Yours', desc:'Choose a hero skin from the 🎨 button. Toggle Performance Mode in ⚙ Settings to strip the RPG chrome for a clean, data-only view. Both settings apply instantly across all profiles.', tip:'Performance Mode keeps all the features — just removes the gamification layer.' },
@@ -23594,7 +23588,7 @@ const HM_SECTION_TOURS = {
     { sel:'#nt-meals-container', emoji:'🍽️', title:'Log Your Meals',    text:'Add food under each meal section. Search by name, enter unknowns by macro, or copy yesterday\'s meals in one tap.' },
     { sel:'#nt-water-cups',      emoji:'💧', title:'Water Tracking',     text:'Tap to log each glass. 8 a day keeps recovery on track — staying hydrated is as important as training.' },
     { sel:'#nt-journal',         emoji:'📓', title:'Daily Notes',        text:'Jot down how you feel — energy, hunger, sleep quality. These notes are your training journal, saved by date.' },
-    { sel:'#fuel-nav-cards',     emoji:'🔗', title:'Recipe Book & Wellness', text:'Tap Recipe Book to browse and generate recipes with macros. Tap Wellness to log sleep, body weight, soreness, and cardio — all in one place.' },
+    { sel:'#fuel-nav-cards',     emoji:'🍳', title:'Recipe Book',        text:'Tap to open your Recipe Book — browse saved recipes, generate new ones by describing a dish, or import from a URL with full macro breakdown.' },
   ],
   recipes: [
     { sel:'#rb-search',          emoji:'🔍', title:'Search or Generate',  text:'Search your recipes by name or ingredient. No match? Type any dish and the AI generates a full recipe with macros.' },
@@ -23638,7 +23632,7 @@ const HM_TOUR_STEPS = [
   { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch skins, set your default rest timer, and toggle Performance Mode (strips RPG chrome for a clean data view).' },
   { sel:'#session-note-card',    emoji:'📝', title:'Session Notes',      text:'Leave a note about how your workout went — it auto-saves daily. Tap ↗ Share Workout to generate a shareable summary card. Streak Shields 🛡 are earned here too as you bank XP.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
-  { sel:'.bottom-nav',           emoji:'🧭', title:'Get Around',         text:'Five tabs along the bottom: Today, Train, Log, Fuel, and Progress. Fuel holds your macros, Recipe Book, and Wellness. Log holds your session history. Charts and awards are under Progress. Go be a hero. 💪' },
+  { sel:'.bottom-nav',           emoji:'🧭', title:'Get Around',         text:'Six tabs along the bottom: Today, Train, Log, Fuel, Wellness, and Progress. Fuel = macros + recipes. Wellness = sleep, soreness, body data. Log = session history. Progress = charts and awards. Go be a hero. 💪' },
 ];
 const HM_TOUR_REFRESHER = { sel:null, emoji:'✨', title:'What\'s New — a Quick Refresher', text:'Here\'s a fresh walkthrough of Hero Mode — including anything new since you last looked. Skip anytime.' };
 let _hmTourIdx = -1;
