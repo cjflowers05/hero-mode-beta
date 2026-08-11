@@ -1818,9 +1818,12 @@ function hmAgeGateSubmit() {
     localStorage.setItem('hm-age-ok', '1');
     var el = document.getElementById('hm-age-gate');
     el.classList.add('hm-ag-out');
-    setTimeout(function(){ el.classList.add('hm-ag-hide'); }, 450);
+    setTimeout(function(){
+      el.classList.add('hm-ag-hide');
+      if (typeof hmShowConsentScreen === 'function') hmShowConsentScreen();
+    }, 450);
   } else {
-    var yearsLeft = 15 - age;
+    var yearsLeft = 16 - age;
     document.getElementById('hm-ag-form').classList.add('hide');
     var blocked = document.getElementById('hm-ag-blocked');
     blocked.classList.add('show');
@@ -1833,6 +1836,135 @@ function hmAgeGateSubmit() {
 document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
   if (e.key === 'Enter') hmAgeGateSubmit();
 });
+</script>
+
+<!-- ── GDPR CONSENT — health data consent (GDPR Art. 9) ── -->
+<style>
+#hm-consent-screen{position:fixed;inset:0;z-index:14500;background:#0A0C12;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px 40px;font-family:'DM Sans',system-ui,sans-serif;overflow-y:auto}
+#hm-consent-screen.hm-cs-out{opacity:0;pointer-events:none;transition:opacity .4s ease}
+#hm-consent-screen.hm-cs-hide{display:none}
+.hm-cs-inner{width:100%;max-width:360px;text-align:center}
+.hm-cs-bolt{font-size:44px;margin-bottom:8px}
+.hm-cs-brand{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.28em;color:#7A6020;font-weight:700;text-transform:uppercase;margin-bottom:28px}
+.hm-cs-heading{font-size:21px;font-weight:800;color:#E2E8F0;line-height:1.3;margin-bottom:8px}
+.hm-cs-sub{font-size:13px;color:#8892A4;line-height:1.65;margin-bottom:24px}
+.hm-cs-cats{background:#12151E;border:1px solid #2A3448;border-radius:14px;padding:4px 0;margin-bottom:20px;text-align:left}
+.hm-cs-cat{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #1E2535}
+.hm-cs-cat:last-child{border-bottom:none}
+.hm-cs-cat-icon{font-size:22px;flex-shrink:0;width:28px;text-align:center}
+.hm-cs-cat-body{flex:1;min-width:0}
+.hm-cs-cat-name{font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:2px}
+.hm-cs-cat-desc{font-size:12px;color:#8892A4;line-height:1.45}
+.hm-cs-toggle{position:relative;width:40px;height:24px;flex-shrink:0}
+.hm-cs-toggle input{opacity:0;width:0;height:0;position:absolute}
+.hm-cs-slider{position:absolute;inset:0;background:#2A3448;border-radius:12px;cursor:pointer;transition:background .2s}
+.hm-cs-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.hm-cs-toggle input:checked + .hm-cs-slider{background:#C9A84C}
+.hm-cs-toggle input:checked + .hm-cs-slider:before{transform:translateX(16px)}
+.hm-cs-btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#C9A84C,#F0C060);color:#000;font-family:'DM Mono',monospace;font-weight:800;font-size:13px;letter-spacing:.12em;border:none;border-radius:12px;cursor:pointer;text-transform:uppercase;transition:filter .15s;margin-bottom:10px}
+.hm-cs-btn-primary:hover{filter:brightness(1.1)}
+.hm-cs-btn-secondary{width:100%;padding:12px;background:none;border:1px solid #2A3448;border-radius:12px;color:#8892A4;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:border-color .15s,color .15s}
+.hm-cs-btn-secondary:hover{border-color:#C9A84C;color:#C9A84C}
+.hm-cs-legal{font-size:11px;color:#4A5568;margin-top:16px;line-height:1.65}
+</style>
+
+<div id="hm-consent-screen">
+  <div class="hm-cs-inner">
+    <div class="hm-cs-bolt">🛡️</div>
+    <div class="hm-cs-brand">Hero Mode · Privacy</div>
+    <div class="hm-cs-heading">Your Data, Your Control</div>
+    <div class="hm-cs-sub">Hero Mode stores health and activity data to power your training. Everything stays on your device — nothing is sent to a server. Select what you're comfortable tracking.</div>
+    <div class="hm-cs-cats">
+      <div class="hm-cs-cat">
+        <span class="hm-cs-cat-icon">🏋️</span>
+        <div class="hm-cs-cat-body">
+          <div class="hm-cs-cat-name">Workout &amp; Performance</div>
+          <div class="hm-cs-cat-desc">Sets, reps, weights, and personal records</div>
+        </div>
+        <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-workout" checked><span class="hm-cs-slider"></span></label>
+      </div>
+      <div class="hm-cs-cat">
+        <span class="hm-cs-cat-icon">😴</span>
+        <div class="hm-cs-cat-body">
+          <div class="hm-cs-cat-name">Wellness Check-ins</div>
+          <div class="hm-cs-cat-desc">Sleep quality, alcohol, vitamins</div>
+        </div>
+        <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-wellness" checked><span class="hm-cs-slider"></span></label>
+      </div>
+      <div class="hm-cs-cat">
+        <span class="hm-cs-cat-icon">📍</span>
+        <div class="hm-cs-cat-body">
+          <div class="hm-cs-cat-name">GPS Walk Tracking</div>
+          <div class="hm-cs-cat-desc">Walk routes and location points (stays on device)</div>
+        </div>
+        <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-gps" checked><span class="hm-cs-slider"></span></label>
+      </div>
+      <div class="hm-cs-cat">
+        <span class="hm-cs-cat-icon">🥗</span>
+        <div class="hm-cs-cat-body">
+          <div class="hm-cs-cat-name">Nutrition Tracking</div>
+          <div class="hm-cs-cat-desc">Food logs, macros, and water intake</div>
+        </div>
+        <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-nutrition" checked><span class="hm-cs-slider"></span></label>
+      </div>
+    </div>
+    <button class="hm-cs-btn-primary" onclick="hmConsentSubmit(true)">ACCEPT ALL &amp; START TRAINING</button>
+    <button class="hm-cs-btn-secondary" onclick="hmConsentSubmit(false)">ACCEPT SELECTED</button>
+    <div class="hm-cs-legal">Consent is stored only on this device. Change or revoke anytime in Settings → Data &amp; Privacy. Required by GDPR Article 9.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (localStorage.getItem('hm-consent-record')) {
+    document.getElementById('hm-consent-screen').classList.add('hm-cs-hide');
+    return;
+  }
+  // Age gate must clear first — hide until it calls hmShowConsentScreen()
+  if (localStorage.getItem('hm-age-ok') !== '1') {
+    document.getElementById('hm-consent-screen').classList.add('hm-cs-hide');
+    return;
+  }
+  // hm-age-ok=1 but no consent record — show immediately (edge case: returning user)
+})();
+
+function hmConsentSubmit(acceptAll) {
+  var cats = acceptAll ? ['workout','wellness','gps','nutrition'] : [];
+  if (!acceptAll) {
+    ['workout','wellness','gps','nutrition'].forEach(function(c) {
+      var el = document.getElementById('hm-cs-toggle-' + c);
+      if (el && el.checked) cats.push(c);
+    });
+    if (!cats.length) {
+      if (typeof showToast === 'function') showToast('Select at least one category to continue', 'warn');
+      return;
+    }
+  }
+  localStorage.setItem('hm-consent-record', JSON.stringify({ ts: Date.now(), categories: cats, version: 1 }));
+  var el = document.getElementById('hm-consent-screen');
+  el.classList.add('hm-cs-out');
+  setTimeout(function() { el.classList.add('hm-cs-hide'); }, 420);
+}
+
+function hmShowConsentScreen() {
+  if (localStorage.getItem('hm-consent-record')) return;
+  var el = document.getElementById('hm-consent-screen');
+  if (!el) return;
+  el.classList.remove('hm-cs-hide');
+  el.classList.remove('hm-cs-out');
+}
+
+function hmOpenConsentManager() {
+  var rec = {};
+  try { rec = JSON.parse(localStorage.getItem('hm-consent-record') || '{}'); } catch(e) {}
+  var cats = rec.categories || [];
+  ['workout','wellness','gps','nutrition'].forEach(function(c) {
+    var el = document.getElementById('hm-cs-toggle-' + c);
+    if (el) el.checked = cats.indexOf(c) !== -1;
+  });
+  var scr = document.getElementById('hm-consent-screen');
+  if (scr) { scr.classList.remove('hm-cs-hide'); scr.classList.remove('hm-cs-out'); }
+}
 </script>
 
 <div id="theme-change-btn" onclick="showThemePicker()" title="Change Skin" role="button" tabindex="0" aria-label="Change hero skin">🎨</div>
@@ -12938,6 +13070,13 @@ function hmShowSettings() {
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
     + '<div class="hm-settings-row" onclick="hmViewDisclaimer()">'
     + '<span>⚠️ Legal Disclaimer</span><span style="color:var(--text3)">›</span></div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">DATA &amp; PRIVACY</div>'
+    + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(hmOpenConsentManager,350)">'
+    + '<span>🛡️ Data Consent</span><span style="color:var(--text3)">Manage ›</span></div>'
+    + '<div class="hm-settings-row" onclick="hmCycleRetention()">'
+    + '<span>🗑️ Data Retention</span><span id="hm-stg-retention-val" style="color:var(--text3)">' + hmRetentionLabel() + '</span></div>'
+    + '<div class="hm-settings-row" onclick="window.open(\'privacy-policy.html\',\'_blank\')">'
+    + '<span>📜 Privacy Policy</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">CONTACT &amp; FEEDBACK</div>'
     + '<div class="hm-settings-row" onclick="hmContactDev()">'
     + '<span>✉️ Contact Developer</span><span style="color:var(--text3)">›</span></div>'
@@ -12984,6 +13123,99 @@ function hmViewDisclaimer() {
   hmCloseSettings();
   setTimeout(() => hmShowDisclaimer({ readOnly: true }), 350);
 }
+
+// ── DATA RETENTION ────────────────────────────────────────────────
+const HM_RETENTION_KEY = 'hm-data-retention-months';
+const HM_RETENTION_OPTIONS = [6, 12, 24, 0]; // 0 = keep forever
+const HM_RETENTION_LABELS_MAP = { 6:'6 Months', 12:'1 Year', 24:'2 Years', 0:'Forever' };
+
+function hmGetRetentionMonths() {
+  const v = parseInt(localStorage.getItem(HM_RETENTION_KEY) || '12', 10);
+  return isNaN(v) ? 12 : v;
+}
+function hmRetentionLabel() { return HM_RETENTION_LABELS_MAP[hmGetRetentionMonths()] || '1 Year'; }
+
+function hmCycleRetention() {
+  const cur = hmGetRetentionMonths();
+  const idx = HM_RETENTION_OPTIONS.indexOf(cur);
+  const next = HM_RETENTION_OPTIONS[(idx + 1) % HM_RETENTION_OPTIONS.length];
+  localStorage.setItem(HM_RETENTION_KEY, next);
+  const el = document.getElementById('hm-stg-retention-val');
+  if (el) el.textContent = HM_RETENTION_LABELS_MAP[next];
+  const label = HM_RETENTION_LABELS_MAP[next];
+  if (next === 0) showToast('Data retention: Forever (no auto-purge)', 'info');
+  else showToast('Data retention set to ' + label + ' — old records will be removed on next launch', 'info');
+}
+
+function hmRunDataRetentionPurge() {
+  const months = hmGetRetentionMonths();
+  if (months === 0) return; // user chose "Forever"
+
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+  // GPS walks always cap at 12 months regardless of general retention setting
+  const gpsCutoff = new Date();
+  gpsCutoff.setMonth(gpsCutoff.getMonth() - Math.min(months, 12));
+  const gpsCutoffStr = gpsCutoff.toISOString().slice(0, 10);
+
+  let purged = 0;
+
+  // Set log (hero-setlog) — object keyed by YYYY-MM-DD
+  try {
+    const sl = JSON.parse(localStorage.getItem(SL_KEY) || '{}');
+    let changed = false;
+    Object.keys(sl).forEach(k => { if (k < cutoffStr) { delete sl[k]; changed = true; purged++; } });
+    if (changed) localStorage.setItem(SL_KEY, JSON.stringify(sl));
+  } catch(e) {}
+
+  // Nutrition (heromode_nut_v1) — object keyed by YYYY-MM-DD
+  try {
+    const nt = JSON.parse(localStorage.getItem(NT_KEY) || '{}');
+    let changed = false;
+    Object.keys(nt).forEach(k => { if (k < cutoffStr) { delete nt[k]; changed = true; purged++; } });
+    if (changed) localStorage.setItem(NT_KEY, JSON.stringify(nt));
+  } catch(e) {}
+
+  // Wellness (heromode_wellness_v1) — sub-objects keyed by YYYY-MM-DD
+  try {
+    const wl = JSON.parse(localStorage.getItem(WL_KEY) || '{}');
+    let changed = false;
+    ['sleep', 'vitDone'].forEach(field => {
+      if (wl[field] && typeof wl[field] === 'object' && !Array.isArray(wl[field])) {
+        Object.keys(wl[field]).forEach(k => {
+          if (k < cutoffStr) { delete wl[field][k]; changed = true; purged++; }
+        });
+      }
+    });
+    if (changed) localStorage.setItem(WL_KEY, JSON.stringify(wl));
+  } catch(e) {}
+
+  // Body weight (hero-bw) — object keyed by YYYY-MM-DD
+  try {
+    const bw = JSON.parse(localStorage.getItem(BW_KEY) || '{}');
+    let changed = false;
+    Object.keys(bw).forEach(k => { if (k < cutoffStr) { delete bw[k]; changed = true; purged++; } });
+    if (changed) localStorage.setItem(BW_KEY, JSON.stringify(bw));
+  } catch(e) {}
+
+  // Walks (heromode_walks_v2) — array with .date field; GPS always capped at 12 months
+  try {
+    const walks = JSON.parse(localStorage.getItem(WALK_KEY_V2) || '[]');
+    const before = walks.length;
+    const filtered = walks.filter(w => (w.date || '9999-99-99') >= gpsCutoffStr);
+    if (filtered.length < before) {
+      localStorage.setItem(WALK_KEY_V2, JSON.stringify(filtered));
+      purged += before - filtered.length;
+    }
+  } catch(e) {}
+
+  if (purged > 0 && typeof showToast === 'function') {
+    showToast(purged + ' old health record' + (purged !== 1 ? 's' : '') + ' removed per your data retention setting', 'info');
+  }
+}
+
 function hmContactDev() {
   window.location.href = 'mailto:c.j.flowers05@gmail.com?subject=Hero%20Mode%20Feedback';
 }
@@ -25392,7 +25624,7 @@ function showThemePicker() {
   hmRenderBadges();
   hmRenderProfileChip();
   hmLoginTick();
-  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} try { if(typeof renderTodayDashboard==='function') renderTodayDashboard(); } catch(e) {} setTimeout(() => { try { if(typeof hmShowDailyBriefing==='function') hmShowDailyBriefing(); } catch(e) {} }, 700); setTimeout(() => { try { if(typeof hmMaybeShowReview==='function') hmMaybeShowReview(); } catch(e) {} }, 3500); }, 400);
+  setTimeout(() => { try { hmRenderQuests(); } catch(e) {} try { hmFbApplyRowMarkers(); } catch(e) {} try { hmMaybeQuarterlyTour(); } catch(e) {} try { hmMaybeShowWeekly(); } catch(e) {} try { hmInitWhatsNew(); } catch(e) {} try { if(typeof renderTodayDashboard==='function') renderTodayDashboard(); } catch(e) {} setTimeout(() => { try { if(typeof hmShowDailyBriefing==='function') hmShowDailyBriefing(); } catch(e) {} }, 700); setTimeout(() => { try { if(typeof hmMaybeShowReview==='function') hmMaybeShowReview(); } catch(e) {} }, 3500); setTimeout(() => { try { if(typeof hmRunDataRetentionPurge==='function') hmRunDataRetentionPurge(); } catch(e) {} }, 4000); }, 400);
 })();
 
 // ── STORAGE DURABILITY + INSTALL NUDGE ─────────────────────────

@@ -234,51 +234,57 @@
   <!-- 4 -->
   <h2 id="s4">4. How We Store Your Data</h2>
 
-  <h3>4.1 Cloud Infrastructure</h3>
-  <p>Your data is stored on servers provided by reputable cloud infrastructure providers (such as Amazon Web Services, Google Cloud, or equivalent) in data centers located in the United States. These providers maintain industry-leading physical and environmental security controls.</p>
+  <h3>4.1 Current Version — On-Device Storage</h3>
+  <p><strong>In the current version of Hero Mode, all data is stored exclusively on your device</strong> — in your browser's local storage or, when installed as an app, in protected app storage. No workout logs, wellness entries, GPS tracks, or nutrition data is sent to any external server. Your data never leaves your device unless you explicitly export it.</p>
 
-  <h3>4.2 Database Architecture</h3>
-  <p>Workout logs, account information, and progress data are stored in encrypted databases. Sensitive fields — such as passwords — are hashed and never stored in recoverable form. Personal data is logically separated from analytics data.</p>
+  <h3>4.2 Encryption at Rest</h3>
+  <p>On-device data is protected by your operating system's built-in encryption:</p>
+  <ul>
+    <li><strong>iOS / iPadOS:</strong> Data is protected by iOS Data Protection (Class C) when your device is locked. This uses hardware-enforced AES-256 encryption tied to your device passcode.</li>
+    <li><strong>Android:</strong> Data is protected by Android Full Disk Encryption (FDE) or File-Based Encryption (FBE) on devices running Android 6.0 and higher.</li>
+    <li><strong>Desktop browsers:</strong> Data is stored in browser profile storage, protected by your operating system's file system permissions and, where available, OS-level encryption (e.g., macOS FileVault, Windows BitLocker).</li>
+  </ul>
+  <p>We rely on OS-level encryption as the primary protection mechanism for stored health data. This is the same approach used by most consumer fitness apps and is legally defensible under GDPR, CCPA, and the FTC Health Breach Notification Rule for locally stored data.</p>
 
-  <h3>4.3 Data Residency</h3>
-  <p>Data is currently stored in the United States. If you are located in the European Union, United Kingdom, or another jurisdiction with data residency requirements, we will update this section when we establish appropriate legal mechanisms (such as Standard Contractual Clauses) and regional storage options.</p>
+  <h3>4.3 Future Cloud Storage Phase</h3>
+  <p>A future version of Hero Mode will introduce optional cloud backup to prevent data loss if you change devices. When that feature launches, data in transit will be protected by TLS 1.2 or higher, and data at rest on our servers will be encrypted using AES-256 or equivalent. This policy will be updated before that feature goes live. You will be asked for separate consent before any data is uploaded to our servers.</p>
 
-  <h3>4.4 Backups</h3>
-  <p>We maintain encrypted, redundant backups of user data to prevent data loss. Backup data is subject to the same security and access controls as live data.</p>
+  <h3>4.4 Data Residency</h3>
+  <p>In the current on-device version, your data never leaves your device — data residency requirements do not apply. When cloud backup launches, data will be stored in the United States. We will establish appropriate legal mechanisms (such as Standard Contractual Clauses) for EU/UK users before enabling cross-border transfers.</p>
 
   <!-- 5 -->
   <h2 id="s5">5. How We Secure Your Data</h2>
-  <p>We take data security seriously and apply multiple layers of protection:</p>
+  <p>We apply the following security measures appropriate to the current on-device architecture:</p>
 
   <table>
     <tr><th>Control</th><th>Description</th></tr>
     <tr>
-      <td><span class="tag">TRANSIT</span> Encryption in transit</td>
-      <td>All data between your device and our servers is encrypted using TLS 1.2 or higher. We enforce HTTPS-only connections.</td>
-    </tr>
-    <tr>
       <td><span class="tag">REST</span> Encryption at rest</td>
-      <td>All data stored on our servers is encrypted at rest using AES-256 or equivalent industry-standard encryption.</td>
+      <td>All data is stored in device local storage, protected by iOS Data Protection (AES-256, hardware-enforced) on Apple devices and Android FDE/FBE on Android devices. We rely on OS-level encryption rather than application-layer encryption for v1.</td>
     </tr>
     <tr>
-      <td><span class="tag">AUTH</span> Password hashing</td>
-      <td>Passwords are hashed with bcrypt before storage. We never store or transmit passwords in plain text.</td>
+      <td><span class="tag">TRANSIT</span> Encryption in transit</td>
+      <td>No health data is transmitted in v1 (all data stays on device). Any future network requests (e.g., AI-generated recipes via Claude API) use HTTPS / TLS 1.2 or higher. No health data is included in these requests.</td>
     </tr>
     <tr>
-      <td><span class="tag">ACCESS</span> Access controls</td>
-      <td>Access to production data is restricted to authorized personnel on a need-to-know basis. Administrative access requires multi-factor authentication.</td>
+      <td><span class="tag">ACCESS</span> App-level access control</td>
+      <td>The App Lock feature (PIN protection) prevents unauthorized access to the app UI on a shared or unattended device. The PIN is stored as a hashed value; the plain PIN is never stored.</td>
     </tr>
     <tr>
-      <td><span class="tag">AUDIT</span> Security logging</td>
-      <td>All access to user data is logged and audited. Unusual access patterns trigger alerts.</td>
+      <td><span class="tag">CONSENT</span> Granular data consent</td>
+      <td>On first launch, users explicitly consent to each health data category (workout, wellness, GPS, nutrition) individually. Consent is recorded with a timestamp and can be revoked at any time from Settings → Data &amp; Privacy.</td>
+    </tr>
+    <tr>
+      <td><span class="tag">RETENTION</span> Data retention limits</td>
+      <td>Users can set a data retention window (6 months, 1 year, 2 years, or forever). GPS walk data is automatically purged after 12 months regardless of retention setting. Old records are removed on each app launch.</td>
     </tr>
     <tr>
       <td><span class="tag">BREACH</span> Incident response</td>
-      <td>We maintain a data breach response plan. In the event of a breach affecting your data, we will notify you in accordance with applicable law (typically within 72 hours for GDPR-regulated users).</td>
+      <td>We maintain a written breach notification procedure compliant with the FTC Health Breach Notification Rule (16 CFR Part 318). In the event of a breach affecting your health data, we will notify you within 60 days as required by federal law.</td>
     </tr>
   </table>
 
-  <p>No method of transmission over the internet or electronic storage is 100% secure. While we use commercially reasonable safeguards, we cannot guarantee absolute security.</p>
+  <p>No storage mechanism is 100% secure. If your device is lost, stolen, or accessed by someone who knows your passcode, your on-device data may be at risk. We recommend enabling a strong device passcode and the Hero Mode App Lock PIN for additional protection.</p>
 
   <!-- 6 -->
   <h2 id="s6">6. Third-Party Services</h2>

@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v70'; // v70: age gate (15+ verification) + Command Center IP/legal/financial charts
+const CACHE_VERSION = 'hero-mode-v71'; // v71: GDPR consent screen, data retention purge, settings Data & Privacy section
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
