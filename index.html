@@ -1740,6 +1740,101 @@ body.perf-mode .banner-hero-emblem{display:none}
   setTimeout(hide, quick ? 900 : 1800);
 })();
 </script>
+
+<!-- ── AGE GATE — 15+ verification, checked before anything else loads ── -->
+<style>
+#hm-age-gate{position:fixed;inset:0;z-index:15000;background:#0A0C12;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;font-family:'DM Sans',system-ui,sans-serif;text-align:center;overflow:hidden}
+#hm-age-gate.hm-ag-out{opacity:0;pointer-events:none;transition:opacity .4s ease}
+#hm-age-gate.hm-ag-hide{display:none}
+.hm-ag-bolt{font-size:52px;margin-bottom:10px;animation:hm-ag-pulse 2.4s ease-in-out infinite}
+@keyframes hm-ag-pulse{0%,100%{filter:drop-shadow(0 0 8px rgba(201,168,76,.35))}50%{filter:drop-shadow(0 0 22px rgba(201,168,76,.75))}}
+.hm-ag-brand{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.28em;color:#7A6020;font-weight:700;text-transform:uppercase;margin-bottom:32px}
+.hm-ag-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:#C9A84C;text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.hm-ag-heading{font-size:23px;font-weight:800;color:#E2E8F0;line-height:1.3;margin-bottom:8px}
+.hm-ag-sub{font-size:14px;color:#8892A4;line-height:1.65;margin-bottom:30px;max-width:300px}
+.hm-ag-field{width:176px;background:#12151E;border:2px solid #2A3448;border-radius:12px;color:#E2E8F0;font-family:'DM Mono',monospace;font-size:30px;font-weight:700;text-align:center;padding:14px 16px;letter-spacing:.08em;outline:none;margin-bottom:6px;-moz-appearance:textfield;appearance:textfield}
+.hm-ag-field:focus{border-color:#C9A84C;box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.hm-ag-field::placeholder{color:#4A5568}
+.hm-ag-field::-webkit-outer-spin-button,.hm-ag-field::-webkit-inner-spin-button{-webkit-appearance:none}
+.hm-ag-err{font-size:12px;color:#F87171;min-height:18px;margin-bottom:14px;font-family:'DM Mono',monospace;letter-spacing:.04em}
+.hm-ag-btn{width:200px;padding:14px;background:linear-gradient(135deg,#C9A84C,#F0C060);color:#000;font-family:'DM Mono',monospace;font-weight:800;font-size:13px;letter-spacing:.12em;border:none;border-radius:12px;cursor:pointer;text-transform:uppercase;transition:filter .15s,transform .1s}
+.hm-ag-btn:hover{filter:brightness(1.1)}
+.hm-ag-btn:active{transform:scale(.97)}
+.hm-ag-note{font-size:11px;color:#4A5568;margin-top:22px;max-width:270px;line-height:1.65}
+.hm-ag-blocked{display:none;flex-direction:column;align-items:center}
+.hm-ag-blocked.show{display:flex}
+.hm-ag-form.hide{display:none}
+.hm-ag-block-icon{font-size:52px;margin-bottom:14px}
+.hm-ag-block-title{font-size:22px;font-weight:800;color:#E2E8F0;margin-bottom:10px}
+.hm-ag-block-msg{font-size:14px;color:#8892A4;line-height:1.65;max-width:290px}
+</style>
+
+<div id="hm-age-gate">
+  <div class="hm-ag-bolt">⚡</div>
+  <div class="hm-ag-brand">Hero Mode</div>
+
+  <div class="hm-ag-form" id="hm-ag-form">
+    <div class="hm-ag-eyebrow">Age Verification</div>
+    <div class="hm-ag-heading">What year were you born?</div>
+    <div class="hm-ag-sub">Hero Mode requires you to be at least 15 years old to train.</div>
+    <input id="hm-ag-year" class="hm-ag-field" type="number" inputmode="numeric" placeholder="YYYY" autocomplete="bday-year">
+    <div class="hm-ag-err" id="hm-ag-err"></div>
+    <button class="hm-ag-btn" onclick="hmAgeGateSubmit()">CONFIRM AGE</button>
+    <div class="hm-ag-note">Your birth year is only used to check eligibility and is never stored or shared.</div>
+  </div>
+
+  <div class="hm-ag-blocked" id="hm-ag-blocked">
+    <div class="hm-ag-block-icon">🛡️</div>
+    <div class="hm-ag-block-title">Come Back Soon, Hero.</div>
+    <div class="hm-ag-block-msg" id="hm-ag-block-msg">Hero Mode is designed for ages 15 and up.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Hide immediately if already verified
+  if (localStorage.getItem('hm-age-ok') === '1') {
+    document.getElementById('hm-age-gate').classList.add('hm-ag-hide');
+    return;
+  }
+  // Set max year to current year (can't be born in future)
+  document.getElementById('hm-ag-year').max = new Date().getFullYear();
+})();
+
+function hmAgeGateSubmit() {
+  var inp = document.getElementById('hm-ag-year');
+  var err = document.getElementById('hm-ag-err');
+  var raw = inp.value.trim();
+  var year = parseInt(raw, 10);
+  var curYear = new Date().getFullYear();
+  err.textContent = '';
+  if (!raw || raw.length !== 4 || isNaN(year) || year < 1920 || year > curYear) {
+    err.textContent = 'Please enter a valid 4-digit birth year.';
+    inp.focus();
+    return;
+  }
+  var age = curYear - year;
+  if (age >= 15) {
+    localStorage.setItem('hm-age-ok', '1');
+    var el = document.getElementById('hm-age-gate');
+    el.classList.add('hm-ag-out');
+    setTimeout(function(){ el.classList.add('hm-ag-hide'); }, 450);
+  } else {
+    var yearsLeft = 15 - age;
+    document.getElementById('hm-ag-form').classList.add('hide');
+    var blocked = document.getElementById('hm-ag-blocked');
+    blocked.classList.add('show');
+    document.getElementById('hm-ag-block-msg').textContent =
+      'Hero Mode is designed for ages 15 and up. Check back in ' +
+      yearsLeft + (yearsLeft === 1 ? ' year' : ' years') + ' — the grind will be waiting.';
+  }
+}
+
+document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') hmAgeGateSubmit();
+});
+</script>
+
 <div id="theme-change-btn" onclick="showThemePicker()" title="Change Skin" role="button" tabindex="0" aria-label="Change hero skin">🎨</div>
 
 <!-- THEME PICKER OVERLAY -->

@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v69'; // v69: GPS accuracy filter + dynamic share card (all exercises shown)
+const CACHE_VERSION = 'hero-mode-v70'; // v70: age gate (15+ verification) + Command Center IP/legal/financial charts
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
