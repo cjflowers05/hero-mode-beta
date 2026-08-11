@@ -214,11 +214,75 @@
     </div>
   </div>
 
-  <!-- PHASE 1: Legal & Business -->
+  <!-- PHASE 1: Funding & Capital -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('funding')">
+      <div class="phase-icon">💰</div>
+      <div class="phase-title">Phase 1 — Funding &amp; Capital</div>
+      <div class="phase-meta">Veteran-specific options — get money before spending it</div>
+      <span class="phase-count" id="count-funding">0/5</span>
+      <div class="phase-chevron open" id="chev-funding">▾</div>
+    </div>
+    <div class="phase-body" id="body-funding">
+
+      <div class="item" id="item-vet-sba-express" onclick="toggle('vet-sba-express')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">SBA Express Loan — up to $500K, 36-hr decision, no guarantee fee for veterans</div>
+          <div class="item-desc">The SBA waives the upfront guarantee fee (typically 2–3.5% of the loan amount) for veteran-owned businesses on SBA Express Loans. Decisions in 36 hours vs. the standard SBA process. You need LLC + EIN + business bank account in place first. Apply through a participating lender — use the Lender Match tool at sba.gov/lenders-match. For a pre-revenue app, expect to provide a personal guarantee. Target $5K–$25K to cover year-one costs: LLC ($225) + Apple Dev ($99) + Google Play ($25) + trademark ($700) + attorney T&amp;C ($1,000–1,500) + sound license ($180) + 6 months of $27/mo recurring = ~$2,800 total year-one hard costs before you earn a dollar. A $10K loan covers this with runway to spare.</div>
+          <div class="item-tags"><span class="tag tag-free">NO GUARANTEE FEE — vet benefit</span><span class="tag tag-paid">Requires LLC + EIN first</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$5K–500K</span><br>sba.gov</div>
+      </div>
+
+      <div class="item" id="item-vet-microloan" onclick="toggle('vet-microloan')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">SBA Microloan — up to $50K, nonprofit lenders, minimal collateral</div>
+          <div class="item-desc">SBA Microloans go through community-based nonprofit intermediaries rather than banks — these lenders are mission-driven and comfortable with early-stage founders who have limited credit history. Average loan: ~$13,000. Rates: 8–13%, terms up to 6 years. Many intermediaries specifically serve veterans and bundle free business mentoring with the loan. Better fit than a bank loan when you have limited revenue history. Find veteran-focused intermediaries at sba.gov/funding-programs/loans/microloans. Also check your state's small business development center (SBDC) — most states have additional veteran microloan pools stacked on top of the federal program.</div>
+          <div class="item-tags"><span class="tag tag-free">Veteran-friendly lenders</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">Up to $50K</span><br>sba.gov/microloans</div>
+      </div>
+
+      <div class="item" id="item-vet-sbir" onclick="toggle('vet-sbir')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">SBIR/STTR Grant — up to $275K non-dilutive, no equity given up</div>
+          <div class="item-desc">The Small Business Innovation Research program funds R&amp;D in technology — fitness tech and behavioral health apps qualify. Phase I: $150K–$275K, no equity surrender. Hero Mode fits HHS (Health &amp; Human Services) or DoD (performance/fitness tech for servicemembers) tracks. Frame the application as: "AI-adaptive personalized training systems for physical performance optimization" or "Behavioral adherence technology for physical activity promotion." The plan generator, XP adherence system, and retention data you'll collect are legitimately research-grade tech. The application is substantial (~40 pages) but AFWERX (DoD) has veteran-specific support. Deadlines are periodic — check sbir.gov/solicitations for open windows. Worth the application effort given the non-dilutive nature of the funding.</div>
+          <div class="item-tags"><span class="tag tag-free">NON-DILUTIVE — no equity</span><span class="tag tag-paid">~40-page application</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$150K–275K</span><br>sbir.gov</div>
+      </div>
+
+      <div class="item" id="item-vet-grants" onclick="toggle('vet-grants')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Veteran entrepreneur grants — StreetShares Foundation, EBV, V-WISE</div>
+          <div class="item-desc"><strong>StreetShares Foundation Veteran Small Business Award</strong>: annual grant competition, up to $15,000, no repayment. streetsharesfoundation.org. <strong>Entrepreneurship Bootcamp for Veterans (EBV)</strong>: free intensive business training through Syracuse University's IVMF — no cost, unlocks mentor networks and funding connections. ivmf.syracuse.edu. <strong>V-WISE (Veteran Women Igniting the Spirit of Entrepreneurship)</strong>: SBA-sponsored, female veteran founders. <strong>Hivers &amp; Strivers</strong>: equity fund for veteran-founded companies, $250K–$1M range (gives up equity but opens doors). hiversandstrivers.com. Apply to all simultaneously — these are not mutually exclusive and most applications are free. Also register as a Service-Disabled Veteran-Owned Small Business (SDVOSB) at sba.gov — unlocks federal contract set-asides.</div>
+          <div class="item-tags"><span class="tag tag-free">GRANTS — no repayment</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0–15K+</span><br>Multiple sources</div>
+      </div>
+
+      <div class="item" id="item-vet-bunker" onclick="toggle('vet-bunker')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Bunker Labs accelerator — apply to GROW or cohort program</div>
+          <div class="item-desc">Bunker Labs (bunkerlabs.org) is the largest nonprofit accelerator for veteran entrepreneurs. GROW program and cohort accelerators provide free mentoring, investor introductions, peer networks, and access to funding pools. Alumni have raised VC rounds and scaled to acquisition. Apply regardless of whether you pursue loans — the mentor network is valuable even if no direct capital flows. Action items: (1) Apply to the next Bunker Labs cohort at bunkerlabs.org — free, low-friction. (2) Also look at Vet Biz Central (vetbizcentral.com) for a full ecosystem map. (3) If you ever want to pursue VC: Recon Strategy and Vets in Tech both have warm networks into veteran-friendly investors. Do not pursue VC before you have real users — focus on grants and microloans to launch, then let traction do the fundraising pitch.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE — mentorship + network access</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>bunkerlabs.org</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 2: Legal & Business -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('legal')">
       <div class="phase-icon">🏛️</div>
-      <div class="phase-title">Phase 1 — Legal &amp; Business Foundation</div>
+      <div class="phase-title">Phase 2 — Legal &amp; Business Foundation</div>
       <div class="phase-meta">Do this first — blocks everything else</div>
       <span class="phase-count" id="count-legal">0/6</span>
       <div class="phase-chevron open" id="chev-legal">▾</div>
@@ -288,11 +352,233 @@
     </div>
   </div>
 
-  <!-- PHASE 2: Developer Accounts -->
+  <!-- PHASE 3: Core App — Already Built -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('built')">
+      <div class="phase-icon">✅</div>
+      <div class="phase-title">Phase 3 — Core App &amp; Compliance — Already Built</div>
+      <div class="phase-meta">Shipped — auto-checked on first visit</div>
+      <span class="phase-count" id="count-built">0/7</span>
+      <div class="phase-chevron open" id="chev-built">▾</div>
+    </div>
+    <div class="phase-body" id="body-built">
+
+      <div class="item" id="item-app-core" onclick="toggle('app-core')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Full workout app — plan generator, 6 tabs, session tracker, logging</div>
+          <div class="item-desc">Goal-based plan generator compiles a phased training program from goals, schedule, and available equipment. 6-tab navigation: Train (daily plan), Log (set logger with PRs), Fuel (nutrition tracker with 150+ foods + AI recipes), Wellness (sleep, vitamins, alcohol), Progress (body weight, measurements, photos, charts), Walk (GPS route tracker with Beau the dog). 24,000+ lines of single-file PWA — fully offline-capable, zero dependencies required at runtime.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-pwa" onclick="toggle('app-pwa')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">PWA: manifest, service worker (v71), 512px icons, splash, offline</div>
+          <div class="item-desc">manifest.json with hero-mode theme color, display: standalone, all icon sizes (192/512/180px), and share_target for share sheet integration. Service worker uses network-first strategy with offline fallback — app loads with zero connectivity after first visit. Cache versioned as hero-mode-v71. Icons and splash screen (assets/ui/splash.png) in place. Install prompt handled by heroDurability IIFE.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-agegate" onclick="toggle('app-agegate')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Age gate 16+ — birth year YYYY input, blocked screen, persisted in localStorage</div>
+          <div class="item-desc">Fixed overlay (z:15000) fires before any app UI loads. User enters 4-digit birth year; if age ≥ 16, hm-age-ok is set in localStorage and the gate fades out. If under 16, shows "Come Back Soon, Hero" with exact years remaining. Returning verified users skip the gate instantly via IIFE check. Satisfies GDPR digital consent age (16+ for most EU countries) and COPPA age-gating for minors. Feeds into the GDPR consent screen on first verification.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span><span class="tag tag-ip">GDPR Art. 8</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-firstrun" onclick="toggle('app-firstrun')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">First-run sequence: disclaimer → onboarding tour → what's new</div>
+          <div class="item-desc">Disclaimer modal (hero-disclaimer-v1) shown once with explicit acceptance before any training begins — covers "not medical advice," injury disclaimer, consult physician clause. After acceptance: 9-step onboarding tour covers every tab and key feature. What's New modal (hero-wn-seen-v7) shown once per version to returning users. Disclaimer acceptance is gated by HM_DISCLAIMER_KEY; skipping or dismissing does not set the key, so it re-shows until accepted.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-gamification" onclick="toggle('app-gamification')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">XP system, 50 hero levels, 16 skins, daily quests, trophy case, streaks</div>
+          <div class="item-desc">XP awarded for: logging sets (5 XP), completing days (50 XP), wellness check-ins (10 XP), body weight log (10 XP), walk sessions (15 XP), nutrition log (10 XP). 50 leveling tiers from Rookie to Transcendent with unlock thresholds. 16 hero skins (Warrior through Transcendent) — 8 locked by level. Daily quests refresh at midnight with 3 randomized objectives awarding XP and chest keys. Chest opening rewards randomized cosmetics. Trophy case with 20+ medals. Streak tracking with freeze items. All state persisted to localStorage under hero-* key prefix.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-share" onclick="toggle('app-share')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Share card (canvas PNG), GPS walk route map (Leaflet), dynamic share</div>
+          <div class="item-desc">Post-session share card generated via Canvas API — shows hero name, level, exercises logged, XP earned, date. Exported as PNG and shared via Web Share API (or downloaded as fallback). GPS Walk Tracker uses Geolocation API + Leaflet.js to render real-time route map with polyline and distance/pace stats. Walk summaries include date, distance, duration, pace, and a Leaflet map screenshot option. Both features drive organic social sharing as a built-in growth mechanism.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+      <div class="item" id="item-app-data-privacy" onclick="toggle('app-data-privacy')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Data &amp; Privacy settings — consent manager, retention control, privacy policy link</div>
+          <div class="item-desc">Settings → DATA &amp; PRIVACY section with three rows: (1) Data Consent — opens GDPR Art. 9 consent manager where user can adjust per-category toggles; (2) Data Retention — cycles 6 months / 1 year / 2 years / Forever, stored as hm-data-retention-months; (3) Privacy Policy — links to hosted privacy-policy.html. Data purge runs 4 seconds after app init, removing records older than the chosen retention window from set log, nutrition, wellness, body weight, and GPS walks. GPS walks always capped at 12 months regardless of general setting.</div>
+          <div class="item-tags"><span class="tag tag-free">DONE</span><span class="tag tag-ip">GDPR Art. 5</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Shipped</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 4: IP & Legal Shield -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('ip')">
+      <div class="phase-icon">🛡️</div>
+      <div class="phase-title">Phase 4 — IP &amp; Legal Shield</div>
+      <div class="phase-meta">Protect the brand before it has value to steal</div>
+      <span class="phase-count" id="count-ip">0/7</span>
+      <div class="phase-chevron open" id="chev-ip">▾</div>
+    </div>
+    <div class="phase-body" id="body-ip">
+
+      <div class="item" id="item-tm-search" onclick="toggle('tm-search')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Search "Hero Mode" on USPTO TESS — do this week</div>
+          <div class="item-desc">Before spending a dollar on marketing or trademark filing, confirm nobody already owns "Hero Mode" in Class 9 (software) or Class 41 (fitness/entertainment). Go to tmsearch.uspto.gov → Basic Word Mark Search → search "Hero Mode" → filter IC: 009 and 041. If a live registration exists in your class, every marketing dollar you spend is at risk — you could receive a C&amp;D demanding a rebrand after launch. This takes 20 minutes and is free. Do it before anything else in this phase.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-urgent">DO THIS WEEK</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>USPTO TESS</div>
+      </div>
+
+      <div class="item" id="item-tm-file" onclick="toggle('tm-file')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">File "Hero Mode" trademark — TEAS Standard, Class 9 + Class 41</div>
+          <div class="item-desc">Once the USPTO search clears, file on TEAS Standard (not TEAS Plus — Standard gives more room to amend if the examiner pushes back). Two classes: Class 9 (computer software for fitness tracking) and Class 41 (fitness instruction and entertainment services). $350/class = $700 total. Your filing date is your priority date — it locks your ownership position against any future filer. Use an attorney to draft the identification of goods/services description precisely; a bad description gets refused or narrowed during examination. Processing takes 8–12 months but the serial number is issued immediately as your ownership record.</div>
+          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-ip">IP Priority</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$700</span><br>USPTO TEAS Std</div>
+      </div>
+
+      <div class="item" id="item-tos" onclick="toggle('tos')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Attorney-drafted Terms of Service + liability limitation clause</div>
+          <div class="item-desc">Without a T&amp;C, there is no contractual shield between you and users. The critical clause: "In no event shall HeroMode LLC be liable for any injury, loss, or damage arising from the use of workout plans, exercise instructions, or AI-generated content." This is your first line of defense against injury claims. Also covers: arbitration clause (keeps disputes out of court), no medical advice disclaimer, DMCA compliance, account termination rights. Cost: $500–1,500 from a startup attorney. Clerky ($150–300) offers templates as a budget fallback. Must be live and linked in the app before launch — this is a hard BLOCKER.</div>
+          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-ip">IP Priority</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$500–1,500</span><br>Startup attorney</div>
+      </div>
+
+      <div class="item" id="item-privacy-atty" onclick="toggle('privacy-atty')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Attorney review of privacy policy — GDPR, CCPA, health data</div>
+          <div class="item-desc">The privacy policy is written and updated to accurately reflect on-device OS-level encryption and v1 local-only storage, but needs an attorney's eyes before launch. Three specific risks: (1) Health data classification — workout logs, body weight, and wellness check-ins qualify as special category data under GDPR Art. 9. (2) GDPR — the moment a European user downloads the app, GDPR applies. (3) COPPA — age gate is in place at 16+, but attorney should confirm the implementation satisfies COPPA standards. A focused review for a simple app runs $500–1,000.</div>
+          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-ip">IP Priority</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$500–1,000</span><br>Startup attorney</div>
+      </div>
+
+      <div class="item" id="item-movekit-audit" onclick="toggle('movekit-audit')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Audit MoveKit video license for commercial app distribution</div>
+          <div class="item-desc">The exercise demonstration videos in /assets/MoveKit_Videos/ are the backbone of the workout UX. Before launch: find the original MoveKit license agreement and look for these exact words — "commercial use," "distribution," "subscription," "app store." Many asset packs license for personal or development use only. Commercial distribution through an app store with paying subscribers requires a separate commercial license. If the language is ambiguous, email MoveKit directly before launch. A C&amp;D on your video library post-launch, when you have users depending on the experience, is far more disruptive than resolving this now. Cost to check: $0. Upgrade cost: TBD.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE to check</span><span class="tag tag-urgent">CHECK BEFORE LAUNCH</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Check your license</div>
+      </div>
+
+      <div class="item" id="item-sound-license" onclick="toggle('sound-license')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Commercial sound license — Epidemic Sound or Artlist (~$180/yr)</div>
+          <div class="item-desc">Every sound in the app — hero themes, ability sounds, UI feedback, level-up — needs a commercial license for app store distribution. Music rights holders use automated detection tools that actively scan app stores. "Free to use" on most sound sites means free for personal/non-commercial use only. Epidemic Sound ($15/mo, $180/yr) and Artlist ($199/yr) both offer proper licenses covering app distribution and social media. Audit every audio file in the project against its source license before launch. This is one of the most actively litigated IP areas for indie apps and one of the easiest to resolve in advance.</div>
+          <div class="item-tags"><span class="tag tag-paid">Annual</span><span class="tag tag-urgent">CHECK BEFORE LAUNCH</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">~$180/yr</span><br>Epidemic Sound</div>
+      </div>
+
+      <div class="item" id="item-oss-audit" onclick="toggle('oss-audit')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Open source license audit — scan all JS dependencies for GPL</div>
+          <div class="item-desc">The GPL (GNU General Public License) is "viral" — if any GPL-licensed code is bundled in the app and distributed, the entire app may legally need to be published as open source, exposing the proprietary plan generator, gamification engine, and all trade secrets. MIT and Apache 2.0 are safe and impose no such requirement. Check every &lt;script&gt; tag in index.html and every npm package by running <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">npx license-checker --summary</code> in the project root to see all license types at a glance. If GPL appears anywhere, replace it with an MIT/Apache equivalent before distribution. Takes 10 minutes, costs nothing.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-ip">IP Priority</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>npx license-checker</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 5: Health Data Compliance -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('compliance')">
+      <div class="phase-icon">🏥</div>
+      <div class="phase-title">Phase 5 — Health Data Compliance</div>
+      <div class="phase-meta">All 4 items built — required before Apple / Google store submission</div>
+      <span class="phase-count" id="count-compliance">0/4</span>
+      <div class="phase-chevron open" id="chev-compliance">▾</div>
+    </div>
+    <div class="phase-body" id="body-compliance">
+
+      <div class="item" id="item-gdpr-consent" onclick="toggle('gdpr-consent')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">GDPR Article 9 health data consent screen — built ✓</div>
+          <div class="item-desc">Consent screen fires after age gate on first launch. Four granular toggles: Workout &amp; Performance, Wellness Check-ins, GPS Walk Tracking, Nutrition Tracking. "Accept All &amp; Start Training" or "Accept Selected." Consent stored as hm-consent-record: {ts, categories[], version: 1} in localStorage. Revocable from Settings → Data &amp; Privacy → Data Consent. Consent manager re-opens the screen with current toggle state so the user can adjust per-category. Satisfies GDPR Art. 9 explicit consent requirement for special-category health data.</div>
+          <div class="item-tags"><span class="tag tag-free">BUILT</span><span class="tag tag-ip">GDPR Art. 9</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Done</span></div>
+      </div>
+
+      <div class="item" id="item-data-retention" onclick="toggle('data-retention')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Data retention limits — built ✓ (GDPR Art. 5(1)(e))</div>
+          <div class="item-desc">Settings → Data Retention cycles through 6 months / 1 year / 2 years / Forever (default: 1 year). hmRunDataRetentionPurge() runs 4 seconds after app init. Purges: set log (hero-setlog), nutrition (heromode_nut_v1), wellness (heromode_wellness_v1 sleep/vitDone), body weight (hero-bw) beyond cutoff date. GPS walks (heromode_walks_v2) always capped at 12 months regardless of general retention setting. Shows toast when records are removed. Stored at hm-data-retention-months. Satisfies GDPR Art. 5(1)(e) storage limitation principle.</div>
+          <div class="item-tags"><span class="tag tag-free">BUILT</span><span class="tag tag-ip">GDPR Art. 5(1)(e)</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Done</span></div>
+      </div>
+
+      <div class="item" id="item-encryption-rest" onclick="toggle('encryption-rest')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Encryption at rest — documented ✓ (iOS Data Protection / Android FDE)</div>
+          <div class="item-desc">Decision made: rely on OS-level encryption for v1 (Option A). iOS Data Protection (Class C, AES-256, hardware-enforced) protects all localStorage when device is locked. Android FDE/FBE on Android 6.0+ provides equivalent protection. Privacy policy (Sections 4–5) updated to accurately describe this — no longer describes a server that doesn't exist yet. App-level PBKDF2 encryption deferred to cloud phase when there's actually a risk of server-side data exposure. Legal rationale documented in HERO-MODE-DEV-GUIDE.md.</div>
+          <div class="item-tags"><span class="tag tag-free">DOCUMENTED</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Done</span></div>
+      </div>
+
+      <div class="item" id="item-breach-procedure" onclick="toggle('breach-procedure')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Breach notification procedure — written ✓ (FTC Health Breach Notification Rule)</div>
+          <div class="item-desc">breach-notification-procedure.md written and committed to the repo. Covers: definition of breach (pre- and post-backend), 60-day notification timeline (Day 0 discovery → Day 60 FTC filing if 500+ users), scope assessment checklist, complete user notification email template, FTC submission URL (ftc.gov/healthbreach), and record-keeping requirements. Post-backend additions (Firebase anomaly alerts, Firestore audit logging) documented for cloud phase. Store with LLC records from Northwest Registered Agent. Satisfies FTC 16 CFR Part 318.</div>
+          <div class="item-tags"><span class="tag tag-free">WRITTEN</span><span class="tag tag-ip">FTC 16 CFR 318</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Done</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 6: Developer Accounts -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('devaccts')">
       <div class="phase-icon">🛂</div>
-      <div class="phase-title">Phase 2 — Developer Accounts</div>
+      <div class="phase-title">Phase 6 — Developer Accounts</div>
       <div class="phase-meta">Required to publish on either store</div>
       <span class="phase-count" id="count-devaccts">0/4</span>
       <div class="phase-chevron open" id="chev-devaccts">▾</div>
@@ -342,11 +628,11 @@
     </div>
   </div>
 
-  <!-- PHASE 3: Services & Infrastructure -->
+  <!-- PHASE 7: Services & Infrastructure -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('services')">
       <div class="phase-icon">⚙️</div>
-      <div class="phase-title">Phase 3 — Services &amp; Infrastructure</div>
+      <div class="phase-title">Phase 7 — Services &amp; Infrastructure</div>
       <div class="phase-meta">Ads, IAP, analytics — all free tier to start</div>
       <span class="phase-count" id="count-services">0/5</span>
       <div class="phase-chevron open" id="chev-services">▾</div>
@@ -406,11 +692,11 @@
     </div>
   </div>
 
-  <!-- PHASE 4: Technical Build -->
+  <!-- PHASE 8: Technical Build -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('tech')">
       <div class="phase-icon">🔧</div>
-      <div class="phase-title">Phase 4 — Technical Build &amp; Testing</div>
+      <div class="phase-title">Phase 8 — Technical Build &amp; Testing</div>
       <div class="phase-meta">Native builds, signing, real device testing</div>
       <span class="phase-count" id="count-tech">0/8</span>
       <div class="phase-chevron open" id="chev-tech">▾</div>
@@ -500,11 +786,11 @@
     </div>
   </div>
 
-  <!-- PHASE 5: Submission -->
+  <!-- PHASE 9: Submission -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('submit')">
       <div class="phase-icon">🚀</div>
-      <div class="phase-title">Phase 5 — Store Submission</div>
+      <div class="phase-title">Phase 9 — Store Submission</div>
       <div class="phase-meta">Fill out all metadata, submit for review</div>
       <span class="phase-count" id="count-submit">0/5</span>
       <div class="phase-chevron open" id="chev-submit">▾</div>
@@ -564,11 +850,11 @@
     </div>
   </div>
 
-  <!-- PHASE 6: Marketing & Growth -->
+  <!-- PHASE 10: Marketing & Growth -->
   <div class="phase">
     <div class="phase-header" onclick="togglePhase('marketing')">
       <div class="phase-icon">📣</div>
-      <div class="phase-title">Phase 6 — Marketing &amp; Growth</div>
+      <div class="phase-title">Phase 10 — Marketing &amp; Growth</div>
       <div class="phase-meta">Start before launch day, not after</div>
       <span class="phase-count" id="count-marketing">0/7</span>
       <div class="phase-chevron open" id="chev-marketing">▾</div>
@@ -643,90 +929,6 @@
           <div class="item-tags"><span class="tag tag-free">Commission only</span></div>
         </div>
         <div class="item-cost"><span class="free">$0 upfront</span><br>~10–20% commission</div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PHASE 7: IP & Legal Shield -->
-  <div class="phase">
-    <div class="phase-header" onclick="togglePhase('ip')">
-      <div class="phase-icon">🛡️</div>
-      <div class="phase-title">Phase 7 — IP &amp; Legal Shield</div>
-      <div class="phase-meta">Protect the brand before it has value to steal</div>
-      <span class="phase-count" id="count-ip">0/7</span>
-      <div class="phase-chevron open" id="chev-ip">▾</div>
-    </div>
-    <div class="phase-body" id="body-ip">
-
-      <div class="item" id="item-tm-search" onclick="toggle('tm-search')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Search "Hero Mode" on USPTO TESS — do this week</div>
-          <div class="item-desc">Before spending a dollar on marketing or trademark filing, confirm nobody already owns "Hero Mode" in Class 9 (software) or Class 41 (fitness/entertainment). Go to tmsearch.uspto.gov → Basic Word Mark Search → search "Hero Mode" → filter IC: 009 and 041. If a live registration exists in your class, every marketing dollar you spend is at risk — you could receive a C&amp;D demanding a rebrand after launch. This takes 20 minutes and is free. Do it before anything else in this phase.</div>
-          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-urgent">DO THIS WEEK</span></div>
-        </div>
-        <div class="item-cost"><span class="free">$0</span><br>USPTO TESS</div>
-      </div>
-
-      <div class="item" id="item-tm-file" onclick="toggle('tm-file')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">File "Hero Mode" trademark — TEAS Standard, Class 9 + Class 41</div>
-          <div class="item-desc">Once the USPTO search clears, file on TEAS Standard (not TEAS Plus — Standard gives more room to amend if the examiner pushes back). Two classes: Class 9 (computer software for fitness tracking) and Class 41 (fitness instruction and entertainment services). $350/class = $700 total. Your filing date is your priority date — it locks your ownership position against any future filer. Use an attorney to draft the identification of goods/services description precisely; a bad description gets refused or narrowed during examination. Processing takes 8–12 months but the serial number is issued immediately as your ownership record.</div>
-          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-ip">IP Priority</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">$700</span><br>USPTO TEAS Std</div>
-      </div>
-
-      <div class="item" id="item-tos" onclick="toggle('tos')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Attorney-drafted Terms of Service + liability limitation clause</div>
-          <div class="item-desc">Without a T&amp;C, there is no contractual shield between you and users. The critical clause: "In no event shall HeroMode LLC be liable for any injury, loss, or damage arising from the use of workout plans, exercise instructions, or AI-generated content." This is your first line of defense against injury claims. Also covers: arbitration clause (keeps disputes out of court), no medical advice disclaimer, DMCA compliance, account termination rights. Cost: $500–1,500 from a startup attorney. Clerky ($150–300) offers templates as a budget fallback. Must be live and linked in the app before launch — this is a hard BLOCKER.</div>
-          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-ip">IP Priority</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">$500–1,500</span><br>Startup attorney</div>
-      </div>
-
-      <div class="item" id="item-privacy-atty" onclick="toggle('privacy-atty')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Attorney review of privacy policy — GDPR, CCPA, health data</div>
-          <div class="item-desc">The privacy policy is written, but needs an attorney's eyes before launch. Three specific risks: (1) Health data classification — workout logs, body weight, and wellness check-ins may legally qualify as health data under some jurisdictions, triggering stricter processing requirements. (2) GDPR — the moment a European user downloads the app, GDPR applies. Policy must include lawful basis for processing, data subject rights (access, deletion, portability), and a processing description that matches what you actually collect. (3) COPPA — if any users may be under 13, age gating or a COPPA-compliant notice is legally required. A focused review for a simple app runs $500–1,000.</div>
-          <div class="item-tags"><span class="tag tag-paid">One-time cost</span><span class="tag tag-ip">IP Priority</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">$500–1,000</span><br>Startup attorney</div>
-      </div>
-
-      <div class="item" id="item-movekit-audit" onclick="toggle('movekit-audit')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Audit MoveKit video license for commercial app distribution</div>
-          <div class="item-desc">The exercise demonstration videos in /assets/MoveKit_Videos/ are the backbone of the workout UX. Before launch: find the original MoveKit license agreement and look for these exact words — "commercial use," "distribution," "subscription," "app store." Many asset packs license for personal or development use only. Commercial distribution through an app store with paying subscribers requires a separate commercial license. If the language is ambiguous, email MoveKit directly before launch. A C&amp;D on your video library post-launch, when you have users depending on the experience, is far more disruptive than resolving this now. Cost to check: $0. Upgrade cost: TBD.</div>
-          <div class="item-tags"><span class="tag tag-free">FREE to check</span><span class="tag tag-urgent">CHECK BEFORE LAUNCH</span></div>
-        </div>
-        <div class="item-cost"><span class="free">$0</span><br>Check your license</div>
-      </div>
-
-      <div class="item" id="item-sound-license" onclick="toggle('sound-license')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Commercial sound license — Epidemic Sound or Artlist (~$180/yr)</div>
-          <div class="item-desc">Every sound in the app — hero themes, ability sounds, UI feedback, level-up — needs a commercial license for app store distribution. Music rights holders use automated detection tools that actively scan app stores. "Free to use" on most sound sites means free for personal/non-commercial use only. Epidemic Sound ($15/mo, $180/yr) and Artlist ($199/yr) both offer proper licenses covering app distribution and social media. Audit every audio file in the project against its source license before launch. This is one of the most actively litigated IP areas for indie apps and one of the easiest to resolve in advance.</div>
-          <div class="item-tags"><span class="tag tag-paid">Annual</span><span class="tag tag-urgent">CHECK BEFORE LAUNCH</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">~$180/yr</span><br>Epidemic Sound</div>
-      </div>
-
-      <div class="item" id="item-oss-audit" onclick="toggle('oss-audit')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Open source license audit — scan all JS dependencies for GPL</div>
-          <div class="item-desc">The GPL (GNU General Public License) is "viral" — if any GPL-licensed code is bundled in the app and distributed, the entire app may legally need to be published as open source, exposing the proprietary plan generator, gamification engine, and all trade secrets. MIT and Apache 2.0 are safe and impose no such requirement. Check every &lt;script&gt; tag in index.html and every npm package by running <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">npx license-checker --summary</code> in the project root to see all license types at a glance. If GPL appears anywhere, replace it with an MIT/Apache equivalent before distribution. Takes 10 minutes, costs nothing.</div>
-          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-ip">IP Priority</span></div>
-        </div>
-        <div class="item-cost"><span class="free">$0</span><br>npx license-checker</div>
       </div>
 
     </div>
@@ -849,7 +1051,7 @@
       <div class="info-meta">Who can come after you · Ranked by likelihood</div>
     </div>
     <div class="info-body">
-      <div class="risk-intro">These are the realistic ways third parties — competitors, users, regulators, or IP holders — could take legal or platform action against Hero Mode. Most are preventable with work already on the Phase 7 checklist above.</div>
+      <div class="risk-intro">These are the realistic ways third parties — competitors, users, regulators, or IP holders — could take legal or platform action against Hero Mode. Most are preventable with work already on the Phase 4 checklist above.</div>
       <div class="risk-grid">
 
         <div class="risk-card risk-high">
@@ -870,7 +1072,7 @@
           <div class="risk-card-top"><span class="risk-badge">🔴 HIGH</span>
             <div class="risk-card-title">MoveKit / Sound Asset License Violation</div></div>
           <div class="risk-card-desc">If MoveKit doesn't cover commercial distribution with paying subscribers, or if any audio isn't properly licensed, rights holders can issue a DMCA takedown that removes the app from both stores simultaneously.</div>
-          <div class="risk-card-fix"><strong>Shield:</strong> Audit MoveKit license agreement now. Get Epidemic Sound commercial license before launch. Both actions are on the Phase 7 checklist above.</div>
+          <div class="risk-card-fix"><strong>Shield:</strong> Audit MoveKit license agreement now. Get Epidemic Sound commercial license before launch. Both actions are on the Phase 4 checklist above.</div>
         </div>
 
         <div class="risk-card risk-med">
@@ -919,60 +1121,6 @@
     </div>
   </div>
 
-  <!-- PHASE 8: Pre-Launch Health Data Compliance -->
-  <div class="phase">
-    <div class="phase-header" onclick="togglePhase('compliance')">
-      <div class="phase-icon">🏥</div>
-      <div class="phase-title">Phase 8 — Health Data Compliance</div>
-      <div class="phase-meta">BLOCKER — required before Apple / Google store submission</div>
-      <span class="phase-count" id="count-compliance">0/4</span>
-      <div class="phase-chevron open" id="chev-compliance">▾</div>
-    </div>
-    <div class="phase-body" id="body-compliance">
-
-      <div class="item" id="item-gdpr-consent" onclick="toggle('gdpr-consent')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Build GDPR Article 9 health data consent screen</div>
-          <div class="item-desc">The age gate is NOT a health data consent mechanism — it confirms age, not consent. GDPR Article 9 classifies workout logs, body weight, wellness check-ins, and GPS tracks as "special category" health data requiring explicit, specific, separate consent before collection. The age gate satisfies the 16+ digital consent age for most EU countries. What's still needed: a dedicated consent screen shown before the first piece of health data is recorded, listing each data type specifically and using plain language (e.g., "I consent to Hero Mode collecting my workout logs, body measurements, wellness check-ins, and GPS walk data to power the app"). Consent must be granular (user can accept some categories and decline others), recorded with a timestamp, and revocable without losing their account. Implement as a one-time post-age-gate screen on first data collection, with a consent management page in Settings. This is the biggest GDPR gap and the most likely regulatory trigger.</div>
-          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">GDPR Art. 9</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">Dev time</span><br>No $ cost</div>
-      </div>
-
-      <div class="item" id="item-data-retention" onclick="toggle('data-retention')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Implement data retention limits — GDPR Article 5(1)(e)</div>
-          <div class="item-desc">GDPR requires health data be kept "no longer than necessary for the purpose collected." Right now all data persists indefinitely until manually deleted. Before store launch, add: (1) a user-configurable data retention period in Settings (options: 6 months, 1 year, 2 years, Keep Forever — default 1 year), (2) an automatic purge that runs on app open, deleting records older than the chosen window, and (3) auto-delete for GPS walk tracks after 12 months (location data carries extra risk). The purge should be visible — show the user "12 walk sessions older than your retention period were removed." Apple's privacy review and Google Play's Data Safety form both ask whether you have a data retention policy; this is the proof that you do. Build this in Settings alongside the consent management page.</div>
-          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">GDPR Art. 5</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">Dev time</span><br>No $ cost</div>
-      </div>
-
-      <div class="item" id="item-encryption-rest" onclick="toggle('encryption-rest')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Evaluate and implement encryption at rest for health data</div>
-          <div class="item-desc">Context: iOS automatically encrypts app storage when the device is locked (iOS Data Protection, Class C). Android does the same with full-disk encryption on modern devices. The app-level PIN lock protects the UI layer but NOT the underlying localStorage when the device is unlocked. True at-rest encryption would encrypt every localStorage value using a key derived from the user's PIN via PBKDF2 (Web Crypto API). This is the right long-term approach but is a significant rewrite — every read and write path in index.html goes through decryption/encryption, and if the user forgets their PIN, data is unrecoverable. Decision point before launch: (A) Rely on OS-level encryption (iOS Data Protection + Android FDE) and document this clearly in the privacy policy — acceptable for a v1 release. (B) Build app-level PBKDF2 encryption before launch — required if you want to claim "end-to-end encrypted" in marketing. (C) Defer until cloud backend — implement encryption before any health data ever leaves the device. Recommendation: choose A for initial launch, build B/C in the cloud phase. Document the decision in the privacy policy.</div>
-          <div class="item-tags"><span class="tag tag-paid">Decision required</span><span class="tag tag-ip">Security</span></div>
-        </div>
-        <div class="item-cost"><span class="one-time">Dev time</span><br>Design choice</div>
-      </div>
-
-      <div class="item" id="item-breach-procedure" onclick="toggle('breach-procedure')">
-        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
-        <div class="item-body">
-          <div class="item-title">Write breach notification procedure — FTC Health Breach Notification Rule</div>
-          <div class="item-desc">The FTC Health Breach Notification Rule (16 CFR Part 318) applies to apps that collect personal health records, including workout and wellness data — regardless of revenue or company size. It requires notifying affected users within 60 days of discovering a breach. Before launch: write a one-page internal procedure document that covers (1) how you define a "breach" (unauthorized access, loss, or disclosure of health data), (2) how you'd detect one (currently: any unauthorized access to the device or, in the cloud phase, database logs), (3) the 60-day notification timeline and what the user notification must contain (nature of breach, data types exposed, steps taken, contact for questions), and (4) who is responsible (you, as the sole founder). Store this document with your LLC records — it doesn't need to be public, just exist and be followed. When the Firebase/Supabase backend goes live, add technical breach detection: Cloud Function alerts on anomalous read patterns, Firestore audit logs. The FTC has issued substantial fines to small app developers for non-compliance with this rule — it is not limited to large companies.</div>
-          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">FTC Rule</span></div>
-        </div>
-        <div class="item-cost"><span class="free">$0</span><br>Write the doc</div>
-      </div>
-
-    </div>
-  </div>
-
   <div class="footer-actions">
     <button class="reset-btn" onclick="resetAll()">↺ RESET ALL CHECKBOXES</button>
   </div>
@@ -981,10 +1129,22 @@
 
 <script>
   const STORE_KEY = 'hm-launch-checklist-v1';
-  const phases = ['legal','devaccts','services','tech','submit','marketing','ip','compliance'];
+  const phases = ['funding','legal','built','ip','compliance','devaccts','services','tech','submit','marketing'];
+
+  const COMPLETED_ITEMS = [
+    'app-core','app-pwa','app-agegate','app-firstrun','app-gamification','app-share','app-data-privacy',
+    'gdpr-consent','data-retention','encryption-rest','breach-procedure'
+  ];
 
   function load() {
-    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) {}
+    let changed = false;
+    COMPLETED_ITEMS.forEach(function(id) {
+      if (!(id in state)) { state[id] = true; changed = true; }
+    });
+    if (changed) save(state);
+    return state;
   }
   function save(state) {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
