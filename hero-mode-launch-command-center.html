@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Mode — Launch Command Center</title>
+  <style>
+  :root {
+    --bg: #0A0C12; --bg2: #0D1017; --bg3: #12151E; --bg4: #171B26;
+    --gold: #C9A84C; --gold2: #F0C060; --gold-dim: #7A6020;
+    --text: #E2E8F0; --text2: #8892A4; --text3: #4A5568;
+    --border: #1E2433; --border2: #2A3448;
+    --green: #4ADE80; --red: #F87171; --blue: #60A5FA;
+    --yes: #22C55E; --warn: #F59E0B;
+    --r: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; font-size: 15px; min-height: 100vh; }
+
+  /* ── STICKY HEADER ── */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 14px 24px; display: flex; align-items: center; gap: 16px;
+    backdrop-filter: blur(8px);
+  }
+  .header-logo { font-weight: 900; font-size: 13px; letter-spacing: .14em; color: var(--gold); white-space: nowrap; }
+  .progress-track { flex: 1; background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 4px; transition: width .4s; }
+  .progress-label { font-size: 12px; color: var(--text2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cost-chips { display: flex; gap: 8px; flex-shrink: 0; }
+  .chip { font-size: 11px; font-family: monospace; font-weight: 700; padding: 4px 10px; border-radius: 6px; letter-spacing: .04em; white-space: nowrap; }
+  .chip-startup { background: rgba(201,168,76,.12); color: var(--gold); border: 1px solid rgba(201,168,76,.25); }
+  .chip-monthly { background: rgba(96,165,250,.10); color: var(--blue); border: 1px solid rgba(96,165,250,.2); }
+
+  /* ── LAYOUT ── */
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ── COST SUMMARY CARD ── */
+  .cost-summary {
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r);
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+    overflow: hidden; margin-bottom: 32px;
+  }
+  .cost-col { padding: 20px 24px; background: var(--bg3); }
+  .cost-col:not(:last-child) { border-right: 1px solid var(--border); }
+  .cost-eyebrow { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); font-family: monospace; margin-bottom: 6px; }
+  .cost-amount { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .cost-amount.gold { color: var(--gold); }
+  .cost-amount.blue { color: var(--blue); }
+  .cost-amount.green { color: var(--green); }
+  .cost-note { font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+  /* ── PHASE SECTIONS ── */
+  .phase { margin-bottom: 28px; }
+  .phase-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: var(--r) var(--r) 0 0;
+    cursor: pointer; user-select: none;
+  }
+  .phase-header:hover { border-color: var(--border2); }
+  .phase-icon { font-size: 18px; flex-shrink: 0; }
+  .phase-title { font-weight: 800; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; flex: 1; }
+  .phase-meta { font-size: 11px; color: var(--text2); font-family: monospace; text-align: right; }
+  .phase-count { display: inline-block; background: var(--border2); border-radius: 20px; padding: 2px 9px; font-size: 11px; font-weight: 700; color: var(--text2); }
+  .phase-count.done { background: rgba(74,222,128,.15); color: var(--green); }
+  .phase-chevron { color: var(--text3); font-size: 12px; transition: transform .2s; }
+  .phase-chevron.open { transform: rotate(180deg); }
+
+  .phase-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--r) var(--r); overflow: hidden; }
+
+  /* ── CHECKLIST ITEMS ── */
+  .item {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    align-items: start; padding: 14px 18px; gap: 0;
+    border-bottom: 1px solid var(--border); background: var(--bg2);
+    cursor: pointer; transition: background .12s;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: var(--bg3); }
+  .item.checked { opacity: .6; }
+  .item.checked .item-title { text-decoration: line-through; color: var(--text2); }
+
+  .item-cb { display: flex; align-items: center; padding-top: 2px; }
+  .cb {
+    width: 20px; height: 20px; border: 2px solid var(--border2);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all .15s; background: var(--bg3);
+  }
+  .item.checked .cb { background: var(--gold); border-color: var(--gold); }
+  .cb-check { color: #000; font-size: 13px; font-weight: 900; opacity: 0; }
+  .item.checked .cb-check { opacity: 1; }
+
+  .item-body { padding-left: 4px; }
+  .item-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.35; margin-bottom: 4px; }
+  .item-desc { font-size: 12px; color: var(--text2); line-height: 1.55; }
+  .item-desc a { color: var(--gold); text-decoration: none; }
+  .item-desc a:hover { text-decoration: underline; }
+  .item-tags { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+  .tag { font-size: 10px; font-family: monospace; font-weight: 700; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; }
+  .tag-blocker { background: rgba(248,113,113,.12); color: #F87171; border: 1px solid rgba(248,113,113,.2); }
+  .tag-free { background: rgba(74,222,128,.1); color: #4ADE80; border: 1px solid rgba(74,222,128,.18); }
+  .tag-paid { background: rgba(201,168,76,.1); color: var(--gold); border: 1px solid rgba(201,168,76,.18); }
+  .tag-monthly { background: rgba(96,165,250,.1); color: #60A5FA; border: 1px solid rgba(96,165,250,.18); }
+  .tag-apple { background: rgba(255,255,255,.06); color: #ccc; border: 1px solid rgba(255,255,255,.12); }
+  .tag-android { background: rgba(100,220,120,.1); color: #5ED08C; border: 1px solid rgba(100,220,120,.2); }
+
+  .item-cost { font-size: 12px; font-weight: 700; font-family: monospace; color: var(--text3); white-space: nowrap; padding-left: 12px; padding-top: 2px; text-align: right; line-height: 1.5; }
+  .item-cost .free { color: var(--green); }
+  .item-cost .one-time { color: var(--gold); }
+  .item-cost .per-mo { color: var(--blue); }
+
+  /* ── RESET BTN ── */
+  .footer-actions { text-align: center; margin-top: 32px; }
+  .reset-btn { background: none; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-family: monospace; letter-spacing: .06em; }
+  .reset-btn:hover { color: var(--text2); border-color: var(--border2); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .cost-summary { grid-template-columns: 1fr; }
+    .cost-col:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
+    .header { flex-wrap: wrap; gap: 8px; }
+    .cost-chips { display: none; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div class="header">
+  <div class="header-logo">⚡ HERO MODE LAUNCH</div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="progress-label" id="prog-label">0 / 0 complete</div>
+  <div class="cost-chips">
+    <div class="chip chip-startup">~$380 startup</div>
+    <div class="chip chip-monthly">~$8–33/mo</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- COST SUMMARY -->
+  <div class="cost-summary">
+    <div class="cost-col">
+      <div class="cost-eyebrow">One-time startup</div>
+      <div class="cost-amount gold">~$380</div>
+      <div class="cost-note">LLC filing + Apple Dev + Google Play + domain<br>Low end if filing in a cheap state. High end ~$650.</div>
+    </div>
+    <div class="cost-col">
+      <div class="cost-eyebrow">Monthly (pre-revenue)</div>
+      <div class="cost-amount blue">~$8/mo</div>
+      <div class="cost-note">Google Workspace email only. Everything else is free tier until you hit real usage.</div>
+    </div>
+    <div class="cost-col">
+      <div class="cost-eyebrow">Monthly (post-backend)</div>
+      <div class="cost-amount green">~$33/mo</div>
+      <div class="cost-note">Email + Supabase $25 + domain. RevenueCat and AdMob earn/scale with revenue — no fixed cost.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1: Legal & Business -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('legal')">
+      <div class="phase-icon">🏛️</div>
+      <div class="phase-title">Phase 1 — Legal &amp; Business Foundation</div>
+      <div class="phase-meta">Do this first — blocks everything else</div>
+      <span class="phase-count" id="count-legal">0/6</span>
+      <div class="phase-chevron open" id="chev-legal">▾</div>
+    </div>
+    <div class="phase-body" id="body-legal">
+
+      <div class="item" id="item-llc" onclick="toggle('llc')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Form legal entity — HeroMode LLC (or Inc.)</div>
+          <div class="item-desc">An LLC protects your personal assets from business liability. File in your state (Vermont: ~$125) or Delaware (~$90 + $300/yr franchise fee — only worth it if raising VC). Most founders use their home state. You can file online at your state's Secretary of State website in 30–60 min. This is required to open a business bank account and formally sign contracts.</div>
+          <div class="item-tags"><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-paid">One-time cost</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$125–500</span><br>one-time</div>
+      </div>
+
+      <div class="item" id="item-ein" onclick="toggle('ein')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Get an EIN (Employer Identification Number)</div>
+          <div class="item-desc">Your business's tax ID — like a Social Security number for the company. Required to open a business bank account and receive payments. Apply free and instantly at IRS.gov. Takes 5 minutes once the LLC is formed.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>IRS.gov</div>
+      </div>
+
+      <div class="item" id="item-bank" onclick="toggle('bank')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Open a business bank account</div>
+          <div class="item-desc">Keep business and personal finances completely separate — required for proper bookkeeping and tax filing. Mercury (mercury.com) is free, no minimums, built for startups, and works great for sole founders. Requires LLC docs + EIN. Apply online, approved in 1–3 days.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0/mo</span><br>Mercury</div>
+      </div>
+
+      <div class="item" id="item-domain" onclick="toggle('domain')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Secure heromode.app domain (and .com if available)</div>
+          <div class="item-desc">heromode.app is the canonical brand domain used throughout the app and privacy policy. Register it if not already owned — .app domains are ~$20/yr on Cloudflare (best price) or Google Domains. Also check heromode.com — if it's affordable, grab it to block brand squatting.</div>
+          <div class="item-tags"><span class="tag tag-paid">Annual</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">~$20/yr</span><br>Cloudflare</div>
+      </div>
+
+      <div class="item" id="item-email" onclick="toggle('email')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Set up contact_us@heromode.app business email</div>
+          <div class="item-desc">Required by both stores in the privacy policy and support contact. Google Workspace Starter is $6/user/month — gets you @heromode.app email, Google Meet, Drive, and Docs. Alternatively Cloudflare Email Routing (free) can forward @heromode.app to your personal Gmail, but this won't let you send from the address professionally. Google Workspace is the right call for a real launch.</div>
+          <div class="item-tags"><span class="tag tag-monthly">Monthly</span></div>
+        </div>
+        <div class="item-cost"><span class="per-mo">$6/mo</span><br>Google Workspace</div>
+      </div>
+
+      <div class="item" id="item-privacy-host" onclick="toggle('privacy-host')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Host privacy-policy.html at a stable public URL</div>
+          <div class="item-desc">Both stores require a privacy policy URL before submission — and it must stay live forever. The file is already written and in the repo. Enable GitHub Pages in your repo settings (Settings → Pages → Deploy from branch: master) and it'll be live at cjflowers05.github.io/hero-mode-beta/privacy-policy.html. Once you have heromode.app, point a subdomain there instead: privacy.heromode.app.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-blocker">BLOCKER</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>GitHub Pages</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 2: Developer Accounts -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('devaccts')">
+      <div class="phase-icon">🛂</div>
+      <div class="phase-title">Phase 2 — Developer Accounts</div>
+      <div class="phase-meta">Required to publish on either store</div>
+      <span class="phase-count" id="count-devaccts">0/4</span>
+      <div class="phase-chevron open" id="chev-devaccts">▾</div>
+    </div>
+    <div class="phase-body" id="body-devaccts">
+
+      <div class="item" id="item-apple-dev" onclick="toggle('apple-dev')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Apple Developer Program — enroll as an organization</div>
+          <div class="item-desc">$99/year. Enroll as an Organization (not Individual) using your LLC name — this is how "HeroMode" appears under the app instead of your personal name. Requires a D-U-N-S number (free, 2–5 day wait from Dun &amp; Bradstreet). Apply at developer.apple.com/programs. Approval takes 24–48 hrs after D-U-N-S is confirmed. Also enroll in the Small Business Program (developer.apple.com/app-store/small-business-program) to get 15% commission instead of 30% on your first $1M of revenue.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-paid">Annual</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$99/yr</span><br>apple.com</div>
+      </div>
+
+      <div class="item" id="item-asc" onclick="toggle('asc')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">App Store Connect — create app record</div>
+          <div class="item-desc">Free with your Developer account. Go to appstoreconnect.apple.com → Apps → + → New App. Set bundle ID com.heromode.app, primary language, category (Health &amp; Fitness). This creates the app record you'll submit builds to. Paste in your listing copy from store-listing.md.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Included</div>
+      </div>
+
+      <div class="item" id="item-google-dev" onclick="toggle('google-dev')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Google Play Developer account</div>
+          <div class="item-desc">$25 one-time fee. Go to play.google.com/console, sign in with a Google account (use the business Gmail once it's set up), pay the fee, complete the developer profile. Create the app: All Apps → Create App → fill in the name, language, app/game, free/paid. Bundle ID: com.heromode.app. Also enroll in the Play Media Experience Program if available — Google's equivalent of Apple's Small Business Program (15% commission).</div>
+          <div class="item-tags"><span class="tag tag-android">Android</span><span class="tag tag-blocker">BLOCKER</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">$25</span><br>one-time</div>
+      </div>
+
+      <div class="item" id="item-duns" onclick="toggle('duns')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Get a D-U-N-S number (for Apple Org enrollment)</div>
+          <div class="item-desc">Required to enroll as an Organization in the Apple Developer Program. Request free at fedgov.dnb.com/webform. Takes 2–5 business days to process. Do this immediately after forming the LLC — it's the longest wait in the whole chain. You'll need your LLC name, address, and EIN.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>2–5 day wait</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 3: Services & Infrastructure -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('services')">
+      <div class="phase-icon">⚙️</div>
+      <div class="phase-title">Phase 3 — Services &amp; Infrastructure</div>
+      <div class="phase-meta">Ads, IAP, analytics — all free tier to start</div>
+      <span class="phase-count" id="count-services">0/5</span>
+      <div class="phase-chevron open" id="chev-services">▾</div>
+    </div>
+    <div class="phase-body" id="body-services">
+
+      <div class="item" id="item-admob" onclick="toggle('admob')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Google AdMob — set up ad account + get App IDs</div>
+          <div class="item-desc">Free to set up at admob.google.com. Create an app for iOS and Android, get two App IDs. Add them to iOS Info.plist (GADApplicationIdentifier) and Android AndroidManifest.xml. AdMob pays you per impression/click — you're the publisher, not the buyer. Estimated revenue: $1–5 CPM on a fitness audience. AdMob also requires an ATT permission usage description string added to iOS Info.plist for App Tracking Transparency compliance.</div>
+          <div class="item-tags"><span class="tag tag-free">EARNS REVENUE</span><span class="tag tag-blocker">Needed before native build</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Earns ~$1–5 CPM</div>
+      </div>
+
+      <div class="item" id="item-revenuecat" onclick="toggle('revenuecat')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">RevenueCat — set up subscription management</div>
+          <div class="item-desc">Free until $2,500 MRR, then 1% of revenue. Handles all iOS + Android receipt validation, subscription status, and restore purchases through one unified API. Go to revenuecat.com → create a project → add iOS + Android apps → create a Premium Monthly entitlement → link to App Store + Play Store product IDs. Then wire hmInitiatePurchase() and hmRestorePurchase() in index.html to Purchases.purchasePackage() and Purchases.restorePurchases(). Install: npm install @revenuecat/purchases-capacitor.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE to $2.5k MRR</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>then 1% rev</div>
+      </div>
+
+      <div class="item" id="item-firebase" onclick="toggle('firebase')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Firebase — analytics + crash reporting (Crashlytics)</div>
+          <div class="item-desc">Free forever for the usage levels a new app will see. Create a project at console.firebase.google.com, add your iOS + Android apps. Firebase Analytics shows you which screens users visit, where they drop off in onboarding, and which features drive retention. Crashlytics catches errors before users complain. Install @capacitor-firebase/analytics and @capacitor-firebase/crashlytics when wiring up native builds.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Firebase free tier</div>
+      </div>
+
+      <div class="item" id="item-supabase" onclick="toggle('supabase')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Supabase — backend for P2 (cloud sync + accounts)</div>
+          <div class="item-desc">Don't set up until you have ~100 daily active users (per the roadmap). When ready: supabase.com → new project → set up auth (email/password), a workouts table, and storage for profile photos. Free tier handles 50,000 MAUs and 500MB DB. Pro plan is $25/month when you need it. Supabase uses PostgreSQL and has a JS client that plugs cleanly into the existing localStorage functions.</div>
+          <div class="item-tags"><span class="tag tag-monthly">$25/mo when live</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0 now</span><br>$25/mo at P2</div>
+      </div>
+
+      <div class="item" id="item-landing" onclick="toggle('landing')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Build heromode.app landing page</div>
+          <div class="item-desc">The URL is already in the share cards and privacy policy — it needs to be a real page before launch. Minimum viable: hero headline, 3–4 screenshots or a video, App Store + Play Store download buttons, privacy policy link. Can be built as a static HTML page hosted on GitHub Pages (free) or Cloudflare Pages (free). This is also what the share card links to — every share the app generates should land somewhere compelling.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE to host</span><span class="tag tag-blocker">Marketing blocker</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>GitHub/CF Pages</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 4: Technical Build -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('tech')">
+      <div class="phase-icon">🔧</div>
+      <div class="phase-title">Phase 4 — Technical Build &amp; Testing</div>
+      <div class="phase-meta">Native builds, signing, real device testing</div>
+      <span class="phase-count" id="count-tech">0/8</span>
+      <div class="phase-chevron open" id="chev-tech">▾</div>
+    </div>
+    <div class="phase-body" id="body-tech">
+
+      <div class="item" id="item-android-studio" onclick="toggle('android-studio')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Install Android Studio + run first Android build</div>
+          <div class="item-desc">Free download at developer.android.com/studio. First launch walks you through SDK setup (~10 min). Then: npm run cap:android → Android Studio opens with the project. Plug in an Android phone (USB, Developer Mode on) or use the emulator. Press Run ▶. This is a real Hero Mode app running natively on Android. No store account needed for this step.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span><span class="tag tag-android">Android</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Android Studio</div>
+      </div>
+
+      <div class="item" id="item-ios-build" onclick="toggle('ios-build')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">First iOS build on Mac via Xcode</div>
+          <div class="item-desc">On your Mac: git clone the repo (or copy the folder), npm install, npm run cap:ios. Xcode opens with ios/App/App.xcworkspace. Sign in with your Apple ID (Xcode → Settings → Accounts). Select your Team on the project's Signing &amp; Capabilities tab. Pick your iPhone or a simulator → Run. You'll need the $99 Apple Developer account to run on a real device beyond 7-day free provisioning. This is the step that makes it a real iPhone app.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-blocker">Needs Dev account</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Xcode (free)</div>
+      </div>
+
+      <div class="item" id="item-admob-wire" onclick="toggle('admob-wire')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Wire AdMob IDs into native manifests</div>
+          <div class="item-desc">iOS: add GADApplicationIdentifier to ios/App/App/Info.plist with your iOS AdMob App ID. Add NSUserTrackingUsageDescription string for ATT prompt. Android: add &lt;meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"&gt; to android/app/src/main/AndroidManifest.xml. Install the plugin: npm install @capacitor-community/admob, then npm run cap:sync. Without this, the free tier shows no ads.</div>
+          <div class="item-tags"><span class="tag tag-blocker">Required for ads</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Plugin only</div>
+      </div>
+
+      <div class="item" id="item-iap-wire" onclick="toggle('iap-wire')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Wire RevenueCat IAP — create products in both stores</div>
+          <div class="item-desc">In App Store Connect: Features → In-App Purchases → Subscriptions → + → Auto-Renewable Subscription. Product ID: com.heromode.app.premium.monthly. Price: $4.99/mo. In Play Console: Monetize → Subscriptions → Create. Same product ID convention. Then configure both in RevenueCat dashboard under Entitlements. Wire in index.html: hmInitiatePurchase() calls Purchases.purchasePackage() and on success calls hmSetPremium(true). hmRestorePurchase() calls Purchases.restorePurchases().</div>
+          <div class="item-tags"><span class="tag tag-blocker">Required for Premium</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>RevenueCat free</div>
+      </div>
+
+      <div class="item" id="item-signing" onclick="toggle('signing')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Set up signing certificates + keystores</div>
+          <div class="item-desc">iOS: Xcode handles this automatically with an Apple Developer account — select Automatically manage signing, pick your team. Android: Generate a release keystore in Android Studio (Build → Generate Signed Bundle/APK → Create new keystore). Store the keystore file somewhere safe and backed up — lose it and you can never update the app on Play Store. Keep the key password in a password manager.</div>
+          <div class="item-tags"><span class="tag tag-blocker">Required for release</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Included in IDEs</div>
+      </div>
+
+      <div class="item" id="item-testflight" onclick="toggle('testflight')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">TestFlight beta — distribute to 10–20 real testers</div>
+          <div class="item-desc">Free with Apple Developer account. In Xcode: Product → Archive → Distribute → App Store Connect → upload. In App Store Connect → TestFlight → add internal testers (up to 100, no review needed) or external testers (up to 10,000, light beta review ~1 day). Share the TestFlight link with real gym-goers — not just friends and family. Get 2 weeks of real usage data before the public launch.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>TestFlight</div>
+      </div>
+
+      <div class="item" id="item-play-internal" onclick="toggle('play-internal')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Play Console internal testing — Android beta distribution</div>
+          <div class="item-desc">In Android Studio: Build → Generate Signed Bundle (choose Android App Bundle .aab, not APK). Upload the .aab to Play Console → Testing → Internal Testing → Create new release. Add testers by email. They get an install link immediately — no review required. Faster and simpler than TestFlight for Android.</div>
+          <div class="item-tags"><span class="tag tag-android">Android</span><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Play Console</div>
+      </div>
+
+      <div class="item" id="item-screenshots" onclick="toggle('screenshots')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Take screenshots — all 8 scenes, correct store sizes</div>
+          <div class="item-desc">iOS requires 1320×2868 (iPhone 6.9") and optionally iPad. Android requires 1080×1920 min, plus a 1024×500 feature graphic. See store-listing.md for the full 8-scene shot list: hero intro, session tracker, logging a set, level-up moment, history, share card, theme picker, Deck of Cards. Take them on a real device or simulator. Tools like Rottenwood or AppLaunchpad can add device frames and background gradients for a polished look ($0–29).</div>
+          <div class="item-tags"><span class="tag tag-blocker">Required for submission</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0–29</span><br>Screenshot tool</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 5: Submission -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('submit')">
+      <div class="phase-icon">🚀</div>
+      <div class="phase-title">Phase 5 — Store Submission</div>
+      <div class="phase-meta">Fill out all metadata, submit for review</div>
+      <span class="phase-count" id="count-submit">0/5</span>
+      <div class="phase-chevron open" id="chev-submit">▾</div>
+    </div>
+    <div class="phase-body" id="body-submit">
+
+      <div class="item" id="item-asc-listing" onclick="toggle('asc-listing')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">App Store Connect — complete full listing (use store-listing.md)</div>
+          <div class="item-desc">Fill in: App Name ("Hero Mode: Workout Tracker"), Subtitle ("Train Like a Hero. Level Up."), Description, Keywords (94 chars), Promotional Text, Privacy Policy URL, Support URL, Marketing URL. Set Category: Health &amp; Fitness. Age Rating: 4+ (ads disclosed). Upload screenshots for all required device sizes. Upload the 1024×1024 icon (already generated). Set up your IAP subscription in Features → Subscriptions before submitting — Apple won't approve the app without an active IAP if you reference Premium in the description.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span></div>
+        </div>
+        <div class="item-cost">—</div>
+      </div>
+
+      <div class="item" id="item-play-listing" onclick="toggle('play-listing')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Play Console — complete store listing + Data Safety form</div>
+          <div class="item-desc">Fill in: App Name (50 chars), Short Description (80 chars), Full Description, screenshots, feature graphic (1024×500), App Icon (512×512 — already generated). Complete the Data Safety questionnaire (answers are in store-listing.md). Complete the Content Rating questionnaire — select "Fitness/Health" category, answer no to violence/gambling/etc. Set up the subscription product in Monetize → Subscriptions before submission.</div>
+          <div class="item-tags"><span class="tag tag-android">Android</span></div>
+        </div>
+        <div class="item-cost">—</div>
+      </div>
+
+      <div class="item" id="item-apple-review" onclick="toggle('apple-review')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Submit to Apple App Review</div>
+          <div class="item-desc">In Xcode: Archive the build → upload to App Store Connect. In ASC: select the build, attach it to the release, answer the review notes (explain what the app does, that you have a Premium subscription, that you've tested on device). Click Submit for Review. First review: 24–48 hours typically. If rejected, Apple sends a specific reason — fix it and resubmit. The most common rejection reasons for fitness apps: missing Health data justification (not applicable here), IAP setup issues, or metadata inconsistencies.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-blocker">24–48hr review</span></div>
+        </div>
+        <div class="item-cost">—</div>
+      </div>
+
+      <div class="item" id="item-google-review" onclick="toggle('google-review')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Submit to Google Play Review</div>
+          <div class="item-desc">In Play Console: upload the signed .aab to Production → Create Release. Complete all policy declarations (ads, IAP, target audience). Click Review and Publish. Google reviews typically take a few hours to a couple of days for new apps. First-time submissions go through a more thorough review. Common rejections: metadata doesn't match app behavior, missing privacy policy, or IAP product not properly configured.</div>
+          <div class="item-tags"><span class="tag tag-android">Android</span></div>
+        </div>
+        <div class="item-cost">—</div>
+      </div>
+
+      <div class="item" id="item-small-biz" onclick="toggle('small-biz')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Enroll in Apple Small Business Program (15% commission)</div>
+          <div class="item-desc">Cuts Apple's commission from 30% to 15% on your first $1M of annual App Store revenue. Apply at developer.apple.com/app-store/small-business-program after your developer account is active. Takes a few days to process. On a $4.99/mo subscription: 15% = $0.75 to Apple vs. 30% = $1.50. Over 1,000 subscribers, that's $750/mo you keep instead of losing. Apply immediately — there's no downside.</div>
+          <div class="item-tags"><span class="tag tag-apple">Apple</span><span class="tag tag-free">FREE to enroll</span></div>
+        </div>
+        <div class="item-cost"><span class="free">Saves 15%</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 6: Marketing & Growth -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('marketing')">
+      <div class="phase-icon">📣</div>
+      <div class="phase-title">Phase 6 — Marketing &amp; Growth</div>
+      <div class="phase-meta">Start before launch day, not after</div>
+      <span class="phase-count" id="count-marketing">0/7</span>
+      <div class="phase-chevron open" id="chev-marketing">▾</div>
+    </div>
+    <div class="phase-body" id="body-marketing">
+
+      <div class="item" id="item-social" onclick="toggle('social')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Claim @heromode on TikTok, Instagram, and X</div>
+          <div class="item-desc">Claim the handle now before someone else does — even if you don't post immediately. TikTok is the highest-leverage channel for a fitness app right now: workout content, level-up animations, and share card reveals are inherently visual and perform well in the algorithm. Instagram Reels for the same content. X/Twitter for dev updates and ProductHunt engagement. Start posting 2–3 weeks before launch to build a warm audience.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-tiktok-content" onclick="toggle('tiktok-content')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Film 5 pre-launch TikTok/Reels — show the gamification</div>
+          <div class="item-desc">The best performing content: (1) "I turned my gym into an RPG" — screen record the XP animation and level-up. (2) "Sharing my workout card" — show the share card appearing, the exercises listed, then the CTA. (3) "What happens when you hit Warrior rank" — the rank-up moment. (4) "Day 30 of tracking every workout" — streak visual + trophy case. (5) Deck of Cards workout reveal — flip the card, do the reps. No production budget needed. Phone on a tripod, screen recording + gym footage, trending audio.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-producthunt" onclick="toggle('producthunt')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Submit to ProductHunt on launch day</div>
+          <div class="item-desc">Schedule your ProductHunt launch for 12:01 AM Pacific on a Tuesday or Wednesday (highest traffic days). Write a clear tagline: "The workout tracker that turns every rep into XP." Have your network ready to upvote early — the first 2 hours determine if you trend. A top-10 ProductHunt day can drive hundreds of downloads. Create your maker account and draft the post at producthunt.com before launch day.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-reddit" onclick="toggle('reddit')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Post genuinely in fitness subreddits — r/fitness, r/bodybuilding, r/apps</div>
+          <div class="item-desc">Don't just spam a link. Build credibility first — comment helpfully for a week, then post. r/apps allows app showcases. r/fitness does "app recommendation" threads. Lead with the problem you're solving ("I couldn't find a tracker that made me actually want to open it every day") not "download my app." The share card feature is a natural r/fitness post: "I built a thing that turns your workout into a card you can share." Show the card. Real fitness people respond to authenticity.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-aso" onclick="toggle('aso')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">App Store Optimization (ASO) — keywords, ratings strategy</div>
+          <div class="item-desc">Your keywords in ASO are like SEO for the app store. Use AppFollow or AppFigures (free tiers) to research what terms Hevy, Strong, and Fitbod rank for, then target adjacent terms they don't own. After launch, actively ask your first 50 users to leave a review — the rating and review count are the #1 ranking factor after downloads. A single email to your beta testers saying "if you liked it, a 5-star review takes 30 seconds" will get 20–30% response rate.</div>
+          <div class="item-tags"><span class="tag tag-free">FREE tools available</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-beta-gym" onclick="toggle('beta-gym')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Find 10–20 gym-going beta testers (not friends/family)</div>
+          <div class="item-desc">Friends and family give polite, vague feedback because they're not your target user and don't want to hurt your feelings. You need people who already track workouts and are frustrated with their current app. Find them at: your actual gym (ask 5 people), local running club, CrossFit box, college rec center. Give them 2-week TestFlight access. Ask specific questions: "What confused you in the first 5 minutes?" "Did you log a workout 3+ times?" "What would make you pay $5/month?" Their answers are worth 100x friends/family feedback.</div>
+          <div class="item-tags"><span class="tag tag-blocker">Critical insight</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span></div>
+      </div>
+
+      <div class="item" id="item-influencer" onclick="toggle('influencer')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Reach out to 3–5 fitness micro-influencers for organic coverage</div>
+          <div class="item-desc">Micro-influencers (10k–100k followers) have better engagement rates than mega-influencers and are far more accessible. Find them on TikTok and Instagram in the "workout tracker" or "gym motivation" niche. DM them with a personalized pitch — not a generic PR email. Offer free Premium access and let them use it authentically for 2 weeks before posting. Don't pay upfront; offer affiliate commission (10–20% of subscriptions they drive via a RevenueCat referral link). Cost: $0 upfront, scalable on performance.</div>
+          <div class="item-tags"><span class="tag tag-free">Commission only</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0 upfront</span><br>~10–20% commission</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="reset-btn" onclick="resetAll()">↺ RESET ALL CHECKBOXES</button>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+  const STORE_KEY = 'hm-launch-checklist-v1';
+  const phases = ['legal','devaccts','services','tech','submit','marketing'];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }
+  }
+  function save(state) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function toggle(id) {
+    const state = load();
+    state[id] = !state[id];
+    save(state);
+    applyState(state);
+  }
+
+  function applyState(state) {
+    let total = 0, done = 0;
+    const phaseCounts = {};
+    phases.forEach(p => phaseCounts[p] = { total: 0, done: 0 });
+
+    document.querySelectorAll('.item[id]').forEach(el => {
+      const id = el.id.replace('item-', '');
+      const phase = el.closest('.phase-body') ? el.closest('.phase-body').id.replace('body-', '') : null;
+      total++;
+      if (phase) phaseCounts[phase].total++;
+      if (state['item-' + id] || state[id]) {
+        el.classList.add('checked');
+        done++;
+        if (phase) phaseCounts[phase].done++;
+      } else {
+        el.classList.remove('checked');
+      }
+    });
+
+    // Progress bar
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-label').textContent = done + ' / ' + total + ' complete';
+
+    // Phase counts
+    phases.forEach(p => {
+      const el = document.getElementById('count-' + p);
+      if (!el) return;
+      const { done: d, total: t } = phaseCounts[p];
+      el.textContent = d + '/' + t;
+      el.className = 'phase-count' + (d === t && t > 0 ? ' done' : '');
+    });
+  }
+
+  function togglePhase(id) {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    if (!body) return;
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : '';
+    if (chev) chev.classList.toggle('open', !open);
+  }
+
+  function resetAll() {
+    if (confirm('Reset all checkboxes?')) {
+      save({});
+      applyState({});
+    }
+  }
+
+  // Init
+  applyState(load());
+</script>
+
+</body>
+</html>

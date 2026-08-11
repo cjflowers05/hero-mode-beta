@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-10. Current SW version: v65.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-11. Current SW version: v69.*
 
 ---
 
@@ -599,13 +599,20 @@ _dc = {
 
 ### 6.12 Cardio Tracking
 
-**What it does:** Log cardio sessions (type, duration, distance), repeat last session in one tap, track cardio XP.
+**What it does:** Log cardio sessions (type, duration, distance), repeat last session in one tap, track cardio XP. Includes a live GPS dog-walk tracker with real-time pace map.
 
 **Key functions:**
 - Open cardio modal: `function openCardioModal()`
 - Save session: `function cardioCommitSession(data)` — the shared save path for both the modal and the repeat-last chip. Awards +15 XP.
 - Repeat last: `function cardioRepeatLast()` — reads `localStorage['hero-cardio-last']` and commits it immediately
 - Cardio program: `function renderCardioProgram()` — structured plans (5K trainer, etc.)
+
+**GPS Walk Tracker accuracy (v69):** `walkPositions` is built via `navigator.geolocation.watchPosition`. Three filters are applied to every incoming position before it's stored:
+1. **Accuracy gate:** skip if `pos.coords.accuracy > 35m` — rejects cell-tower and WiFi-trilateration readings
+2. **Min-distance gate:** skip if `haversineKm(prev, pos) < 3m` — eliminates stationary GPS jitter
+3. **Speed sanity check:** skip if implied speed > 25 km/h (6.94 m/s) — rejects GPS teleport jumps
+
+Without these filters, a single bad cell-tower reading can add 0.5+ miles to the distance total. Distance is accumulated by summing `haversineKm()` over all accepted `walkPositions`.
 
 ---
 
@@ -644,7 +651,7 @@ const CACHE_VERSION = 'hero-mode-v63'; // change this number on every deploy
 
 **Video files are NOT cached** by the service worker (the `if (url.pathname.includes('/MoveKit_Videos/'))` exemption — add any large video directories here to prevent cache quota exhaustion). The `assets/ui/deck_cards/` images ARE cached.
 
-**Current version:** v65 (as of 2026-08-10)
+**Current version:** v69 (as of 2026-08-11)
 
 **Dev gotcha:** if you forget to bump the SW version, existing users won't see your changes. See [Section 9](#9-key-dev-gotchas) for how to force-clear the cache during development.
 
@@ -663,7 +670,8 @@ const CACHE_VERSION = 'hero-mode-v63'; // change this number on every deploy
 
 **Key functions:**
 - `hmShare(context, dateKey, dcData)` — main entry point; builds card → bridge → share/download
-- `hmBuildShareCard(context, dateKey, dcData)` — returns `Promise<Blob>` (1080×1080 canvas PNG)
+- `hmBuildShareCard(context, dateKey, dcData)` — returns `Promise<Blob>` (dynamic-height canvas PNG)
+  - Canvas height is computed before drawing: `H = max(1080, LIST_TOP + exercises.length * 72 + 24 + 98 + 120)`. Short workouts stay at 1080px; long ones grow. All exercises are always shown — no truncation.
   - `'workout'` context: reads workout name from `.today-banner-name`, exercises from `.session-ex-row` DOM elements; circles are gold+checked for logged sets, open for planned
   - `'history'` context: reads from `slLoad()[dateKey]` log; shows sets + max weight per exercise
   - `'dc'` context: shows total reps, time, cards done, skipped count
