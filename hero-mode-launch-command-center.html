@@ -919,6 +919,60 @@
     </div>
   </div>
 
+  <!-- PHASE 8: Pre-Launch Health Data Compliance -->
+  <div class="phase">
+    <div class="phase-header" onclick="togglePhase('compliance')">
+      <div class="phase-icon">🏥</div>
+      <div class="phase-title">Phase 8 — Health Data Compliance</div>
+      <div class="phase-meta">BLOCKER — required before Apple / Google store submission</div>
+      <span class="phase-count" id="count-compliance">0/4</span>
+      <div class="phase-chevron open" id="chev-compliance">▾</div>
+    </div>
+    <div class="phase-body" id="body-compliance">
+
+      <div class="item" id="item-gdpr-consent" onclick="toggle('gdpr-consent')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Build GDPR Article 9 health data consent screen</div>
+          <div class="item-desc">The age gate is NOT a health data consent mechanism — it confirms age, not consent. GDPR Article 9 classifies workout logs, body weight, wellness check-ins, and GPS tracks as "special category" health data requiring explicit, specific, separate consent before collection. The age gate satisfies the 16+ digital consent age for most EU countries. What's still needed: a dedicated consent screen shown before the first piece of health data is recorded, listing each data type specifically and using plain language (e.g., "I consent to Hero Mode collecting my workout logs, body measurements, wellness check-ins, and GPS walk data to power the app"). Consent must be granular (user can accept some categories and decline others), recorded with a timestamp, and revocable without losing their account. Implement as a one-time post-age-gate screen on first data collection, with a consent management page in Settings. This is the biggest GDPR gap and the most likely regulatory trigger.</div>
+          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">GDPR Art. 9</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">Dev time</span><br>No $ cost</div>
+      </div>
+
+      <div class="item" id="item-data-retention" onclick="toggle('data-retention')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Implement data retention limits — GDPR Article 5(1)(e)</div>
+          <div class="item-desc">GDPR requires health data be kept "no longer than necessary for the purpose collected." Right now all data persists indefinitely until manually deleted. Before store launch, add: (1) a user-configurable data retention period in Settings (options: 6 months, 1 year, 2 years, Keep Forever — default 1 year), (2) an automatic purge that runs on app open, deleting records older than the chosen window, and (3) auto-delete for GPS walk tracks after 12 months (location data carries extra risk). The purge should be visible — show the user "12 walk sessions older than your retention period were removed." Apple's privacy review and Google Play's Data Safety form both ask whether you have a data retention policy; this is the proof that you do. Build this in Settings alongside the consent management page.</div>
+          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">GDPR Art. 5</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">Dev time</span><br>No $ cost</div>
+      </div>
+
+      <div class="item" id="item-encryption-rest" onclick="toggle('encryption-rest')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Evaluate and implement encryption at rest for health data</div>
+          <div class="item-desc">Context: iOS automatically encrypts app storage when the device is locked (iOS Data Protection, Class C). Android does the same with full-disk encryption on modern devices. The app-level PIN lock protects the UI layer but NOT the underlying localStorage when the device is unlocked. True at-rest encryption would encrypt every localStorage value using a key derived from the user's PIN via PBKDF2 (Web Crypto API). This is the right long-term approach but is a significant rewrite — every read and write path in index.html goes through decryption/encryption, and if the user forgets their PIN, data is unrecoverable. Decision point before launch: (A) Rely on OS-level encryption (iOS Data Protection + Android FDE) and document this clearly in the privacy policy — acceptable for a v1 release. (B) Build app-level PBKDF2 encryption before launch — required if you want to claim "end-to-end encrypted" in marketing. (C) Defer until cloud backend — implement encryption before any health data ever leaves the device. Recommendation: choose A for initial launch, build B/C in the cloud phase. Document the decision in the privacy policy.</div>
+          <div class="item-tags"><span class="tag tag-paid">Decision required</span><span class="tag tag-ip">Security</span></div>
+        </div>
+        <div class="item-cost"><span class="one-time">Dev time</span><br>Design choice</div>
+      </div>
+
+      <div class="item" id="item-breach-procedure" onclick="toggle('breach-procedure')">
+        <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
+        <div class="item-body">
+          <div class="item-title">Write breach notification procedure — FTC Health Breach Notification Rule</div>
+          <div class="item-desc">The FTC Health Breach Notification Rule (16 CFR Part 318) applies to apps that collect personal health records, including workout and wellness data — regardless of revenue or company size. It requires notifying affected users within 60 days of discovering a breach. Before launch: write a one-page internal procedure document that covers (1) how you define a "breach" (unauthorized access, loss, or disclosure of health data), (2) how you'd detect one (currently: any unauthorized access to the device or, in the cloud phase, database logs), (3) the 60-day notification timeline and what the user notification must contain (nature of breach, data types exposed, steps taken, contact for questions), and (4) who is responsible (you, as the sole founder). Store this document with your LLC records — it doesn't need to be public, just exist and be followed. When the Firebase/Supabase backend goes live, add technical breach detection: Cloud Function alerts on anomalous read patterns, Firestore audit logs. The FTC has issued substantial fines to small app developers for non-compliance with this rule — it is not limited to large companies.</div>
+          <div class="item-tags"><span class="tag tag-blocker">STORE BLOCKER</span><span class="tag tag-ip">FTC Rule</span></div>
+        </div>
+        <div class="item-cost"><span class="free">$0</span><br>Write the doc</div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="footer-actions">
     <button class="reset-btn" onclick="resetAll()">↺ RESET ALL CHECKBOXES</button>
   </div>
@@ -927,7 +981,7 @@
 
 <script>
   const STORE_KEY = 'hm-launch-checklist-v1';
-  const phases = ['legal','devaccts','services','tech','submit','marketing','ip'];
+  const phases = ['legal','devaccts','services','tech','submit','marketing','ip','compliance'];
 
   function load() {
     try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }

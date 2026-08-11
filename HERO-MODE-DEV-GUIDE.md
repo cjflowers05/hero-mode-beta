@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-11. Current SW version: v69.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-11. Current SW version: v70.*
 
 ---
 
@@ -1072,7 +1072,102 @@ The `_dcCardImgSrc(val, suit)` function handles all casing quirks automatically.
 - `.fx-*` — FX overlay elements (emblem, title, rings, particles)
 
 ### Service worker versions
-Format: `hero-mode-v{N}` where N is a sequential integer. Current: v59. Bump by 1 on every deploy.
+Format: `hero-mode-v{N}` where N is a sequential integer. Current: v70. Bump by 1 on every deploy.
+
+---
+
+## ⚠️ PRE-STORE-SUBMISSION COMPLIANCE BLOCKERS
+
+These four items MUST be completed before submitting to Apple App Store or Google Play. They are tracked in the Launch Command Center (Phase 8). Do not submit without resolving all four.
+
+### 1. GDPR Article 9 — Health Data Consent Screen (BLOCKER)
+
+**What:** A dedicated consent screen shown before the first health data record is stored. The age gate (16+) is NOT a consent mechanism — it confirms age only. GDPR Article 9 requires explicit, specific consent for health data as a "special category."
+
+**What to build:**
+- One-time consent screen after the age gate passes, before first workout/wellness/GPS data is collected
+- Lists each data type specifically: workout logs, body weight, wellness check-ins, GPS walk tracks
+- Granular toggles: user can accept some categories and decline others
+- Consent recorded with a timestamp to `hm-consent-record` in localStorage: `{ ts, categories: ['workout','wellness','gps','nutrition'], version: 1 }`
+- Revocable via Settings → Data & Privacy → Manage Consent (without deleting their account or workout data)
+- The consent record must be shown in the Data Safety form submitted to Google Play
+
+**Why it matters:** Largest GDPR gap. Regulatory action against fitness apps for missing Article 9 consent has been the #1 enforcement area in the EU. Apple reviewers check for this in health-adjacent apps.
+
+---
+
+### 2. Data Retention Limits — GDPR Article 5(1)(e) (BLOCKER)
+
+**What:** Health data must not be kept "longer than necessary." Currently all data persists forever.
+
+**What to build:**
+- Settings → Data & Privacy → Data Retention: options 6 months / 1 year / 2 years / Keep Forever (default: 1 year)
+- On app open, run a purge that removes workout log entries, wellness records, and nutrition logs older than the user's chosen window
+- GPS walk track data: always auto-purge after 12 months regardless of retention setting (location data carries extra regulatory risk)
+- Show a non-intrusive toast when purge runs: "3 old walk sessions removed per your data retention setting"
+- Store setting at `hm-data-retention-months` (default: 12)
+
+**Why it matters:** Google Play's Data Safety form asks for your data retention policy. "Indefinite" is a red flag that triggers manual review. Apple also scrutinizes indefinite health data retention.
+
+---
+
+### 3. Encryption at Rest — Decision Required Before Launch
+
+**Context:** iOS encrypts app storage automatically when the device is locked (iOS Data Protection, Class C). Android does the same with full-disk encryption on modern devices (Android 6+). The app-level PIN lock protects the UI — not the raw localStorage when the device is already unlocked.
+
+**Decision options:**
+
+| Option | Description | Effort | Claim in privacy policy |
+|--------|-------------|--------|------------------------|
+| A | Rely on OS-level encryption; document in privacy policy | None | "Data encrypted at rest by device OS" |
+| B | App-level PBKDF2 encryption of localStorage values using PIN-derived key | High — rewrites all read/write paths | "Data encrypted at rest with your PIN" |
+| C | Defer to cloud phase; encrypt before any data leaves the device | Medium, deferred | "Data encrypted in transit and at rest on server" |
+
+**Recommendation:** Option A for v1 launch, Option C for cloud phase. Document clearly in privacy policy that you rely on iOS Data Protection and Android FDE. This is legally defensible for a consumer fitness app and what most competitors do.
+
+**If choosing Option B:** Use `PBKDF2` with `SHA-256`, 100,000 iterations, a random per-device salt. Every `localStorage.setItem` call becomes `setEncrypted(key, value, derivedKey)` and every `getItem` becomes `getDecrypted(key, derivedKey)`. Warning: if user forgets PIN, all data is permanently unrecoverable.
+
+---
+
+### 4. Breach Notification Procedure — FTC Health Breach Notification Rule (BLOCKER)
+
+**What:** The FTC Health Breach Notification Rule (16 CFR Part 318) applies to ALL apps collecting personal health records — no minimum company size or revenue threshold. Requires notifying affected users within 60 days of discovering a breach.
+
+**What to write (internal document — not public, but must exist):**
+
+```
+HERO MODE — BREACH NOTIFICATION PROCEDURE v1.0
+Effective: [launch date]
+
+1. Definition of breach: Any unauthorized access, disclosure, acquisition, or loss of 
+   user health data, whether through device theft, unauthorized account access, or 
+   (post-backend) database intrusion.
+
+2. Detection: 
+   - Pre-backend: physical device theft or loss
+   - Post-backend: Firebase/Supabase anomaly alerts, audit logs
+   
+3. Timeline:
+   - Day 0: Breach discovered
+   - Day 1-5: Assess scope (which users, which data types, timeframe)
+   - Day 5-30: Prepare notification (nature of breach, data exposed, steps taken)
+   - Day 30-60: Notify all affected users via email (contact_us@heromode.app)
+   - Day 60: If 500+ users affected, notify FTC at ftc.gov
+   
+4. Notification must include:
+   - Nature and date of breach
+   - Types of health data involved
+   - Steps taken to address the breach
+   - Contact for user questions: contact_us@heromode.app
+   
+5. Responsible party: [Your name], HeroMode LLC
+
+6. Document storage: Keep with LLC records, review annually
+```
+
+Store this document alongside your Articles of Organization from Northwest Registered Agent. The FTC has fined small app developers for this rule — it is not limited to large companies.
+
+**Post-backend additions:** Add Cloud Function alerts for anomalous read volume (>10x normal for a user), Firestore audit logging, and a documented incident response runbook.
 
 ---
 

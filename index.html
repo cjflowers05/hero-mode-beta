@@ -1776,7 +1776,7 @@ body.perf-mode .banner-hero-emblem{display:none}
   <div class="hm-ag-form" id="hm-ag-form">
     <div class="hm-ag-eyebrow">Age Verification</div>
     <div class="hm-ag-heading">What year were you born?</div>
-    <div class="hm-ag-sub">Hero Mode requires you to be at least 15 years old to train.</div>
+    <div class="hm-ag-sub">Hero Mode requires you to be at least 16 years old to train.</div>
     <input id="hm-ag-year" class="hm-ag-field" type="number" inputmode="numeric" placeholder="YYYY" autocomplete="bday-year">
     <div class="hm-ag-err" id="hm-ag-err"></div>
     <button class="hm-ag-btn" onclick="hmAgeGateSubmit()">CONFIRM AGE</button>
@@ -1786,7 +1786,7 @@ body.perf-mode .banner-hero-emblem{display:none}
   <div class="hm-ag-blocked" id="hm-ag-blocked">
     <div class="hm-ag-block-icon">🛡️</div>
     <div class="hm-ag-block-title">Come Back Soon, Hero.</div>
-    <div class="hm-ag-block-msg" id="hm-ag-block-msg">Hero Mode is designed for ages 15 and up.</div>
+    <div class="hm-ag-block-msg" id="hm-ag-block-msg">Hero Mode is designed for ages 16 and up.</div>
   </div>
 </div>
 
@@ -1814,7 +1814,7 @@ function hmAgeGateSubmit() {
     return;
   }
   var age = curYear - year;
-  if (age >= 15) {
+  if (age >= 16) {
     localStorage.setItem('hm-age-ok', '1');
     var el = document.getElementById('hm-age-gate');
     el.classList.add('hm-ag-out');
@@ -1825,7 +1825,7 @@ function hmAgeGateSubmit() {
     var blocked = document.getElementById('hm-ag-blocked');
     blocked.classList.add('show');
     document.getElementById('hm-ag-block-msg').textContent =
-      'Hero Mode is designed for ages 15 and up. Check back in ' +
+      'Hero Mode is designed for ages 16 and up. Check back in ' +
       yearsLeft + (yearsLeft === 1 ? ' year' : ' years') + ' — the grind will be waiting.';
   }
 }
