@@ -1740,13 +1740,13 @@ body.perf-mode .banner-hero-emblem{display:none}
   setTimeout(hide, quick ? 900 : 1800);
 })();
 </script>
-<div id="theme-change-btn" onclick="showThemePicker()" title="Change Theme" role="button" tabindex="0" aria-label="Change hero theme">🎨</div>
+<div id="theme-change-btn" onclick="showThemePicker()" title="Change Skin" role="button" tabindex="0" aria-label="Change hero skin">🎨</div>
 
 <!-- THEME PICKER OVERLAY -->
 <div id="theme-picker-overlay">
   <div class="tp-eyebrow">Choose Your Identity</div>
   <div class="tp-title"><span>HERO</span><span>MODE</span></div>
-  <div class="tp-sub">Heroes Aren't Born. They're Forged.<br>Pick your theme and activate.</div>
+  <div class="tp-sub">Heroes Aren't Born. They're Forged.<br>Pick your skin and activate.</div>
   <div class="tp-grid" id="tp-grid"></div>
   <button class="tp-confirm-btn" onclick="confirmTheme(true)">ACTIVATE HERO MODE</button>
   <div class="tp-skip" onclick="confirmTheme()">Skip — decide later</div>
@@ -12722,7 +12722,7 @@ const HM_WHATS_NEW = [
   { icon:'🛡', name:'Streak Shields', desc:'Earn up to 3 Streak Shields at XP milestones. If you miss a day and open the app, you\'ll be offered the chance to spend one shield and protect your streak.' },
   { icon:'↗', name:'Share Your Workout', desc:'Tap ↗ Share Workout in the session-note card to generate a 1080×1080 summary card you can post to socials or send to friends.' },
   { icon:'🎯', name:'Workout Check-in Timing', desc:'The mood & time check-in now appears exactly when you tap your first exercise of the day — not on app open.' },
-  { icon:'🌸', name:'Signature Themes', desc:'Three new personal themes — Mom Mode, Dad Mode, and Forge — sit at the top of the theme picker with their own icons, colors, and activation flash.' },
+  { icon:'🌸', name:'Signature Skins', desc:'Three new personal skins — Mom Mode, Dad Mode, and Forge — sit at the top of the skin picker with their own icons, colors, and activation flash.' },
   { icon:'⚙️', name:'Customize Your Tabs', desc:'Tap ⚙ CUSTOMIZE at the top of Train or Wellness to show or hide any section. Your layout is saved per device.' },
   { icon:'👆', name:'Swipe Between Tabs', desc:'Swipe left or right anywhere in the app to move between tabs — Today, Train, Log, Nutrition, Recipes, Wellness, and Progress.' },
   { icon:'🎁', name:'Chest Opening Moment', desc:'Completing all 3 daily quests now triggers a full-screen animated chest opening with confetti, a bonus XP callout, and a motivational message.' },
@@ -12836,7 +12836,7 @@ function hmShowSettings() {
     + '<div class="hm-settings-row" onclick="hmToggleLight();hmCloseSettings()">'
     + '<span>' + (lightMode ? '🌙' : '☀️') + ' Display Mode</span><span style="color:var(--text3)">' + (lightMode ? 'Light → Dark' : 'Dark → Light') + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(showThemePicker,300)">'
-    + '<span>🎨 Change Theme</span><span style="color:var(--text3)">›</span></div>'
+    + '<span>🎨 Change Skin</span><span style="color:var(--text3)">›</span></div>'
     + '<div class="hm-settings-row" onclick="hmTogglePerformanceMode()" >'
     + '<span>⚡ App Mode</span><span id="hm-stg-mode-val" style="color:var(--text3)">' + (hmIsPerformanceMode() ? 'Performance' : 'Hero Mode') + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();showTab(\'wellness\',null)">'
@@ -13117,7 +13117,7 @@ const HM_TUTORIAL_STEPS = [
   { emoji:'🥦', title:'Fuel', desc:'The Fuel tab tracks water, daily macros, and meals. Tap Recipe Book to browse and generate recipes, or Wellness to log sleep, soreness, and body data.', tip:'Hit protein every day — it\'s the number that moves results.' },
   { emoji:'🏆', title:'Trophy Case', desc:'Earn badges by hitting milestones — streak days, XP totals, nutrition logs, and more. Level up to unlock new hero portraits and titles.', tip:'Tap your profile chip in the plan header to open your Trophy Case.' },
   { emoji:'📊', title:'Log & Progress', desc:'The Log tab shows your full session history — tap any date to replay a session or hit ↺ Repeat to add those exercises back to today. Progress shows all your charts and trends.', tip:'The Log tab replay lets you review every set, weight, and PR from any session.' },
-  { emoji:'🎨', title:'Make It Yours', desc:'Choose a hero theme from the 🎨 button. Toggle Performance Mode in ⚙ Settings to strip the RPG chrome for a clean, data-only view. Both settings apply instantly across all profiles.', tip:'Performance Mode keeps all the features — just removes the gamification layer.' },
+  { emoji:'🎨', title:'Make It Yours', desc:'Choose a hero skin from the 🎨 button. Toggle Performance Mode in ⚙ Settings to strip the RPG chrome for a clean, data-only view. Both settings apply instantly across all profiles.', tip:'Performance Mode keeps all the features — just removes the gamification layer.' },
 ];
 let _hmTutIdx = 0;
 
@@ -22743,9 +22743,9 @@ function hmShowUpgradeModal() {
     <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:400px;width:100%;padding:32px 28px;text-align:center">
       <div style="font-size:48px;margin-bottom:12px">⚡</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:.06em;margin-bottom:8px">HERO MODE PREMIUM</div>
-      <div style="color:var(--text2);font-size:15px;margin-bottom:24px;line-height:1.6">Unlock all hero themes, go ad-free, and support the app.</div>
+      <div style="color:var(--text2);font-size:15px;margin-bottom:24px;line-height:1.6">Unlock all hero skins, go ad-free, and support the app.</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
-        <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> All ${HM_PREMIUM_THEME_IDS.length}+ premium hero themes</div>
+        <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> All ${HM_PREMIUM_THEME_IDS.length}+ premium hero skins</div>
         <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Ad-free training</div>
         <div style="display:flex;align-items:center;gap:10px;text-align:left;color:var(--text2);font-size:14px"><span style="color:var(--gold);font-size:18px">✓</span> Exclusive features as they ship</div>
       </div>
@@ -23634,8 +23634,8 @@ const HM_TOUR_STEPS = [
   { sel:'.plan-summary-card',    emoji:'🗓️', title:'Own Your Week',      text:'Tap 🗓 WEEK to choose your rest days and move any workout to any day. Tap ✎ EDIT to change sets or add exercises, or GOALS to rebuild the whole plan.' },
   { sel:'#daily-quests',         emoji:'⚔️', title:'Daily Quests',       text:'Three missions a day. Complete them, claim the XP, and open the chest for a bonus. Small wins, every day.' },
   { sel:'#custom-workout-entry', emoji:'⚡', title:'Custom Sessions',    text:'Off-plan day? Build your own session from scratch or add extra exercises to today\'s workout.' },
-  { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Theme',      text:'Toggle sound here, and tap the 🎨 next to it to change your hero theme — colors, emblem, and even the sound effects.' },
-  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch themes, set your default rest timer, and toggle Performance Mode (strips RPG chrome for a clean data view).' },
+  { sel:'#sound-toggle-btn',     emoji:'🔊', title:'Sound & Skin',       text:'Toggle sound here, and tap the 🎨 next to it to change your hero skin — colors, emblem, and even the sound effects.' },
+  { sel:'#settings-btn',         emoji:'⚙', title:'Settings',           text:'Tap ⚙ to open Settings — toggle sound, switch skins, set your default rest timer, and toggle Performance Mode (strips RPG chrome for a clean data view).' },
   { sel:'#session-note-card',    emoji:'📝', title:'Session Notes',      text:'Leave a note about how your workout went — it auto-saves daily. Tap ↗ Share Workout to generate a shareable summary card. Streak Shields 🛡 are earned here too as you bank XP.' },
   { sel:'#tour-btn',             emoji:'✨', title:'See This Again',     text:'Tap ✨ anytime to replay this walkthrough — it always includes whatever\'s new since your last look.' },
   { sel:'.bottom-nav',           emoji:'🧭', title:'Get Around',         text:'Five tabs along the bottom: Today, Train, Log, Fuel, and Progress. Fuel holds your macros, Recipe Book, and Wellness. Log holds your session history. Charts and awards are under Progress. Go be a hero. 💪' },
