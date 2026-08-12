@@ -13888,7 +13888,7 @@ function renderMuscleRecoveryMap() {
     return '#5BC876';
   };
 
-  const themeId   = (hmActiveProfile()?.theme) || localStorage.getItem('heroTheme') || 'warrior';
+  const themeId   = (hmActiveProfile()?.theme) || localStorage.getItem('heroTheme') || 'recruit';
   const defSprite = SORE_CHAR_MAP[themeId] || 'Generic_WM';
   const spriteFn  = localStorage.getItem('soreSpriteOverride') || defSprite;
 
@@ -22928,84 +22928,88 @@ const HM_PATTERNS = {
 };
 
 const HERO_THEMES = [
+  // ── RECRUIT — default starting skin, always accessible (lock:1 = level 1+) ─
+  { id:'recruit', name:'Recruit', sub:'Unproven. Untested. Dangerous.', emblem:'🪖', pat:'grid', tone:'power', lock:1,
+    swatch:['#8A98A8','#3A4555'],
+    vars:{'--gold':'#8A98A8','--gold-dim':'#4A5568','--bg':'#0A0B0D','--bg2':'#10121A','--bg3':'#171A23','--bg4':'#1F2330','--text':'#E0E4EC','--text2':'#808A9A','--text3':'#505A6A','--border':'rgba(138,152,168,0.11)','--border2':'rgba(138,152,168,0.26)','--accent-rgb':'138,152,168'} },
   // ── SIGNATURE MODES ──────────────────────────────────────────────────────
-  { id:'mommode', name:'Mom Mode', sub:'Blush & Teal', emblem:'🌸', emblSrc:'assets/ui/mom_mode_icon.png', pat:'dots', tone:'mystic', lock:0,
+  { id:'mommode', name:'Mom Mode', sub:'Blush & Teal', emblem:'🌸', emblSrc:'assets/ui/mom_mode_icon.png', pat:'dots', tone:'mystic', lock:2,
     swatch:['#D4A5AF','#4ECDC4'],
     vars:{'--gold':'#D4A5AF','--gold-dim':'#A06878','--bg':'#0E0A0B','--bg2':'#160D0F','--bg3':'#1E1114','--bg4':'#261518','--text':'#F0E8EA','--text2':'#B09099','--text3':'#7A6068','--border':'rgba(212,165,175,0.11)','--border2':'rgba(212,165,175,0.25)','--accent-rgb':'212,165,175'} },
-  { id:'dadmode', name:'Dad Mode', sub:'Teal & Steel', emblem:'🛡️', emblSrc:'assets/ui/dad_mode_icon.png', pat:'scales', tone:'power', lock:0,
+  { id:'dadmode', name:'Dad Mode', sub:'Teal & Steel', emblem:'🛡️', emblSrc:'assets/ui/dad_mode_icon.png', pat:'scales', tone:'power', lock:2,
     swatch:['#4ECDC4','#1B4F8A'],
     vars:{'--gold':'#4ECDC4','--gold-dim':'#2BAAAA','--bg':'#060A10','--bg2':'#0C1420','--bg3':'#111D2E','--bg4':'#17253C','--text':'#EBF0F8','--text2':'#8090B0','--text3':'#507090','--border':'rgba(78,205,196,0.13)','--border2':'rgba(78,205,196,0.30)','--accent-rgb':'78,205,196'} },
-  { id:'forge', name:'Forge', sub:'Electric & Void', emblem:'⚒️', emblSrc:'assets/ui/anvil_icon.png', pat:'rays', tone:'power', lock:0,
+  { id:'forge', name:'Forge', sub:'Electric & Void', emblem:'⚒️', emblSrc:'assets/ui/anvil_icon.png', pat:'rays', tone:'power', lock:2,
     swatch:['#29B6F6','#050A12'],
     vars:{'--gold':'#29B6F6','--gold-dim':'#0277BD','--bg':'#050A12','--bg2':'#09121E','--bg3':'#0E1A2A','--bg4':'#122135','--text':'#E8F2FF','--text2':'#7090B8','--text3':'#4A6080','--border':'rgba(41,182,246,0.13)','--border2':'rgba(41,182,246,0.30)','--accent-rgb':'41,182,246'} },
   // ── STANDARD THEMES ──────────────────────────────────────────────────────
-  { id:'warrior', name:'Warrior', sub:'Crimson & Steel', emblem:'⚔️', pat:'rays', tone:'power',
+  { id:'warrior', name:'Warrior', sub:'Crimson & Steel', emblem:'⚔️', pat:'rays', tone:'power', lock:2,
     swatch:['#E53935','#B71C1C'],
     vars:{'--gold':'#E53935','--gold-dim':'#B71C1C','--bg':'#0A0808','--bg2':'#110D0D','--bg3':'#1A1010','--bg4':'#221414','--text':'#F2EEEE','--text2':'#9A8E8E','--text3':'#6D6060','--border':'rgba(229,57,53,0.12)','--border2':'rgba(229,57,53,0.28)','--accent-rgb':'229,57,53'} },
-  { id:'champion', name:'Champion', sub:'Gold & Black', emblem:'🏆', pat:'rays', tone:'light',
+  { id:'champion', name:'Champion', sub:'Gold & Black', emblem:'🏆', pat:'rays', tone:'light', lock:2,
     swatch:['#FFD600','#FFA000'],
     vars:{'--gold':'#FFD600','--gold-dim':'#FFA000','--bg':'#090800','--bg2':'#100F00','--bg3':'#181600','--bg4':'#201D00','--text':'#F5F2E0','--text2':'#96916A','--text3':'#6F6949','--border':'rgba(255,214,0,0.12)','--border2':'rgba(255,214,0,0.28)','--accent-rgb':'255,214,0'} },
-  { id:'guardian', name:'Guardian', sub:'Electric Blue', emblem:'🛡️', pat:'grid', tone:'power',
+  { id:'guardian', name:'Guardian', sub:'Electric Blue', emblem:'🛡️', pat:'grid', tone:'power', lock:2,
     swatch:['#2196F3','#0D47A1'],
     vars:{'--gold':'#2196F3','--gold-dim':'#0D47A1','--bg':'#070A0D','--bg2':'#0C1116','--bg3':'#101820','--bg4':'#141F2A','--text':'#EAF0F5','--text2':'#8898A6','--text3':'#5E6E7B','--border':'rgba(33,150,243,0.12)','--border2':'rgba(33,150,243,0.28)','--accent-rgb':'33,150,243'} },
-  { id:'shadow', name:'Shadow', sub:'Deep Purple', emblem:'🌙', pat:'dots', tone:'mystic',
+  { id:'shadow', name:'Shadow', sub:'Deep Purple', emblem:'🌙', pat:'dots', tone:'mystic', lock:2,
     swatch:['#9C27B0','#4A148C'],
     vars:{'--gold':'#B14FC4','--gold-dim':'#6A1B7A','--bg':'#0A070C','--bg2':'#110D14','--bg3':'#18121D','--bg4':'#201826','--text':'#F0EAF3','--text2':'#9A8EA2','--text3':'#6C5F74','--border':'rgba(156,39,176,0.14)','--border2':'rgba(156,39,176,0.30)','--accent-rgb':'177,79,196'} },
-  { id:'titan', name:'Titan', sub:'Silver & Black', emblem:'🏔️', pat:'grid', tone:'power',
+  { id:'titan', name:'Titan', sub:'Silver & Black', emblem:'🏔️', pat:'grid', tone:'power', lock:2,
     swatch:['#B0BEC5','#546E7A'],
     vars:{'--gold':'#B0BEC5','--gold-dim':'#546E7A','--bg':'#090A0B','--bg2':'#0F1112','--bg3':'#161819','--bg4':'#1D2021','--text':'#F0F2F3','--text2':'#93999D','--text3':'#666E72','--border':'rgba(176,190,197,0.12)','--border2':'rgba(176,190,197,0.28)','--accent-rgb':'176,190,197'} },
-  { id:'vigilante', name:'Vigilante', sub:'Red · Black · Blue', emblem:'🕶️', pat:'grid', tone:'power',
+  { id:'vigilante', name:'Vigilante', sub:'Red · Black · Blue', emblem:'🕶️', pat:'grid', tone:'power', lock:2,
     swatch:['#E53935','#1565C0'],
     vars:{'--gold':'#EF4444','--gold-dim':'#1565C0','--bg':'#08080C','--bg2':'#0E0E14','--bg3':'#14141C','--bg4':'#1A1A24','--text':'#F1F0F4','--text2':'#9694A0','--text3':'#696673','--border':'rgba(239,68,68,0.13)','--border2':'rgba(239,68,68,0.30)','--accent-rgb':'239,68,68'} },
-  { id:'paragon', name:'Paragon', sub:'Red · Yellow · Blue', emblem:'🦅', pat:'rays', tone:'light',
+  { id:'paragon', name:'Paragon', sub:'Red · Yellow · Blue', emblem:'🦅', pat:'rays', tone:'light', lock:2,
     swatch:['#1E88E5','#D32F2F'],
     vars:{'--gold':'#42A5F5','--gold-dim':'#C62828','--bg':'#07090D','--bg2':'#0C1016','--bg3':'#11161F','--bg4':'#161D28','--text':'#EBF1F7','--text2':'#8A97A6','--text3':'#5F6C7B','--border':'rgba(66,165,245,0.13)','--border2':'rgba(66,165,245,0.30)','--accent-rgb':'66,165,245'} },
-  { id:'goliath', name:'Goliath', sub:'Green & Purple', emblem:'💪', pat:'scales', tone:'power',
+  { id:'goliath', name:'Goliath', sub:'Green & Purple', emblem:'💪', pat:'scales', tone:'power', lock:2,
     swatch:['#43A047','#6A1B9A'],
     vars:{'--gold':'#4CAF50','--gold-dim':'#2E7031','--bg':'#080A08','--bg2':'#0D110D','--bg3':'#121812','--bg4':'#182018','--text':'#EDF3ED','--text2':'#8FA090','--text3':'#637164','--border':'rgba(76,175,80,0.13)','--border2':'rgba(76,175,80,0.30)','--accent-rgb':'76,175,80'} },
-  { id:'ascendant', name:'Ascendant', sub:'Gold · Orange · Blue', emblem:'🔥', pat:'rays', tone:'light', lock:0,
+  { id:'ascendant', name:'Ascendant', sub:'Gold · Orange · Blue', emblem:'🔥', pat:'rays', tone:'light', lock:2,
     swatch:['#FFB300','#FF6F00'],
     vars:{'--gold':'#FFB300','--gold-dim':'#FF6F00','--bg':'#0A0803','--bg2':'#110E06','--bg3':'#191408','--bg4':'#211B0B','--text':'#F5F0E2','--text2':'#9C9270','--text3':'#726A4F','--border':'rgba(255,179,0,0.13)','--border2':'rgba(255,179,0,0.30)','--accent-rgb':'255,179,0'} },
-  { id:'valkyrie', name:'Valkyrie', sub:'Rose & Blush', emblem:'🌸', pat:'dots', tone:'light',
+  { id:'valkyrie', name:'Valkyrie', sub:'Rose & Blush', emblem:'🌸', pat:'dots', tone:'light', lock:2,
     swatch:['#FF5C8D','#C2185B'],
     vars:{'--gold':'#FF5C8D','--gold-dim':'#C2185B','--bg':'#0C080A','--bg2':'#130D10','--bg3':'#1B1216','--bg4':'#24171D','--text':'#F5EDF0','--text2':'#A08E96','--text3':'#745F6A','--border':'rgba(255,92,141,0.13)','--border2':'rgba(255,92,141,0.30)','--accent-rgb':'255,92,141'} },
-  { id:'phoenix', name:'Phoenix', sub:'Ember & Coral', emblem:'🪶', pat:'rays', tone:'light', lock:0,
+  { id:'phoenix', name:'Phoenix', sub:'Ember & Coral', emblem:'🪶', pat:'rays', tone:'light', lock:2,
     swatch:['#FF6B4A','#D84315'],
     vars:{'--gold':'#FF6B4A','--gold-dim':'#D84315','--bg':'#0B0806','--bg2':'#130D0A','--bg3':'#1B120E','--bg4':'#241812','--text':'#F5EEEA','--text2':'#A09088','--text3':'#75655A','--border':'rgba(255,107,74,0.13)','--border2':'rgba(255,107,74,0.30)','--accent-rgb':'255,107,74'} },
-  { id:'mystic', name:'Mystic', sub:'Magenta & Violet', emblem:'🔮', pat:'stars', tone:'mystic', lock:0,
+  { id:'mystic', name:'Mystic', sub:'Magenta & Violet', emblem:'🔮', pat:'stars', tone:'mystic', lock:2,
     swatch:['#D94FD9','#7B1FA2'],
     vars:{'--gold':'#D94FD9','--gold-dim':'#8E24AA','--bg':'#0B070B','--bg2':'#120C12','--bg3':'#1A111A','--bg4':'#231623','--text':'#F4ECF4','--text2':'#A08EA0','--text3':'#745F74','--border':'rgba(217,79,217,0.13)','--border2':'rgba(217,79,217,0.30)','--accent-rgb':'217,79,217'} },
-  { id:'siren', name:'Siren', sub:'Aqua & Teal', emblem:'🌊', pat:'waves', tone:'aqua',
+  { id:'siren', name:'Siren', sub:'Aqua & Teal', emblem:'🌊', pat:'waves', tone:'aqua', lock:2,
     swatch:['#2BD9C7','#00838F'],
     vars:{'--gold':'#2BD9C7','--gold-dim':'#00838F','--bg':'#060A0A','--bg2':'#0B1211','--bg3':'#101918','--bg4':'#152120','--text':'#EAF4F3','--text2':'#88A09D','--text3':'#5F7471','--border':'rgba(43,217,199,0.13)','--border2':'rgba(43,217,199,0.30)','--accent-rgb':'43,217,199'} },
-  { id:'starlight', name:'Starlight', sub:'Lavender & Pearl', emblem:'✨', pat:'stars', tone:'mystic',
+  { id:'starlight', name:'Starlight', sub:'Lavender & Pearl', emblem:'✨', pat:'stars', tone:'mystic', lock:2,
     swatch:['#B79CFF','#7E57C2'],
     vars:{'--gold':'#B79CFF','--gold-dim':'#7E57C2','--bg':'#09080D','--bg2':'#0F0E15','--bg3':'#16141E','--bg4':'#1D1A27','--text':'#F1EFF6','--text2':'#9A94A8','--text3':'#6A637C','--border':'rgba(183,156,255,0.14)','--border2':'rgba(183,156,255,0.30)','--accent-rgb':'183,156,255'} },
-  { id:'huntress', name:'Huntress', sub:'Emerald & Jade', emblem:'🏹', pat:'scales', tone:'aqua',
+  { id:'huntress', name:'Huntress', sub:'Emerald & Jade', emblem:'🏹', pat:'scales', tone:'aqua', lock:2,
     swatch:['#34C97A','#00695C'],
     vars:{'--gold':'#34C97A','--gold-dim':'#00695C','--bg':'#070A08','--bg2':'#0C120E','--bg3':'#111914','--bg4':'#16211A','--text':'#ECF4EF','--text2':'#8CA094','--text3':'#617468','--border':'rgba(52,201,122,0.13)','--border2':'rgba(52,201,122,0.30)','--accent-rgb':'52,201,122'} },
-  { id:'viking', name:'Viking', sub:'Frost & Iron', emblem:'🪓', pat:'waves', tone:'aqua', lock:0,
+  { id:'viking', name:'Viking', sub:'Frost & Iron', emblem:'🪓', pat:'waves', tone:'aqua', lock:2,
     swatch:['#7BB8CE','#C8A84B'],
     vars:{'--gold':'#7BB8CE','--gold-dim':'#2E6080','--bg':'#080B0E','--bg2':'#0D1318','--bg3':'#121C24','--bg4':'#18242E','--text':'#EBF2F6','--text2':'#8AAAB8','--text3':'#5D7A88','--border':'rgba(123,184,206,0.13)','--border2':'rgba(123,184,206,0.30)','--accent-rgb':'123,184,206'} },
-  { id:'spartan', name:'Spartan', sub:'Gold & Crimson', emblem:'🛡️', pat:'rays', tone:'power', lock:0,
+  { id:'spartan', name:'Spartan', sub:'Gold & Crimson', emblem:'🛡️', pat:'rays', tone:'power', lock:2,
     swatch:['#D4A84B','#8B1A1A'],
     vars:{'--gold':'#D4A84B','--gold-dim':'#8B1A1A','--bg':'#0A0703','--bg2':'#120E06','--bg3':'#1A1508','--bg4':'#221C0B','--text':'#F5EFE0','--text2':'#A08B6A','--text3':'#74634A','--border':'rgba(212,168,75,0.14)','--border2':'rgba(212,168,75,0.30)','--accent-rgb':'212,168,75'} },
-  { id:'samurai', name:'Samurai', sub:'Red & Gold', emblem:'⛩️', pat:'rays', tone:'power', lock:0,
+  { id:'samurai', name:'Samurai', sub:'Red & Gold', emblem:'⛩️', pat:'rays', tone:'power', lock:2,
     swatch:['#CC1F1F','#D4A017'],
     vars:{'--gold':'#D4A017','--gold-dim':'#8B5C00','--bg':'#0B0907','--bg2':'#130F0A','--bg3':'#1C1610','--bg4':'#241C15','--text':'#F3EFE5','--text2':'#9E9278','--text3':'#726854','--border':'rgba(212,160,23,0.14)','--border2':'rgba(212,160,23,0.30)','--accent-rgb':'212,160,23'} },
-  { id:'ronin', name:'Ronin', sub:'No Master, No Mercy', emblem:'⚔️', pat:'slash', tone:'crimson', lock:0,
+  { id:'ronin', name:'Ronin', sub:'No Master, No Mercy', emblem:'⚔️', pat:'slash', tone:'crimson', lock:2,
     swatch:['#C0392B','#3A3A3A'],
     vars:{'--gold':'#C0392B','--gold-dim':'#7B0000','--bg':'#0A0808','--bg2':'#120E0E','--bg3':'#1A1414','--bg4':'#221A1A','--text':'#F0E8E8','--text2':'#A08888','--text3':'#6A5050','--border':'rgba(192,57,43,0.13)','--border2':'rgba(192,57,43,0.30)','--accent-rgb':'192,57,43'} },
-  { id:'ranger', name:'Ranger', sub:'Forest & Ember', emblem:'🎯', pat:'scales', tone:'aqua', lock:0,
+  { id:'ranger', name:'Ranger', sub:'Forest & Ember', emblem:'🎯', pat:'scales', tone:'aqua', lock:2,
     swatch:['#E8892E','#5D8A3C'],
     vars:{'--gold':'#E8892E','--gold-dim':'#9A4B18','--bg':'#0A0805','--bg2':'#120F08','--bg3':'#1A150B','--bg4':'#221C10','--text':'#F5EEE2','--text2':'#A09075','--text3':'#746852','--border':'rgba(232,137,46,0.13)','--border2':'rgba(232,137,46,0.30)','--accent-rgb':'232,137,46'} },
-  { id:'alpha', name:'Alpha', sub:'Onyx & Ember', emblem:'🦁', pat:'rays', tone:'power',
+  { id:'alpha', name:'Alpha', sub:'Onyx & Ember', emblem:'🦁', pat:'rays', tone:'power', lock:2,
     swatch:['#FF6B00','#CC3300'],
     vars:{'--gold':'#FF6B00','--gold-dim':'#CC3300','--bg':'#060504','--bg2':'#0D0907','--bg3':'#150E0A','--bg4':'#1C130D','--text':'#F5EEE5','--text2':'#A08A70','--text3':'#74604A','--border':'rgba(255,107,0,0.14)','--border2':'rgba(255,107,0,0.32)','--accent-rgb':'255,107,0'} },
-  { id:'nomad', name:'Nomad', sub:'Desert Sand & Sienna', emblem:'🗺️', pat:'dots', tone:'power',
+  { id:'nomad', name:'Nomad', sub:'Desert Sand & Sienna', emblem:'🗺️', pat:'dots', tone:'power', lock:2,
     swatch:['#C8935A','#8B4E2A'],
     vars:{'--gold':'#C8935A','--gold-dim':'#8B4E2A','--bg':'#0C0904','--bg2':'#140E07','--bg3':'#1D140A','--bg4':'#261A0E','--text':'#F4EDDE','--text2':'#9E8C6E','--text3':'#73624A','--border':'rgba(200,147,90,0.14)','--border2':'rgba(200,147,90,0.30)','--accent-rgb':'200,147,90'} },
-  { id:'sentinel', name:'Sentinel', sub:'Olive & Steel', emblem:'🎖️', pat:'grid', tone:'power',
+  { id:'sentinel', name:'Sentinel', sub:'Olive & Steel', emblem:'🎖️', pat:'grid', tone:'power', lock:2,
     swatch:['#7B9B4A','#4A5E2A'],
     vars:{'--gold':'#7B9B4A','--gold-dim':'#3A4A2A','--bg':'#080A07','--bg2':'#0E120D','--bg3':'#141A12','--bg4':'#1B2218','--text':'#EDF2E8','--text2':'#8CA080','--text3':'#617259','--border':'rgba(123,155,74,0.14)','--border2':'rgba(123,155,74,0.30)','--accent-rgb':'123,155,74'} },
   // ── LOCKED THEMES — ascending by level ──────────────────────────
@@ -23127,7 +23131,7 @@ function hmProfilesLoad(){
     if (p && p.list && p.list.length) return p;
   } catch(e) {}
   // First run / migration: adopt legacy single-user data into profile p1
-  const theme = localStorage.getItem('heroTheme') || 'warrior';
+  const theme = localStorage.getItem('heroTheme') || 'recruit';
   const p = { active:'p1', list:[{ id:'p1', name:'Hero', emoji:'🦸', theme, created: new Date().toISOString().slice(0,10) }] };
   try {
     const legacyXP = localStorage.getItem('hero-xp');
@@ -23174,8 +23178,8 @@ function hmSwitchProfile(id){
     else localStorage.removeItem('heromode_goals_v1');
   } catch(e) {}
   // Restore this hero's theme — the animations, emblem, and sound follow the profile
-  localStorage.setItem('heroTheme', prof.theme || 'warrior');
-  applyTheme(prof.theme || 'warrior');
+  localStorage.setItem('heroTheme', prof.theme || 'recruit');
+  applyTheme(prof.theme || 'recruit');
   if (typeof hmApplyPlan === 'function') hmApplyPlan(true);
   hmRenderXP(); hmRenderBadges(); hmRenderProfileChip();
   hmCloseTrophyCase();
@@ -23297,7 +23301,7 @@ function hmRemoveMyPhoto(){
 function hmCreateProfile(name){
   const p = hmProfilesLoad();
   const id = 'p' + (Date.now() % 1000000);
-  const rec = { id, name: name || 'Hero', theme:'warrior', created: new Date().toISOString().slice(0,10) };
+  const rec = { id, name: name || 'Hero', theme:'recruit', created: new Date().toISOString().slice(0,10) };
   rec.photo = _npPhoto || 'assets/ui/heroes/rookie_hero_male.png';
   _npPhoto = null;
   p.list.push(rec);
@@ -23728,6 +23732,7 @@ function hmXP(kind, pts, meta){
     const _lvEID = {spiderman:'vigilante',superman:'paragon',hulk:'goliath',supersaiyan:'ascendant',thor:'stormcaller',wick:'phantom'};
     setTimeout(() => { hmHeroFX('LEVEL ' + after.lvl, hmRankFor(after.lvl), theme.emblSrc || _lvEID[theme.id] || theme.id); hmSfx('level'); }, 350);
     setTimeout(() => { if (typeof showToast === 'function') showToast('⬆️ Level ' + after.lvl + ' — ' + hmRankFor(after.lvl) + '!', 'success'); }, 1800);
+    if (after.lvl === 2 && before === 1) setTimeout(() => { if (typeof showToast === 'function') showToast('🎨 Hero Skins unlocked! Tap 🎨 to choose your identity.', 'info'); }, 3200);
     // Story chapters — comic cut-scene unlocks at level milestones
     const chapter = HM_STORY.find(ch => after.lvl >= ch.lvl && !s.story[ch.id]);
     if (chapter) {
@@ -25508,7 +25513,7 @@ function selectTheme(id) {
 }
 
 function confirmTheme(activated) {
-  const id = _selectedThemeId || 'warrior';
+  const id = _selectedThemeId || 'recruit';
   localStorage.setItem('heroTheme', id);
   // Theme belongs to the active profile — their animations follow them
   try {
@@ -25532,12 +25537,15 @@ function confirmTheme(activated) {
 }
 
 function showThemePicker() {
-  // Rebuild every open — lock state depends on the active profile's level,
-  // which can change mid-session (leveling up, switching heroes).
   buildThemePicker();
   const overlay = document.getElementById('theme-picker-overlay');
   if (overlay) overlay.classList.remove('hidden');
-  const saved = (hmActiveProfile() || {}).theme || localStorage.getItem('heroTheme') || 'warrior';
+  const lvl = hmLevelInfo(hmXPLoad().xp).lvl;
+  const sub = overlay && overlay.querySelector('.tp-sub');
+  if (sub) sub.innerHTML = lvl < 2
+    ? '🪖 You\'re a Recruit — reach Level 2 to choose your hero skin.'
+    : 'Heroes Aren\'t Born. They\'re Forged.<br>Pick your skin and activate.';
+  const saved = (hmActiveProfile() || {}).theme || localStorage.getItem('heroTheme') || 'recruit';
   selectTheme(saved);
 }
 
@@ -25573,7 +25581,7 @@ function showThemePicker() {
     const overlay = document.getElementById('theme-picker-overlay');
     if (overlay) overlay.classList.add('hidden');
   } else {
-    selectTheme('warrior');
+    selectTheme('recruit');
   }
   // settings button
   if (!document.getElementById('settings-btn')) {

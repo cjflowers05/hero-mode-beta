@@ -361,39 +361,47 @@ Key functions: `hmPhaseStateLoad()`, `hmPhaseStateSave(s)`, `hmPhaseProgress()`,
 
 ---
 
-### 6.5 Themes & Sound
+### 6.5 Skins & Sound
 
-**What it does:** 15 visual themes that change colors, header pattern, emblem, and sound tone. Three themes are level-gated.
+**What it does:** 30+ hero skins ("themes" in code) that change colors, header pattern, emblem, and sound tone. Skins are gated by level — all skins require Level 2+ except the starting "Recruit" skin (Level 1).
+
+**Skin unlock system:**
+- `recruit` — always unlocked (`lock:1`), steel/charcoal palette, the default for all new users
+- All other standard/signature skins — `lock:2` (unlock at Level 2)
+- `stormcaller`, `amazon` — `lock:25`
+- `apex` — `lock:30`
+- `phantom` — `lock:50`
+- At Level 2, a toast fires: "🎨 Hero Skins unlocked! Tap 🎨 to choose your identity."
+- The skin picker sub-text changes dynamically: Level 1 shows a Recruit message; Level 2+ shows the normal tagline.
 
 **Where to find it:** Block 3, search:
-- `const HERO_THEMES` — array of all 15 theme definitions
-- `function hmThemeUnlocked(t)` — returns true if user's level meets the theme requirement
-- `function showThemePicker()` — opens the theme picker overlay
-- `function hmApplyTheme(id)` — applies a theme (sets CSS variables + saves)
+- `const HERO_THEMES` — array of all 30+ skin definitions (recruit is first)
+- `function hmThemeUnlocked(t)` — gate: `!t.lock` OR profile already wears it OR `level >= t.lock`
+- `function showThemePicker()` — opens the picker, updates sub-text based on current level
+- `function applyTheme(id)` — applies a skin (sets CSS variables + saves)
 - `function hmSfx(name)` — plays a sound effect (done / badge / trophy / level / pr / tap)
 - `function hmAudioUnlock()` — must be called on first user gesture (iOS audio restriction)
 
-**Theme definition shape:**
+**Skin definition shape:**
 ```js
 {
-  id: "warrior",
-  name: "Warrior",
-  accent: "#C9A84C",          // gold color
-  accentRgb: "201,168,76",    // for rgba() usage
-  bg: "#0A0C10",
-  bg2: "#12151C",
-  // ...more color tokens...
-  emblem: "⚔️",               // or path to image
-  patImg: "...",              // CSS background-image for header pattern
-  tone: 440,                  // base frequency for WebAudio SFX
-  lockLevel: null             // null = always available; 8/15/20 = locked
+  id: 'warrior',
+  name: 'Warrior',
+  sub: 'Crimson & Steel',     // tagline shown in picker
+  emblem: '⚔️',               // emoji OR emblSrc path for image emblems
+  pat: 'rays',                // header bg pattern: rays|grid|dots|scales|waves|stars|slash
+  tone: 'power',              // audio tone family
+  lock: 2,                    // level required; 1 = always (recruit only); omit = never (don't omit)
+  swatch: ['#E53935','#B71C1C'], // picker color chips [primary, secondary]
+  vars: { '--gold': '#E53935', '--gold-dim': '#B71C1C', '--bg': '#0A0808', ... }
 }
 ```
 
-**Adding a new theme:**
+**Adding a new skin:**
 1. Add to `HERO_THEMES` array with all required color tokens
 2. Keep `--text3` around L≈40% HSL for legibility (learned from bug history)
-3. If level-gated, set `lockLevel` and it auto-locks/unlocks via `hmThemeUnlocked()`
+3. Set `lock:2` (or higher) — never omit the lock property on standard skins
+4. Skin auto-locks/unlocks via `hmThemeUnlocked()` which compares `hmLevelInfo(xp).lvl >= t.lock`
 
 **Sound effects** are generated with WebAudio API — no audio files needed. `hmSfx('done')` plays a completion tone, `'trophy'` plays a fanfare, etc.
 
