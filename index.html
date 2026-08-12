@@ -4279,6 +4279,7 @@ function hmRenderTrain(){
   let html = '';
   // plan summary + edit
   const editCount = hmPlanEditsCount();
+  html += hmWildcardCardHTML();
   html += '<div class="plan-summary-card"><div class="plan-summary-txt">' +
     '<div class="plan-summary-label">Your Plan' + (editCount ? ' · ' + editCount + ' edit' + (editCount > 1 ? 's' : '') : '') + '</div>' +
     '<div class="plan-summary-val">' + (g.goal === 'endurance' ? '🏁 ' + (HM_EVENT_LABEL[g.event] || '5K') : HM_GOAL_LABEL[g.goal]) + ' · ' + hmScheduleTrainCount(g) + ' days/wk · ' + g.session + ' min · ' + g.weeks + ' weeks</div></div>' +
@@ -4286,7 +4287,6 @@ function hmRenderTrain(){
     '<div class="plan-edit-btn" onclick="hmTargetMuscle()" title="Add focused muscle training to your plan">🎯 TARGET</div>' +
     '<div class="plan-edit-btn' + (window._hmEditMode ? ' on' : '') + '" onclick="hmToggleEditMode()" title="Customize exercises">' + (window._hmEditMode ? '✓ DONE' : '✎ EDIT') + '</div>' +
     '<div class="plan-edit-btn" onclick="gpOpen()">GOALS</div></div>';
-  html += hmWildcardCardHTML();
   if (window._hmEditMode) {
     html += '<div style="display:flex;gap:8px;align-items:center;background:rgba(var(--accent-rgb),.06);border:1px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:12px">' +
       '<div style="flex:1;font-size:11.5px;color:var(--text2);line-height:1.45">⇄ swap · ✎ sets & reps · ✕ remove · add exercises at the bottom of each day. Your edits stick, even if you rebuild goals.</div>' +
