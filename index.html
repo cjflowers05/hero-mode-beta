@@ -2333,6 +2333,40 @@ function hmOpenConsentManager() {
 #hm-ex-picker.open{display:block}
 #hm-ex-picker .xp-sheet{position:absolute;left:0;right:0;bottom:0;top:20%;background:var(--bg);border-radius:22px 22px 0 0;border-top:1px solid var(--border2);max-width:680px;margin:0 auto;padding:6px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column}
 .hm-exp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+/* Muscle Target Add-On */
+#hm-muscle-picker{position:fixed;inset:0;z-index:9983;background:rgba(0,0,0,.62);backdrop-filter:blur(3px);display:none}
+#hm-muscle-picker.open{display:block}
+#hm-muscle-picker .mp-sheet{position:absolute;left:0;right:0;bottom:0;top:15%;background:var(--bg);border-radius:22px 22px 0 0;border-top:1px solid var(--border2);max-width:680px;margin:0 auto;padding:8px 16px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;overflow:hidden;position:relative}
+.mp-step-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:var(--text);margin-bottom:4px}
+.mp-step-sub{font-size:11.5px;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.mp-muscle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-bottom:8px}
+.mp-mchip{padding:12px 8px;border-radius:12px;border:1px solid var(--border2);background:rgba(255,255,255,.03);cursor:pointer;text-align:center;transition:border-color .15s,background .15s;user-select:none}
+.mp-mchip:hover,.mp-mchip.sel{border-color:var(--gold);background:rgba(var(--accent-rgb),.1)}
+.mp-mchip-icon{font-size:22px;margin-bottom:3px}
+.mp-mchip-label{font-size:10.5px;font-family:'DM Mono',monospace;letter-spacing:.04em;color:var(--text2);line-height:1.2}
+.mp-mchip.sel .mp-mchip-label{color:var(--gold)}
+.mp-mchip-count{font-size:9px;color:var(--text3);margin-top:3px}
+.mp-back{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;margin-bottom:10px;display:inline-flex;align-items:center;gap:5px}
+.mp-back:hover{color:var(--text)}
+.mp-ex-row{display:flex;align-items:center;gap:10px;padding:11px 6px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;user-select:none}
+.mp-ex-row:hover{background:rgba(255,255,255,.03)}
+.mp-ex-row.sel{background:rgba(var(--accent-rgb),.09)}
+.mp-ex-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:border-color .15s,background .15s;color:var(--gold)}
+.mp-ex-row.sel .mp-ex-check{border-color:var(--gold);background:rgba(var(--accent-rgb),.2)}
+.mp-ex-name{font-size:13px;color:var(--text)}
+.mp-ex-tag{font-size:9px;font-family:'DM Mono',monospace;color:var(--text3);letter-spacing:.05em;margin-top:2px}
+.mp-day-row{display:flex;align-items:center;gap:10px;padding:11px 6px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;user-select:none}
+.mp-day-row:hover{background:rgba(255,255,255,.03)}
+.mp-day-row.sel{background:rgba(var(--accent-rgb),.09)}
+.mp-day-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;transition:background .15s,border-color .15s}
+.mp-day-row.sel .mp-day-dot{background:var(--gold);border-color:var(--gold)}
+.mp-day-name{flex:1;font-size:13px;color:var(--text2)}
+.mp-day-row.sel .mp-day-name{color:var(--text)}
+.mp-day-best{font-size:9.5px;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.04em}
+.mp-confirm{display:block;width:100%;margin-top:12px;padding:14px;background:var(--gold);color:#000;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;border:none;border-radius:13px;cursor:pointer;flex-shrink:0}
+.mp-confirm:disabled{opacity:.3;cursor:not-allowed}
+.mp-sel-count{font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text3);letter-spacing:.05em;margin-top:10px;text-align:center;flex-shrink:0}
+.mp-close-x{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text2);z-index:1}
 .gp-btn-img{display:block;width:100%;max-height:70px;object-fit:contain;filter:grayscale(.92) brightness(.58);transition:filter .22s;pointer-events:none}
 .gp-btn.sel .gp-btn-img{filter:none}
 .gp-exp-shield{display:block;width:54px;margin:0 auto 5px;object-fit:contain;filter:grayscale(.6) brightness(.7);transition:filter .22s;pointer-events:none}
@@ -2898,6 +2932,21 @@ const HM_FOCUS_ADD = {
 
 const HM_DOW_NAMES = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const HM_GOAL_LABEL = {muscle:'Build Muscle',fat:'Lose Fat',recomp:'Build + Burn',strength:'Get Stronger',fit:'All-Round Fitness',endurance:'Race / Endurance',crosstraining:'Cross-Training'};
+const HM_ADDON_MUSCLES = [
+  {id:'chest',     label:'Chest',           icon:'💪', tags:['Chest'],                     dayKeys:['push','chest','upper']},
+  {id:'back',      label:'Back',            icon:'🔱', tags:['Back','Lower Back','Traps'],  dayKeys:['pull','back','upper','dead']},
+  {id:'shoulders', label:'Shoulders',       icon:'🎯', tags:['Shoulders','Rear Delts'],     dayKeys:['push','shoulder','upper']},
+  {id:'biceps',    label:'Biceps',          icon:'💪', tags:['Biceps'],                     dayKeys:['pull','arm','back','bicep']},
+  {id:'triceps',   label:'Triceps',         icon:'🔻', tags:['Triceps'],                    dayKeys:['push','arm','chest','tri']},
+  {id:'forearms',  label:'Forearms & Grip', icon:'✊', tags:['Biceps','Forearms'],          dayKeys:['pull','arm','back','grip']},
+  {id:'core',      label:'Core & Abs',      icon:'⚡', tags:['Core'],                       dayKeys:null},
+  {id:'glutes',    label:'Glutes',          icon:'🔥', tags:['Glutes'],                     dayKeys:['leg','lower','glute','hip']},
+  {id:'hamstrings',label:'Hamstrings',      icon:'🦵', tags:['Hamstrings'],                 dayKeys:['leg','lower','hamstring','rdl']},
+  {id:'quads',     label:'Quads',           icon:'🦵', tags:['Legs'],                       dayKeys:['leg','lower','squat','quad']},
+  {id:'calves',    label:'Calves',          icon:'🏃', tags:['Calves'],                     dayKeys:['leg','lower','calf','run']},
+  {id:'reardelts', label:'Rear Delts',      icon:'🎖', tags:['Rear Delts'],                 dayKeys:['pull','back','shoulder','rear']},
+  {id:'traps',     label:'Traps',           icon:'🏔', tags:['Traps'],                      dayKeys:['pull','back','upper','dead']},
+];
 const HM_EQ_CARDS = {
   rack:{title:'Barbell + Power Rack',desc:'Squats, bench, deadlifts, overhead press, pull-ups. The full compound movement library — the foundation of the plan.'},
   db:{title:'Dumbbells',desc:'Presses, rows, lunges, carries, curls, and every circuit movement. The most versatile tool in the gym.'},
@@ -3848,6 +3897,150 @@ function hmExPicked(key){
   hmSfx('set');
 }
 
+// ── MUSCLE TARGET ADD-ON ──
+let _hmTarget = {muscle:null, exSel:new Set(), dayNames:new Set(), dayOptions:[]};
+
+function hmTargetMuscle(){
+  let el = document.getElementById('hm-muscle-picker');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'hm-muscle-picker';
+    el.innerHTML = '<div class="mp-sheet"><div class="tc-handle"></div><div id="mp-content" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0"></div></div>';
+    el.onclick = e => { if(e.target===el) hmCloseMuscle(); };
+    document.body.appendChild(el);
+  }
+  _hmTarget = {muscle:null, exSel:new Set(), dayNames:new Set(), dayOptions:[]};
+  el.classList.add('open');
+  hmMuscleStep1();
+}
+function hmCloseMuscle(){ const el=document.getElementById('hm-muscle-picker'); if(el) el.classList.remove('open'); }
+
+function hmMuscleStep1(){
+  const content = document.getElementById('mp-content');
+  if(!content) return;
+  const chips = HM_ADDON_MUSCLES.map(m => {
+    const count = Object.entries(EX).filter(([k,v]) => m.tags.some(t => (v.tag||'').toLowerCase().includes(t.toLowerCase()))).length;
+    return '<div class="mp-mchip" onclick="hmMusclePick(\''+m.id+'\')">'+
+      '<div class="mp-mchip-icon">'+m.icon+'</div>'+
+      '<div class="mp-mchip-label">'+m.label+'</div>'+
+      '<div class="mp-mchip-count">'+count+' exercises</div></div>';
+  }).join('');
+  content.innerHTML =
+    '<div class="mp-close-x" onclick="hmCloseMuscle()">✕</div>'+
+    '<div class="mp-step-title">Target a Muscle</div>'+
+    '<div class="mp-step-sub">Add focused training to your existing plan — no rebuild needed. Pick a muscle group:</div>'+
+    '<div style="overflow-y:auto;flex:1;min-height:0"><div class="mp-muscle-grid">'+chips+'</div></div>';
+}
+
+function hmMusclePick(muscleId){
+  _hmTarget.muscle = muscleId;
+  _hmTarget.exSel = new Set();
+  const m = HM_ADDON_MUSCLES.find(x => x.id===muscleId);
+  if(!m) return;
+  const exercises = Object.entries(EX)
+    .filter(([k,v]) => m.tags.some(t => (v.tag||'').toLowerCase().includes(t.toLowerCase())))
+    .slice(0,30);
+  const content = document.getElementById('mp-content');
+  if(!content) return;
+  const rows = exercises.map(([k,v]) =>
+    '<div class="mp-ex-row" id="mpex-'+k+'" onclick="hmMuscleExToggle(\''+k+'\')">'+
+    '<div class="mp-ex-check" id="mpexck-'+k+'"></div>'+
+    '<div><div class="mp-ex-name">'+hmEsc(v.name)+'</div>'+
+    '<div class="mp-ex-tag">'+hmEsc(v.tag||'')+'</div></div></div>'
+  ).join('');
+  content.innerHTML =
+    '<div class="mp-close-x" onclick="hmCloseMuscle()">✕</div>'+
+    '<div class="mp-back" onclick="hmMuscleStep1()">← All muscles</div>'+
+    '<div class="mp-step-title">'+m.icon+' '+m.label+'</div>'+
+    '<div class="mp-step-sub">Select 1–3 exercises to add. They slot in after your main work on the best-matched days.</div>'+
+    '<div style="overflow-y:auto;flex:1;min-height:0">'+rows+'</div>'+
+    '<div class="mp-sel-count" id="mp-sel-count">tap exercises to select</div>'+
+    '<button class="mp-confirm" id="mp-confirm-ex" disabled onclick="hmMuscleStep3()">CHOOSE DAYS →</button>';
+}
+
+function hmMuscleExToggle(key){
+  const row = document.getElementById('mpex-'+key);
+  const ck = document.getElementById('mpexck-'+key);
+  if(!row) return;
+  if(_hmTarget.exSel.has(key)){
+    _hmTarget.exSel.delete(key);
+    row.classList.remove('sel');
+    ck.textContent = '';
+  } else {
+    if(_hmTarget.exSel.size >= 3){ if(typeof showToast==='function') showToast('Pick up to 3 exercises','warn'); return; }
+    _hmTarget.exSel.add(key);
+    row.classList.add('sel');
+    ck.textContent = '✓';
+  }
+  const btn = document.getElementById('mp-confirm-ex');
+  const ct = document.getElementById('mp-sel-count');
+  const n = _hmTarget.exSel.size;
+  if(btn) btn.disabled = n===0;
+  if(ct) ct.textContent = n===0 ? 'tap exercises to select' : n+' selected';
+}
+
+function hmMuscleStep3(){
+  if(!_hmTarget.exSel.size) return;
+  const m = HM_ADDON_MUSCLES.find(x => x.id===_hmTarget.muscle);
+  if(!m) return;
+  const seen = new Set(); const opts = [];
+  if(HM_PLAN){ HM_PLAN.phases.forEach(ph => { ph.days.forEach((day,di) => {
+    if(!seen.has(day.name)){
+      seen.add(day.name);
+      const combined = (day.name+' '+(day.focus||'')).toLowerCase();
+      const smart = !m.dayKeys || m.dayKeys.some(k => combined.includes(k));
+      opts.push({name:day.name, smart});
+    }
+  }); }); }
+  _hmTarget.dayOptions = opts;
+  _hmTarget.dayNames = new Set(opts.filter(d=>d.smart).map(d=>d.name));
+  if(_hmTarget.dayNames.size===0 && opts.length) _hmTarget.dayNames.add(opts[0].name);
+  const rows = opts.map((d,i) => {
+    const sel = _hmTarget.dayNames.has(d.name);
+    return '<div class="mp-day-row'+(sel?' sel':'')+'" id="mpday-'+i+'" onclick="hmMuscleDayToggle('+i+')">'+
+      '<div class="mp-day-dot"></div>'+
+      '<div class="mp-day-name">'+hmEsc(d.name)+'</div>'+
+      (d.smart ? '<div class="mp-day-best">best match</div>' : '')+
+      '</div>';
+  }).join('');
+  const exLabel = Array.from(_hmTarget.exSel).map(k => EX[k]?EX[k].name:k).join(', ');
+  const content = document.getElementById('mp-content');
+  if(!content) return;
+  content.innerHTML =
+    '<div class="mp-close-x" onclick="hmCloseMuscle()">✕</div>'+
+    '<div class="mp-back" onclick="hmMusclePick(\''+_hmTarget.muscle+'\')">← Back</div>'+
+    '<div class="mp-step-title">Which days?</div>'+
+    '<div class="mp-step-sub">Adding: <span style="color:var(--gold)">'+hmEsc(exLabel)+'</span>. Highlighted days are the best fit for '+hmEsc(m.label.toLowerCase())+'.</div>'+
+    '<div style="overflow-y:auto;flex:1;min-height:0">'+rows+'</div>'+
+    '<button class="mp-confirm" onclick="hmMuscleApply()">ADD TO PLAN ✓</button>';
+}
+
+function hmMuscleDayToggle(i){
+  const d = _hmTarget.dayOptions[i];
+  const row = document.getElementById('mpday-'+i);
+  if(!d||!row) return;
+  if(_hmTarget.dayNames.has(d.name)){ _hmTarget.dayNames.delete(d.name); row.classList.remove('sel'); }
+  else { _hmTarget.dayNames.add(d.name); row.classList.add('sel'); }
+}
+
+function hmMuscleApply(){
+  if(!_hmTarget.exSel.size||!_hmTarget.dayNames.size) return;
+  const ed = hmPlanEditsLoad();
+  if(HM_PLAN){ HM_PLAN.phases.forEach(ph => { ph.days.forEach((day,di) => {
+    if(_hmTarget.dayNames.has(day.name)){
+      const dk = ph.id+'|'+di;
+      ed.add[dk] = ed.add[dk]||[];
+      _hmTarget.exSel.forEach(key => { if(!ed.add[dk].some(a=>a.key===key)) ed.add[dk].push({key}); });
+    }
+  }); }); }
+  hmPlanEditsSave(ed);
+  hmCloseMuscle();
+  hmApplyPlan(true);
+  hmSfx('levelup');
+  const m = HM_ADDON_MUSCLES.find(x=>x.id===_hmTarget.muscle);
+  if(typeof showToast==='function') showToast('🎯 '+(m?m.label:'Muscle')+' training added to '+_hmTarget.dayNames.size+' day type'+(_hmTarget.dayNames.size>1?'s':''),'success');
+}
+
 // ── RENDER ──
 function hmEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
@@ -4090,6 +4283,7 @@ function hmRenderTrain(){
     '<div class="plan-summary-label">Your Plan' + (editCount ? ' · ' + editCount + ' edit' + (editCount > 1 ? 's' : '') : '') + '</div>' +
     '<div class="plan-summary-val">' + (g.goal === 'endurance' ? '🏁 ' + (HM_EVENT_LABEL[g.event] || '5K') : HM_GOAL_LABEL[g.goal]) + ' · ' + hmScheduleTrainCount(g) + ' days/wk · ' + g.session + ' min · ' + g.weeks + ' weeks</div></div>' +
     '<div class="plan-edit-btn" onclick="hmOpenSchedule()" title="Rest days & which workout is on which day">🗓 WEEK</div>' +
+    '<div class="plan-edit-btn" onclick="hmTargetMuscle()" title="Add focused muscle training to your plan">🎯 TARGET</div>' +
     '<div class="plan-edit-btn' + (window._hmEditMode ? ' on' : '') + '" onclick="hmToggleEditMode()" title="Customize exercises">' + (window._hmEditMode ? '✓ DONE' : '✎ EDIT') + '</div>' +
     '<div class="plan-edit-btn" onclick="gpOpen()">GOALS</div></div>';
   html += hmWildcardCardHTML();
