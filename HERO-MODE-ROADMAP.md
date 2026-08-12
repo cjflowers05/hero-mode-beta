@@ -25,7 +25,7 @@ Shipped and working, all offline/localStorage for current PWA; cloud backend pla
 - **Session tools** — Deck of Cards workout, rest timer (configurable), session notes (per-day journal), check-in timing moved to first exercise tap.
 - **Viral sharing** — workout share card system: session-tracker-style card (workout name + exercise list + circles) shareable via Web Share API or download. ↗ share buttons on banner, session summary, history rows, and Deck of Cards end screen. Workout import via URL param (`?import=<b64>`).
 - **Ship-ready (native)** — Capacitor scaffold (iOS + Android), all icon sizes generated, `privacy-policy.html` written, `store-listing.md` complete, premium gate infrastructure in place.
-- **Monetization architecture** — Free tier (AdMob ads) + Hero Mode Premium ($4.99/mo): `hmIsPremium()`, `hmShowUpgradeModal()`, `HM_PREMIUM_THEME_IDS` all wired; needs RevenueCat + AdMob account setup to go live.
+- **Monetization architecture** — Free tier (AdMob ads) + Hero Mode Premium ($9.99/mo): `hmIsPremium()`, `hmShowUpgradeModal()`, `HM_PREMIUM_THEME_IDS` all wired; needs RevenueCat + AdMob account setup to go live.
 
 **Recommended before more building: get ~10 people using this daily.** Per the business plan, Phase 1 success = "100 people who use it every single day." Everything below is better designed after watching real users.
 
