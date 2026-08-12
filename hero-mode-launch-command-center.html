@@ -1077,11 +1077,128 @@
           <div class="annual-cost">$168/yr</div>
           <div class="annual-note">$14/mo after 3-month promo expires</div>
         </div>
+        <div class="annual-item" style="border-color:rgba(167,139,250,.3)">
+          <div class="annual-label" style="color:#A78BFA">Claude Pro/Max — starts July 2027</div>
+          <div class="annual-cost" style="color:#A78BFA">$240–$1,200/yr</div>
+          <div class="annual-note">$20/mo Pro or $100/mo Max · free until June 2027</div>
+        </div>
+        <div class="annual-item" style="border-color:rgba(167,139,250,.3)">
+          <div class="annual-label" style="color:#A78BFA">Anthropic API (app AI features)</div>
+          <div class="annual-cost" style="color:#A78BFA">~$60–360/yr</div>
+          <div class="annual-note">$5–30/mo pay-per-use · scales with active users</div>
+        </div>
         <div class="annual-item">
           <div class="annual-label">USPTO maintenance (yr 5–6)</div>
           <div class="annual-cost">$450</div>
           <div class="annual-note">Section 8 declaration · $225/class × 2</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI TOOLS & CONSOLIDATION -->
+  <div class="dev-section">
+    <div class="dev-header">
+      <div class="info-icon">🤖</div>
+      <div class="info-title">AI Tools &amp; Subscriptions — Consolidation Plan</div>
+      <div class="info-meta">What you have · What the app needs · What to cut</div>
+    </div>
+    <div class="dev-body">
+      <div class="dev-intro">You currently run three paid AI subscriptions (Claude, ChatGPT Pro, Gemini Advanced) plus the app uses Gemini API for workout generation. Claude Pro/Max is free until <strong style="color:#A78BFA">June 2027</strong> — after that it becomes a monthly line item. Goal: consolidate to only what's genuinely needed before that date so you're not paying for overlap.</div>
+
+      <!-- CURRENT SUBSCRIPTION TABLE -->
+      <div class="proj-table-wrap" style="margin-bottom:18px">
+        <table class="proj-table">
+          <thead>
+            <tr>
+              <th style="text-align:left">Service</th>
+              <th>Cost</th>
+              <th>What it does for you now</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Claude Code / Pro</strong><br><span class="proj-phase-sub">Anthropic</span></td>
+              <td style="color:#A78BFA;font-weight:700">Free until Jun 2027<br>then $20–100/mo</td>
+              <td style="text-align:left;font-size:12px">Primary dev tool — all code, architecture, business docs, command center, design decisions</td>
+              <td style="color:var(--green);font-weight:700">✓ KEEP</td>
+            </tr>
+            <tr>
+              <td><strong>Anthropic API</strong><br><span class="proj-phase-sub">Pay-per-use</span></td>
+              <td style="color:#A78BFA;font-weight:700">$5–30/mo<br>at 10K users</td>
+              <td style="text-align:left;font-size:12px">Powers in-app AI features — workout plan generation, nutrition AI, coaching messages. Not yet wired; app currently uses Gemini API</td>
+              <td style="color:var(--warn);font-weight:700">⚠ DECIDE</td>
+            </tr>
+            <tr>
+              <td><strong>ChatGPT Pro</strong><br><span class="proj-phase-sub">OpenAI · $20/mo</span></td>
+              <td style="color:var(--red);font-weight:700">$240/yr</td>
+              <td style="text-align:left;font-size:12px">General AI tasks, second opinion on ideas — largely redundant now that Claude handles all dev and writing work</td>
+              <td style="color:var(--red);font-weight:700">✕ CUT</td>
+            </tr>
+            <tr>
+              <td><strong>Google Gemini Advanced</strong><br><span class="proj-phase-sub">Google One AI · ~$20/mo</span></td>
+              <td style="color:var(--warn);font-weight:700">~$240/yr</td>
+              <td style="text-align:left;font-size:12px">Personal productivity + the app's Gemini API (workout generation) runs separately on pay-per-use billing — this subscription does NOT cover API usage</td>
+              <td style="color:var(--warn);font-weight:700">⚠ REVIEW</td>
+            </tr>
+            <tr>
+              <td><strong>Gemini API (app)</strong><br><span class="proj-phase-sub">Google · Pay-per-use</span></td>
+              <td style="color:var(--gold);font-weight:700">~$2–15/mo<br>at scale</td>
+              <td style="text-align:left;font-size:12px">Currently powers in-app AI (Gemini 2.0 Flash). Very cheap — ~$0.075/M input tokens. Generous free tier covers early users. Already in projection assumptions</td>
+              <td style="color:var(--green);font-weight:700">✓ KEEP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CONSOLIDATION CARDS -->
+      <div class="dev-grid">
+
+        <div class="dev-card dev-now">
+          <div class="dev-card-top">
+            <span class="dev-badge now">✂️ CUT NOW</span>
+            <div class="dev-card-title">Cancel ChatGPT Pro — $20/mo saved</div>
+          </div>
+          <div class="dev-card-problem">ChatGPT Pro is fully redundant. Claude handles all code, architecture, writing, business docs, and analysis at higher quality for your specific workflow. OpenAI is not powering any part of the app. There is no reason to keep this subscription running.</div>
+          <div class="dev-card-fix"><strong>Action:</strong> Cancel at platform.openai.com → Settings → Billing. Keep the free tier account active in case you need a one-off comparison or API test. Saving: $240/yr immediately.</div>
+        </div>
+
+        <div class="dev-card dev-now">
+          <div class="dev-card-top">
+            <span class="dev-badge now">⚠️ REVIEW</span>
+            <div class="dev-card-title">Gemini Advanced Personal — separate from the API</div>
+          </div>
+          <div class="dev-card-problem">The Gemini Advanced personal subscription ($20/mo) and the Gemini API the app uses are completely separate billing lines. The app's Gemini 2.0 Flash API calls are billed to your Google Cloud project — not to your Gemini Advanced subscription. If Gemini Advanced is only being used for personal productivity tasks Claude can already handle, it's redundant.</div>
+          <div class="dev-card-fix"><strong>Decision to make:</strong> List the 3–5 things you actually use Gemini Advanced for. If Claude covers them, cancel. If Google Workspace integration (Docs, Sheets, Gmail AI) is part of your workflow, keep. The Gemini API for the app is unaffected either way — that stays on regardless of whether you cancel the personal subscription.</div>
+        </div>
+
+        <div class="dev-card dev-y1" style="border-top-color:#A78BFA">
+          <div class="dev-card-top">
+            <span class="dev-badge y2">📅 PLAN BY JUN 2027</span>
+            <div class="dev-card-title">Claude Pro vs Max — pick your tier before the free period ends</div>
+          </div>
+          <div class="dev-card-problem">Claude Code is free until June 2027. After that you need to pick a paid plan. Pro ($20/mo) gives Claude access with higher limits. Max ($100/mo) gives significantly higher usage limits and priority access — relevant if Claude is your primary dev environment running multiple sessions daily. The wrong choice either limits your workflow (too low) or costs more than needed (too high).</div>
+          <div class="dev-card-fix"><strong>Recommendation:</strong> If by June 2027 Hero Mode is generating MRR, Max ($100/mo) is worth it — it's a dev tool cost, not a discretionary spend. If revenue is still early, start on Pro ($20/mo) and upgrade if you hit limits. Set a calendar reminder for May 2027 to evaluate and choose. Do not let it lapse to the free tier mid-sprint.</div>
+        </div>
+
+        <div class="dev-card dev-y1">
+          <div class="dev-card-top">
+            <span class="dev-badge y1">📅 YEAR 1</span>
+            <div class="dev-card-title">Anthropic API vs Gemini API — pick one for the app</div>
+          </div>
+          <div class="dev-card-problem">Right now the app's workout plan generator and AI coaching use Gemini 2.0 Flash (very cheap, already in cost projections). Switching to Anthropic API (Claude Haiku or Sonnet) would give better reasoning quality but at higher cost: Haiku ~$0.25/M tokens vs Flash ~$0.075/M tokens. At 10K users generating plans, this difference is $5–20/mo — manageable either way, but worth a conscious decision.</div>
+          <div class="dev-card-fix"><strong>Recommendation:</strong> Keep Gemini Flash for now — it's already wired into the cost model, performs well for structured workout generation, and the free tier covers your entire early user base. Revisit if you add more complex AI features (conversational coaching, form analysis) where Claude's reasoning would be a meaningful upgrade. Don't switch just for consistency — switch when there's a quality reason.</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:18px;padding:14px 16px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.18);border-left:3px solid #A78BFA;border-radius:8px;font-size:12px;color:var(--text2);line-height:1.6">
+        <strong style="color:#A78BFA;font-size:11px;letter-spacing:.08em;font-family:monospace">AFTER CONSOLIDATION — MONTHLY AI BURN</strong><br>
+        <strong>Today:</strong> Claude (free) + ChatGPT Pro ($20) + Gemini Advanced (~$20) + Gemini API (~$2) = ~$42/mo<br>
+        <strong>After cutting ChatGPT + reviewing Gemini Advanced:</strong> Claude (free) + Gemini API (~$2) = ~$2/mo until July 2027<br>
+        <strong>Post July 2027 (conservative):</strong> Claude Pro ($20) + Gemini API (~$10 at scale) = ~$30/mo<br>
+        <strong>Post July 2027 (full Max):</strong> Claude Max ($100) + Gemini API (~$10) = ~$110/mo · offset by app revenue by then
       </div>
     </div>
   </div>
