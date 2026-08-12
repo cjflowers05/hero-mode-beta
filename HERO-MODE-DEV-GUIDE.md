@@ -1180,3 +1180,31 @@ Store this document alongside your Articles of Organization from Northwest Regis
 ---
 
 *This document should be updated any time a new system is added, a function is renamed, a localStorage key changes, or a dev gotcha is discovered. The goal is that any competent web developer can open this file and understand Hero Mode's codebase in under an hour.*
+
+---
+
+## Session log — 2026-08-12
+
+### Pricing locked at $9.99/mo
+All pricing references updated across `index.html`, `competitive_chart.html`, `hero-mode-launch-command-center.html`, `HERO-MODE-ROADMAP.md`, and `project_monetization.md`. Standard price is **$9.99/mo** — promotions can be run but the base price never changes.
+
+### Hero card back-face share button clipping fixed
+`.hc-wrap` height raised from `290px` to `325px` in `index.html` so the SHARE HERO CARD button on the card back face is no longer clipped by the container.
+
+### Competitive chart privacy section updated
+Replaced 5 compliance-jargon rows (GDPR Art. 9, FTC 16 CFR 318, etc.) with 3 plain-language user-facing claims:
+- "Your data stays on your device — no cloud upload"
+- "No account required — start training immediately"
+- "Delete all your data with one tap"
+
+Score denominators updated from /32 to /30 throughout `competitive_chart.html`.
+
+### Command center — major additions (hero-mode-launch-command-center.html)
+1. **Beta launch beachhead** — Military & Veteran community section added (Team RWB, Reddit, Bunker Labs, MWR gyms, creator outreach). Strategy: free Premium for first 50–100 testers, 2 weeks + 5 survey questions.
+2. **Tech Debt & PWA Dev Sprint** — 10 constraint cards (Capacitor conversion, RevenueCat IAP, localStorage→IndexedDB, push notifications, Mac for iOS, HealthKit, background processing, cloud backup, monolithic file split, TypeScript+testing). Color-coded BLOCKING/NOW/YEAR 1/YEAR 2 badges. Linked solutions for each.
+3. **Business Documents section** — clickable links to all 10 files in `./Business Documents/`.
+4. **AI Tools & Subscriptions Consolidation** — subscription table + action cards: cut ChatGPT Pro now, review Gemini Advanced, plan for Claude Pro/Max cost cliff (June 2027), Anthropic vs Gemini API decision. Summary: ~$42/mo now → ~$2/mo after cuts → ~$30–110/mo post July 2027.
+5. **Internal index / table of contents** — clickable two-column TOC at the top of the page. Phase links (gold) and Reference & Dev links (purple/blue). All 17 section containers have `id` attributes; `scroll-margin-top: 70px` added so sticky header clears section titles on jump.
+
+### PWA → Native app conversion summary (for reference)
+Capacitor wraps existing HTML/JS in a native shell — zero app code changes. Unlocks: App Store organic search, IAP, reliable push notifications on iOS, HealthKit/Health Connect, background processing. Steps: `npm install @capacitor/core @capacitor/cli`, `npx cap init`, `npx cap add ios`, `npx cap add android`, add `@revenuecat/purchases-capacitor` for IAP, build on Mac for iOS. Needs Apple Developer Program ($99/yr) + Google Play ($25 one-time).

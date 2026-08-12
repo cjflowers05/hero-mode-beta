@@ -214,8 +214,21 @@
   .doc-type { font-size: 10px; font-family: monospace; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; }
   .doc-desc { font-size: 11px; color: var(--text2); margin-top: 4px; line-height: 1.4; }
 
+  /* ── TABLE OF CONTENTS ── */
+  [id^="sec-"] { scroll-margin-top: 70px; }
+  .toc-panel { background: var(--card); border: 1px solid var(--border); border-left: 3px solid #F59E0B; border-radius: 8px; padding: 16px 20px 14px; margin-bottom: 20px; }
+  .toc-heading { font-size: 10px; font-family: monospace; letter-spacing: .12em; color: #F59E0B; text-transform: uppercase; font-weight: 700; margin-bottom: 14px; }
+  .toc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .toc-group-label { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--text3); font-family: monospace; font-weight: 700; padding-bottom: 5px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+  .toc-link { display: block; font-size: 11.5px; font-family: monospace; color: var(--text2); text-decoration: none; padding: 2.5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .12s; }
+  .toc-link:hover { text-decoration: underline; }
+  .toc-link.toc-phase:hover { color: #F59E0B; }
+  .toc-link.toc-dev:hover { color: #60A5FA; }
+  .toc-link.toc-ref:hover { color: #A78BFA; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
+    .toc-cols { grid-template-columns: 1fr; }
     .cost-summary { grid-template-columns: 1fr; }
     .cost-col:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
     .header { flex-wrap: wrap; gap: 8px; }
@@ -238,8 +251,38 @@
 
 <div class="wrap">
 
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc-panel">
+    <div class="toc-heading">⚡ Command Center — Quick Navigation</div>
+    <div class="toc-cols">
+      <div>
+        <div class="toc-group-label">Launch Checklist</div>
+        <a href="#sec-costs" class="toc-link toc-phase">💰 Cost Summary</a>
+        <a href="#sec-funding" class="toc-link toc-phase">1 · Funding &amp; Capital</a>
+        <a href="#sec-legal" class="toc-link toc-phase">2 · Legal &amp; Business</a>
+        <a href="#sec-built" class="toc-link toc-phase">3 · Core App — Already Built</a>
+        <a href="#sec-ip" class="toc-link toc-phase">4 · IP &amp; Legal Shield</a>
+        <a href="#sec-compliance" class="toc-link toc-phase">5 · Health Data Compliance</a>
+        <a href="#sec-devaccts" class="toc-link toc-phase">6 · Developer Accounts</a>
+        <a href="#sec-services" class="toc-link toc-phase">7 · Services &amp; Infrastructure</a>
+        <a href="#sec-tech" class="toc-link toc-phase">8 · Technical Build</a>
+        <a href="#sec-submission" class="toc-link toc-phase">9 · Store Submission</a>
+        <a href="#sec-marketing" class="toc-link toc-phase">10 · Marketing &amp; Growth</a>
+      </div>
+      <div>
+        <div class="toc-group-label">Reference &amp; Dev</div>
+        <a href="#sec-projections" class="toc-link toc-ref">📊 Financial Projections</a>
+        <a href="#sec-ai" class="toc-link toc-dev">🤖 AI Tools &amp; Subscriptions</a>
+        <a href="#sec-risk" class="toc-link toc-ref">⚠️ Attack Vector Risk Map</a>
+        <a href="#sec-beta" class="toc-link toc-ref">🪖 Beta Launch — Military Beachhead</a>
+        <a href="#sec-devdept" class="toc-link toc-dev">⚙️ Tech Debt &amp; PWA Sprint</a>
+        <a href="#sec-docs" class="toc-link toc-dev">📁 Business Documents</a>
+      </div>
+    </div>
+  </div>
+
   <!-- COST SUMMARY -->
-  <div class="cost-summary">
+  <div class="cost-summary" id="sec-costs">
     <div class="cost-col">
       <div class="cost-eyebrow">Core launch (one-time)</div>
       <div class="cost-amount gold">~$369</div>
@@ -258,7 +301,7 @@
   </div>
 
   <!-- PHASE 1: Funding & Capital -->
-  <div class="phase">
+  <div class="phase" id="sec-funding">
     <div class="phase-header" onclick="togglePhase('funding')">
       <div class="phase-icon">💰</div>
       <div class="phase-title">Phase 1 — Funding &amp; Capital</div>
@@ -322,7 +365,7 @@
   </div>
 
   <!-- PHASE 2: Legal & Business -->
-  <div class="phase">
+  <div class="phase" id="sec-legal">
     <div class="phase-header" onclick="togglePhase('legal')">
       <div class="phase-icon">🏛️</div>
       <div class="phase-title">Phase 2 — Legal &amp; Business Foundation</div>
@@ -396,7 +439,7 @@
   </div>
 
   <!-- PHASE 3: Core App — Already Built -->
-  <div class="phase">
+  <div class="phase" id="sec-built">
     <div class="phase-header" onclick="togglePhase('built')">
       <div class="phase-icon">✅</div>
       <div class="phase-title">Phase 3 — Core App &amp; Compliance — Already Built</div>
@@ -480,7 +523,7 @@
   </div>
 
   <!-- PHASE 4: IP & Legal Shield -->
-  <div class="phase">
+  <div class="phase" id="sec-ip">
     <div class="phase-header" onclick="togglePhase('ip')">
       <div class="phase-icon">🛡️</div>
       <div class="phase-title">Phase 4 — IP &amp; Legal Shield</div>
@@ -564,7 +607,7 @@
   </div>
 
   <!-- PHASE 5: Health Data Compliance -->
-  <div class="phase">
+  <div class="phase" id="sec-compliance">
     <div class="phase-header" onclick="togglePhase('compliance')">
       <div class="phase-icon">🏥</div>
       <div class="phase-title">Phase 5 — Health Data Compliance</div>
@@ -618,7 +661,7 @@
   </div>
 
   <!-- PHASE 6: Developer Accounts -->
-  <div class="phase">
+  <div class="phase" id="sec-devaccts">
     <div class="phase-header" onclick="togglePhase('devaccts')">
       <div class="phase-icon">🛂</div>
       <div class="phase-title">Phase 6 — Developer Accounts</div>
@@ -672,7 +715,7 @@
   </div>
 
   <!-- PHASE 7: Services & Infrastructure -->
-  <div class="phase">
+  <div class="phase" id="sec-services">
     <div class="phase-header" onclick="togglePhase('services')">
       <div class="phase-icon">⚙️</div>
       <div class="phase-title">Phase 7 — Services &amp; Infrastructure</div>
@@ -736,7 +779,7 @@
   </div>
 
   <!-- PHASE 8: Technical Build -->
-  <div class="phase">
+  <div class="phase" id="sec-tech">
     <div class="phase-header" onclick="togglePhase('tech')">
       <div class="phase-icon">🔧</div>
       <div class="phase-title">Phase 8 — Technical Build &amp; Testing</div>
@@ -830,7 +873,7 @@
   </div>
 
   <!-- PHASE 9: Submission -->
-  <div class="phase">
+  <div class="phase" id="sec-submission">
     <div class="phase-header" onclick="togglePhase('submit')">
       <div class="phase-icon">🚀</div>
       <div class="phase-title">Phase 9 — Store Submission</div>
@@ -894,7 +937,7 @@
   </div>
 
   <!-- PHASE 10: Marketing & Growth -->
-  <div class="phase">
+  <div class="phase" id="sec-marketing">
     <div class="phase-header" onclick="togglePhase('marketing')">
       <div class="phase-icon">📣</div>
       <div class="phase-title">Phase 10 — Marketing &amp; Growth</div>
@@ -978,7 +1021,7 @@
   </div>
 
   <!-- FINANCIAL PROJECTIONS -->
-  <div class="info-section">
+  <div class="info-section" id="sec-projections">
     <div class="info-header">
       <div class="info-icon">📊</div>
       <div class="info-title">Financial Projections</div>
@@ -1097,7 +1140,7 @@
   </div>
 
   <!-- AI TOOLS & CONSOLIDATION -->
-  <div class="dev-section">
+  <div class="dev-section" id="sec-ai">
     <div class="dev-header">
       <div class="info-icon">🤖</div>
       <div class="info-title">AI Tools &amp; Subscriptions — Consolidation Plan</div>
@@ -1204,7 +1247,7 @@
   </div>
 
   <!-- ATTACK VECTOR RISK MAP -->
-  <div class="info-section">
+  <div class="info-section" id="sec-risk">
     <div class="info-header">
       <div class="info-icon">⚔️</div>
       <div class="info-title">Attack Vector Risk Map</div>
@@ -1281,7 +1324,7 @@
     </div>
   </div>
 
-  <div class="info-section">
+  <div class="info-section" id="sec-beta">
     <div class="info-header">
       <div class="info-icon">🪖</div>
       <div class="info-title">Beta Launch — Military &amp; Veteran Community Beachhead</div>
@@ -1357,7 +1400,7 @@
   </div>
 
   <!-- DEV SPRINT: PWA / TECH CONSTRAINTS -->
-  <div class="dev-section">
+  <div class="dev-section" id="sec-devdept">
     <div class="dev-header">
       <div class="info-icon">💻</div>
       <div class="info-title">Tech Debt &amp; PWA Constraints — Dev Sprint</div>
@@ -1472,7 +1515,7 @@
   </div>
 
   <!-- BUSINESS DOCUMENTS -->
-  <div class="dev-section">
+  <div class="dev-section" id="sec-docs">
     <div class="dev-header">
       <div class="info-icon">📁</div>
       <div class="info-title">Business Documents</div>
