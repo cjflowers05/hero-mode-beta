@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v72'; // v72: Recruit skin (starting default), all skins lock at Level 2
+const CACHE_VERSION = 'hero-mode-v73'; // v73: Recruit onboarding tips + Level 2 XP nudge
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

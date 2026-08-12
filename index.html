@@ -1996,6 +1996,7 @@ function hmOpenConsentManager() {
   <div class="xp-wrap">
     <div class="xp-row"><span class="xp-rank" id="xp-rank">LVL 1 · ROOKIE</span><span class="xp-count" id="xp-count">0 / 300 XP</span></div>
     <div class="xp-bar"><div id="xp-fill"></div></div>
+    <div id="recruit-xp-nudge">🎨 · · · XP TO UNLOCK HERO SKINS</div>
   </div>
   <div id="profile-chip" onclick="hmOpenTrophyCase()"></div>
 </div>
@@ -6521,6 +6522,7 @@ function showTab(id,btn){
       }
     }catch(e){}
   }
+  if (typeof hmRecruit_showTip === 'function') setTimeout(() => hmRecruit_showTip(id), 400);
 }
 // ── TAB SWIPE GESTURES ───────────────────────────────────────
 (function(){
@@ -22598,6 +22600,14 @@ document.addEventListener('DOMContentLoaded', function() {
 #xp-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(var(--accent-rgb),1) 45%,rgba(var(--accent-rgb),.8));transition:width .6s cubic-bezier(.22,1,.36,1);box-shadow:0 0 8px rgba(var(--accent-rgb),.6);overflow:hidden}
 .xp-pop{position:absolute;right:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold);animation:hm-xp-pop 1.1s ease forwards;pointer-events:none;z-index:5}
 @keyframes hm-xp-pop{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-22px)}}
+/* Recruit onboarding — XP nudge + section tip banners */
+#recruit-xp-nudge{display:none;margin-top:5px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:var(--gold);text-align:center;opacity:.8}
+.recruit-tip{display:flex;align-items:flex-start;gap:10px;background:rgba(var(--accent-rgb),.06);border:1px solid rgba(var(--accent-rgb),.18);border-left:3px solid var(--gold);border-radius:10px;padding:10px 12px;margin-bottom:14px;animation:rtip-in .25s ease}
+@keyframes rtip-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.recruit-tip-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.recruit-tip-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.07em;color:var(--gold);margin-bottom:3px}
+.recruit-tip-text{font-size:12px;color:var(--text2);line-height:1.45}
+.recruit-tip-close{background:none;border:none;color:var(--text3);font-size:20px;line-height:1;cursor:pointer;padding:0 2px;flex-shrink:0;margin-left:auto;align-self:flex-start}
 @keyframes hmChestBounce{0%{transform:scale(0.5) rotate(-8deg);opacity:0}60%{transform:scale(1.15) rotate(4deg);opacity:1}80%{transform:scale(0.95) rotate(-2deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
 @keyframes hmCustomizePulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5);border-color:var(--border)}50%{box-shadow:0 0 0 4px rgba(var(--accent-rgb),.2);border-color:var(--gold)}}
 .hm-customize-hint{animation:hmCustomizePulse 1.6s ease-in-out 3}
@@ -23610,6 +23620,18 @@ function hmRenderXP(){
       }
     }
   } catch(e) {}
+  // Recruit XP nudge — show until Level 2
+  try {
+    const nudge = document.getElementById('recruit-xp-nudge');
+    if (nudge) {
+      if (info.lvl < 2) {
+        nudge.textContent = '🎨  ' + (info.need - info.rem) + ' XP TO UNLOCK HERO SKINS';
+        nudge.style.display = '';
+      } else {
+        nudge.style.display = 'none';
+      }
+    }
+  } catch(e) {}
 }
 
 // Daily XP caps for lifestyle logging — training (sets/PRs/workouts/walks)
@@ -23952,6 +23974,47 @@ const HM_SECTION_TOURS = {
     { sel:'.backup-bar',           emoji:'💾', title:'Data Backup',         text:'Export your full training history as JSON or CSV anytime. Restore from backup if you switch devices — never lose your data.' },
   ],
 };
+
+// ── RECRUIT ONBOARDING TIPS — shown once per section at Level 1 ──
+const HM_RECRUIT_TIPS = {
+  today:           { icon:'🎖️', title:'MISSION BRIEFING', text:'Complete your daily quests and log workouts to earn XP. Hit Level 2 to unlock Hero Skins and choose your identity.' },
+  workout:         { icon:'💪', title:'HOW TO EARN XP', text:'Tap any exercise to log a set. Every set earns XP. Finish a training day to build your streak and rank up fast.' },
+  tracker:         { icon:'📊', title:'YOUR RECORD BOOK', text:'Every session you log appears here. Stats and personal records update automatically as you train.' },
+  'nutri-tracker': { icon:'🍽️', title:'FUEL YOUR MISSION', text:'Log your meals to hit your nutrition targets. Consistent logging earns XP and keeps your streak alive.' },
+  wellness:        { icon:'🧠', title:'FULL-HERO WELLNESS', text:'Track sleep, cardio, and daily habits here. Wellness logging earns XP — heroes train the whole person.' },
+  charts:          { icon:'📈', title:'WATCH YOURSELF GROW', text:'Your data builds the moment you log. Keep training and come back to watch your progress compound.' },
+};
+const _HM_RECRUIT_TIP_KEY = 'hm-recruit-dismissed';
+
+function hmRecruit_showTip(tabId) {
+  const old = document.getElementById('hm-recruit-tip');
+  if (old) old.remove();
+  if (hmLevelInfo(hmXPLoad().xp).lvl >= 2) return;
+  const tip = HM_RECRUIT_TIPS[tabId];
+  if (!tip) return;
+  let dismissed = {};
+  try { dismissed = JSON.parse(localStorage.getItem(_HM_RECRUIT_TIP_KEY) || '{}'); } catch(e) {}
+  if (dismissed[tabId]) return;
+  const el = document.createElement('div');
+  el.className = 'recruit-tip';
+  el.id = 'hm-recruit-tip';
+  el.innerHTML = '<div class="recruit-tip-icon">' + tip.icon + '</div>' +
+    '<div style="flex:1"><div class="recruit-tip-title">' + tip.title + '</div>' +
+    '<div class="recruit-tip-text">' + tip.text + '</div></div>' +
+    '<button class="recruit-tip-close" onclick="hmRecruit_dismiss(\'' + tabId + '\')" aria-label="Dismiss">×</button>';
+  const tab = document.getElementById('tab-' + tabId);
+  if (!tab) return;
+  tab.insertBefore(el, tab.firstChild);
+}
+
+function hmRecruit_dismiss(tabId) {
+  let dismissed = {};
+  try { dismissed = JSON.parse(localStorage.getItem(_HM_RECRUIT_TIP_KEY) || '{}'); } catch(e) {}
+  dismissed[tabId] = true;
+  localStorage.setItem(_HM_RECRUIT_TIP_KEY, JSON.stringify(dismissed));
+  const el = document.getElementById('hm-recruit-tip');
+  if (el) { el.style.transition = 'opacity .2s, transform .2s'; el.style.opacity = '0'; el.style.transform = 'translateY(-5px)'; setTimeout(() => el.remove(), 220); }
+}
 
 function hmStartSectionTour(section) {
   const steps = HM_SECTION_TOURS[section];
@@ -24523,6 +24586,11 @@ function renderHeroCard(el) {
   const emblSrc  = theme && typeof hmEmblSrc === 'function' ? hmEmblSrc(theme) : '';
   const isMythic = lvlInfo.lvl >= 60;
 
+  // Suppress grade/rating until the hero has logged real activity
+  const hasActivity = stats.STR > 0 || stats.END > 0 || stats.VIT > 0 || stats.AGI > 0;
+  const gradeDisplay  = hasActivity ? grade : '—';
+  const ratingDisplay = hasActivity ? 'RATING ' + rating : 'KEEP TRAINING';
+
   const statBar = (label, val, color) =>
     `<div class="hc-stat-row">
       <div class="hc-stat-label">${label}</div>
@@ -24560,20 +24628,24 @@ function renderHeroCard(el) {
               <div class="hc-back-sub">${rankStr} · LVL ${lvlInfo.lvl}</div>
             </div>
             <div>
-              <div class="hc-rating-badge">${grade}</div>
-              <div class="hc-rating-sub">RATING ${rating}</div>
+              <div class="hc-rating-badge">${gradeDisplay}</div>
+              <div class="hc-rating-sub">${ratingDisplay}</div>
             </div>
           </div>
-          <div class="hc-stats-lbl">DERIVED STATS · LAST 7 DAYS</div>
+          <div class="hc-stats-lbl">HERO STATS · LAST 7 DAYS</div>
           ${statBar('STR', stats.STR, '#E8A44A')}
           ${statBar('END', stats.END, '#4A9EBF')}
           ${statBar('VIT', stats.VIT, '#5BC876')}
           ${statBar('AGI', stats.AGI, '#E84A6F')}
           ${statBar('DIS', stats.DIS, '#C9A84C')}
+          <div style="font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.04em;margin-top:4px;line-height:1.7">
+            STR Strength · END Endurance · VIT Vitality · AGI Agility · DIS Discipline
+            ${!hasActivity ? '<br>Log a workout to start building your stats.' : ''}
+          </div>
           <div class="hc-back-footer">
             <div><div class="hc-bf-lbl">Total XP</div><div class="hc-bf-val">${(xpData.xp||0).toLocaleString()}</div></div>
             <div><div class="hc-bf-lbl">Streak</div><div class="hc-bf-val">${streak} DAYS</div></div>
-            <div><div class="hc-bf-lbl">Hero Rating</div><div class="hc-bf-val">${grade} · ${rating}</div></div>
+            <div><div class="hc-bf-lbl">Hero Rating</div><div class="hc-bf-val">${gradeDisplay} · ${ratingDisplay}</div></div>
           </div>
           <button class="hc-share-btn" onclick="event.stopPropagation();hmShare('hero-card')">↗ SHARE HERO CARD</button>
         </div>
