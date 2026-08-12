@@ -171,6 +171,49 @@
   .risk-card-fix { font-size: 11px; color: var(--text3); line-height: 1.5; padding-top: 8px; border-top: 1px solid var(--border); }
   .risk-card-fix strong { color: var(--green); }
 
+  /* ── DEV SPRINT SECTION (blue accent — distinct from gold launch items) ── */
+  .dev-section { margin-bottom: 28px; }
+  .dev-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; background: rgba(96,165,250,.07);
+    border: 1px solid rgba(96,165,250,.25); border-left: 3px solid var(--blue);
+    border-radius: var(--r) var(--r) 0 0;
+  }
+  .dev-header .info-icon { font-size: 18px; flex-shrink: 0; }
+  .dev-header .info-title { font-weight: 800; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; flex: 1; color: var(--blue); }
+  .dev-header .info-meta { font-size: 11px; color: var(--text2); font-family: monospace; text-align: right; }
+  .dev-body { border: 1px solid rgba(96,165,250,.18); border-top: none; border-radius: 0 0 var(--r) var(--r); background: var(--bg2); padding: 20px; }
+  .dev-intro { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+  .dev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 10px; }
+  .dev-card { border-radius: 8px; padding: 14px 16px; border: 1px solid var(--border); border-top: 2px solid rgba(96,165,250,.35); background: var(--bg3); }
+  .dev-card.dev-blocking { border-top-color: #F87171; }
+  .dev-card.dev-now { border-top-color: var(--warn); }
+  .dev-card.dev-y1 { border-top-color: var(--blue); }
+  .dev-card.dev-y2 { border-top-color: #A78BFA; }
+  .dev-card-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .dev-badge { font-size: 9px; font-family: monospace; font-weight: 800; letter-spacing: .08em; padding: 3px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+  .dev-badge.blocking { background: rgba(248,113,113,.15); color: #F87171; border: 1px solid rgba(248,113,113,.25); }
+  .dev-badge.now { background: rgba(245,158,11,.12); color: var(--warn); border: 1px solid rgba(245,158,11,.25); }
+  .dev-badge.y1 { background: rgba(96,165,250,.12); color: var(--blue); border: 1px solid rgba(96,165,250,.25); }
+  .dev-badge.y2 { background: rgba(167,139,250,.1); color: #A78BFA; border: 1px solid rgba(167,139,250,.2); }
+  .dev-badge.code { background: rgba(96,165,250,.08); color: var(--blue); border: 1px solid rgba(96,165,250,.18); }
+  .dev-badge.subscribe { background: rgba(201,168,76,.08); color: var(--gold); border: 1px solid rgba(201,168,76,.18); }
+  .dev-badge.both { background: rgba(167,139,250,.08); color: #A78BFA; border: 1px solid rgba(167,139,250,.18); }
+  .dev-card-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; width: 100%; }
+  .dev-card-problem { font-size: 12px; color: var(--text2); line-height: 1.55; margin-bottom: 8px; }
+  .dev-card-fix { font-size: 11px; color: var(--text3); line-height: 1.5; padding-top: 8px; border-top: 1px solid var(--border); }
+  .dev-card-fix strong { color: #60A5FA; }
+  .dev-card-fix code { background: var(--bg); color: #A78BFA; padding: 1px 5px; border-radius: 3px; font-size: 10px; }
+
+  /* ── BUSINESS DOCS SECTION ── */
+  .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 4px; }
+  .doc-card { display: flex; align-items: flex-start; gap: 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 13px 14px; text-decoration: none; color: inherit; transition: border-color .15s, background .15s; }
+  .doc-card:hover { border-color: var(--border2); background: var(--bg4); }
+  .doc-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .doc-label { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 3px; }
+  .doc-type { font-size: 10px; font-family: monospace; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; }
+  .doc-desc { font-size: 11px; color: var(--text2); margin-top: 4px; line-height: 1.4; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .cost-summary { grid-template-columns: 1fr; }
@@ -1192,6 +1235,215 @@
       <div style="margin-top:18px;padding:14px 16px;background:rgba(var(--accent-rgb,201,168,76),.06);border:1px solid rgba(var(--accent-rgb,201,168,76),.18);border-left:3px solid var(--gold,#C9A84C);border-radius:8px;font-size:12px;color:var(--text2);line-height:1.6">
         <strong style="color:var(--gold,#C9A84C);font-size:11px;letter-spacing:.08em;font-family:monospace">BETA STRATEGY</strong><br>
         Offer <strong>free Premium access</strong> to the first 50–100 beta testers in exchange for two things: (1) use the app for at least 2 weeks, and (2) answer 5 questions honestly at the end. You are not looking for cheerleading — you need to know exactly where people quit, what confused them, and what made them come back. Those 50 real users are more valuable than 5,000 random installs with no feedback loop.
+      </div>
+    </div>
+  </div>
+
+  <!-- DEV SPRINT: PWA / TECH CONSTRAINTS -->
+  <div class="dev-section">
+    <div class="dev-header">
+      <div class="info-icon">💻</div>
+      <div class="info-title">Tech Debt &amp; PWA Constraints — Dev Sprint</div>
+      <div class="info-meta">What to fix · When · How · Coding vs subscription</div>
+    </div>
+    <div class="dev-body">
+      <div class="dev-intro">Hero Mode is a single HTML/CSS/JS PWA — which is the right call for building fast, but creates specific constraints that must be resolved before or shortly after launch. Items marked <strong style="color:#F87171">BLOCKING</strong> prevent revenue or core functionality. <strong style="color:var(--warn)">NOW</strong> items should be resolved before public launch. <strong style="color:var(--blue)">YEAR 1</strong> items are post-launch priorities. Each card shows what type of work is required: <strong style="color:var(--blue)">CODE</strong> (you build it), <strong style="color:var(--gold)">SUBSCRIBE</strong> (sign up for a service), or <strong style="color:#A78BFA">BOTH</strong>.</div>
+      <div class="dev-grid">
+
+        <div class="dev-card dev-blocking">
+          <div class="dev-card-top">
+            <span class="dev-badge blocking">🔴 BLOCKING</span>
+            <span class="dev-badge both">BOTH</span>
+            <div class="dev-card-title">Capacitor Conversion — Native App Shell</div>
+          </div>
+          <div class="dev-card-problem">Hero Mode can't appear in App Store or Play Store organic search as a raw PWA. Store discoverability is the #1 install channel for fitness apps. Capacitor wraps the existing HTML/JS in a native shell — zero app code changes required, but it unlocks IAP, push notifications, and full store presence.</div>
+          <div class="dev-card-fix"><strong>Code:</strong> <code>npm install @capacitor/core @capacitor/cli</code> → <code>npx cap init</code> → <code>npx cap add android</code> → <code>npx cap add ios</code>. Open Android project in Android Studio; iOS in Xcode (Mac required). Build signed release. Android first — Windows-friendly and lower-friction store submission.<br><br><strong>Subscribe:</strong> Apple Developer Program ($99/yr) + Google Play Developer ($25 one-time) — both already on Phase 1 checklist.</div>
+        </div>
+
+        <div class="dev-card dev-blocking">
+          <div class="dev-card-top">
+            <span class="dev-badge blocking">🔴 BLOCKING</span>
+            <span class="dev-badge both">BOTH</span>
+            <div class="dev-card-title">In-App Purchase Wiring (RevenueCat)</div>
+          </div>
+          <div class="dev-card-problem"><code>hmInitiatePurchase()</code> and <code>hmRestorePurchase()</code> are stubs. No revenue can be collected until RevenueCat's Capacitor plugin is wired. Apple prohibits external payment links — any attempt to route subscriptions outside IAP results in app rejection.</div>
+          <div class="dev-card-fix"><strong>Subscribe:</strong> RevenueCat account (free up to $2.5K MRR) at revenuecat.com. Create entitlement + product in RevenueCat dashboard. Set up subscription products in App Store Connect and Play Console at $9.99/mo.<br><br><strong>Code:</strong> Install <code>@revenuecat/purchases-capacitor</code>. In <code>hmInitiatePurchase()</code>: call <code>Purchases.purchasePackage(pkg)</code>. On success: <code>hmSetPremium(true)</code>. In <code>hmRestorePurchase()</code>: call <code>Purchases.restorePurchases()</code>.</div>
+        </div>
+
+        <div class="dev-card dev-blocking">
+          <div class="dev-card-top">
+            <span class="dev-badge blocking">🔴 BLOCKING</span>
+            <span class="dev-badge code">CODE</span>
+            <div class="dev-card-title">LocalStorage → IndexedDB Migration</div>
+          </div>
+          <div class="dev-card-problem">localStorage is capped at 5–10 MB per device. A dedicated user logging 5 workouts/week accumulates nutrition, wellness, and session records fast. When it fills, writes silently fail — the user loses data with no warning. This is a data integrity issue that must be fixed before users invest real history in the app.</div>
+          <div class="dev-card-fix"><strong>Code:</strong> Replace <code>localStorage.setItem/getItem</code> calls with a thin IndexedDB wrapper (e.g. <code>idb-keyval</code> library or native <code>indexedDB</code> API). IndexedDB has no practical size limit and uses device storage. Audit every <code>localStorage</code> call in <code>index.html</code> and swap to async IDB reads/writes. Estimated effort: 2–4 days. Run a migration on first load to copy existing localStorage data into IDB.</div>
+        </div>
+
+        <div class="dev-card dev-now">
+          <div class="dev-card-top">
+            <span class="dev-badge now">⚠️ NOW</span>
+            <span class="dev-badge both">BOTH</span>
+            <div class="dev-card-title">Push Notifications</div>
+          </div>
+          <div class="dev-card-problem">Push notifications are the #1 re-engagement tool for fitness apps — streak danger alerts, quest refreshes, rest day reminders. Apple's PWA push support (iOS 16.4+) is unreliable and requires the user to manually add the app to their home screen first. Without reliable push, the quest/streak retention loop loses its biggest activation lever.</div>
+          <div class="dev-card-fix"><strong>Code:</strong> After Capacitor conversion, add <code>@capacitor/push-notifications</code> plugin. Request permission on first run. Wire to: streak-risk (user inactive 20+ hrs on a training day), quest refresh (daily at 6 AM), and level-up events.<br><br><strong>Subscribe:</strong> Firebase Cloud Messaging (FCM) — free tier covers millions of messages/month. Used as the delivery layer under Capacitor push.</div>
+        </div>
+
+        <div class="dev-card dev-now">
+          <div class="dev-card-top">
+            <span class="dev-badge now">⚠️ NOW</span>
+            <span class="dev-badge subscribe">SUBSCRIBE</span>
+            <div class="dev-card-title">Mac Access for iOS Builds</div>
+          </div>
+          <div class="dev-card-problem">Xcode only runs on macOS. iOS App Store submissions require a signed IPA built in Xcode. On Windows, Android builds work natively via Android Studio — but every iOS release requires a Mac. This is the single biggest friction point for ongoing iOS development on a Windows machine.</div>
+          <div class="dev-card-fix"><strong>Option A — Cloud Mac (recommended for now):</strong> MacStadium or GitHub Actions macOS runner. GitHub Actions gives 2,000 free macOS minutes/month on free tier — enough for occasional iOS builds. Set up a CI workflow: push to repo → GitHub Actions builds IPA → uploads to TestFlight.<br><br><strong>Option B — Physical Mac:</strong> Refurbished Mac mini M1 ~$400–500 used. One-time cost; best long-term solution if iOS becomes a primary platform.</div>
+        </div>
+
+        <div class="dev-card dev-y1">
+          <div class="dev-card-top">
+            <span class="dev-badge y1">📅 YEAR 1</span>
+            <span class="dev-badge both">BOTH</span>
+            <div class="dev-card-title">HealthKit / Health Connect Integration</div>
+          </div>
+          <div class="dev-card-problem">Users will ask: "Does it sync with my Apple Watch / Garmin / Fitbit?" The answer from a web app is no. HealthKit (iOS) and Health Connect (Android) are native APIs — inaccessible from a browser. This limits the hero stat system to manually logged data only, and creates a gap vs. competitors who pull heart rate, steps, and calories automatically.</div>
+          <div class="dev-card-fix"><strong>Code (post-Capacitor):</strong> iOS — <code>@perfood/capacitor-healthkit</code> plugin. Request read permissions for workout minutes, heart rate, active calories. Feed into STR/END/VIT/AGI stat calculations. Android — <code>capacitor-health-connect</code> plugin (Health Connect API, Android 14+). This makes hero stats richer and more automatic — less friction for users to see their card level up.</div>
+        </div>
+
+        <div class="dev-card dev-y1">
+          <div class="dev-card-top">
+            <span class="dev-badge y1">📅 YEAR 1</span>
+            <span class="dev-badge code">CODE</span>
+            <div class="dev-card-title">Background Processing &amp; Native Rest Timer</div>
+          </div>
+          <div class="dev-card-problem">The rest timer currently stops working the moment a user locks their screen or switches apps. JS cannot run reliably in the background on iOS. This is a core workout experience problem — a user mid-set who gets a text message loses their rest timer. Streak reminders and scheduled quest refreshes also can't fire reliably from a backgrounded web context.</div>
+          <div class="dev-card-fix"><strong>Code (post-Capacitor):</strong> <code>@capacitor/local-notifications</code> for scheduled alerts (rest timer complete, streak warning, quest refresh). For the rest timer specifically: start a local notification with a future fire time when the timer begins — if the app is backgrounded, the notification still fires at the right moment with a vibration.</div>
+        </div>
+
+        <div class="dev-card dev-y1">
+          <div class="dev-card-top">
+            <span class="dev-badge y1">📅 YEAR 1</span>
+            <span class="dev-badge both">BOTH</span>
+            <div class="dev-card-title">Optional Cloud Backup / Cross-Device Sync</div>
+          </div>
+          <div class="dev-card-problem">"I got a new phone and lost all my data" is a top-3 churn reason for fitness apps. Right now all data lives in localStorage — unrecoverable on device switch, factory reset, or app uninstall. Users who have 6+ months of workout history won't start over; they just leave. Offering optional encrypted backup preserves the on-device-first privacy story while eliminating data loss churn.</div>
+          <div class="dev-card-fix"><strong>Subscribe:</strong> Firebase Firestore (free Spark tier covers early users) or Supabase (open-source alternative, generous free tier). Keep on-device as the default — backup is opt-in, clearly described as encrypted.<br><br><strong>Code:</strong> Add "Back Up My Data" toggle in Settings. On enable: serialize localStorage/IDB data → encrypt client-side → push to Firestore under user's anonymous UID. On new device: enter a recovery key → pull + decrypt → restore. Never store unencrypted health data remotely.</div>
+        </div>
+
+        <div class="dev-card dev-y1">
+          <div class="dev-card-top">
+            <span class="dev-badge y1">📅 YEAR 1</span>
+            <span class="dev-badge code">CODE</span>
+            <div class="dev-card-title">Monolithic File Split — JS Module Architecture</div>
+          </div>
+          <div class="dev-card-problem">index.html is ~25,000+ lines — all JS, CSS, and HTML in one file. Every feature addition makes navigation harder, refactoring riskier, and collaboration impossible. No code splitting means the entire app parses on every load. No module boundaries means one bug can silently affect unrelated systems. This is manageable for a solo founder now but becomes the bottleneck for the next major feature sprint.</div>
+          <div class="dev-card-fix"><strong>Code:</strong> Migrate to a Vite + vanilla JS build setup. Extract major systems into modules: <code>quest-engine.js</code>, <code>xp-system.js</code>, <code>nutrition.js</code>, <code>workout-generator.js</code>, <code>hero-card.js</code>. Capacitor's build pipeline already supports Vite — this pairs naturally with the native conversion. Estimated effort: 1–2 weeks. Do after Capacitor conversion is stable.</div>
+        </div>
+
+        <div class="dev-card dev-y2">
+          <div class="dev-card-top">
+            <span class="dev-badge y2">🔮 YEAR 2</span>
+            <span class="dev-badge code">CODE</span>
+            <div class="dev-card-title">TypeScript + Automated Testing</div>
+          </div>
+          <div class="dev-card-problem">Vanilla JS has no type safety — bugs that TypeScript would catch at compile time (passing the wrong shape of data to a function, misspelling a property name) slip through to runtime. No automated tests mean every refactor carries silent regression risk. At current scale this is fine; at 10K+ users with real paying subscribers, a bad deploy that corrupts workout data or breaks IAP is a support crisis and a churn event.</div>
+          <div class="dev-card-fix"><strong>Code:</strong> After the Vite module split, add TypeScript incrementally — <code>allowJs: true</code> in tsconfig lets you migrate one file at a time rather than all at once. Add Vitest for unit tests on the core logic (XP calculations, quest engine, workout generator). Target: critical financial paths (IAP, premium gating) tested first. Full coverage later.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BUSINESS DOCUMENTS -->
+  <div class="dev-section">
+    <div class="dev-header">
+      <div class="info-icon">📁</div>
+      <div class="info-title">Business Documents</div>
+      <div class="info-meta">Hero Mode — App-Centered Planning Update · August 2026</div>
+    </div>
+    <div class="dev-body">
+      <div class="dev-intro">All planning, financial, and legal documents for the Hero Mode launch. Open directly or bring printed to VBOC/SBTDC meetings. Financial models (XLSX) require Excel or Google Sheets.</div>
+      <div class="docs-grid">
+        <a class="doc-card" href="./Business Documents/Hero_Mode_01_Full_Business_Plan_v1_1.pdf" target="_blank">
+          <div class="doc-icon">📋</div>
+          <div>
+            <div class="doc-label">Full Business Plan</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">Complete business plan — market, product, financials, operations, go-to-market, and risk.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_02_Executive_Summary_v1_1.pdf" target="_blank">
+          <div class="doc-icon">⚡</div>
+          <div>
+            <div class="doc-label">Executive Summary</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">One-page overview — market benchmarks, Year 1 targets, success gates, and funding rationale.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_03_Three_Year_Financial_Model_v1_1.xlsx" target="_blank">
+          <div class="doc-icon">📊</div>
+          <div>
+            <div class="doc-label">3-Year Financial Model</div>
+            <div class="doc-type">XLSX · v1.1</div>
+            <div class="doc-desc">Revenue projections, subscriber growth, churn modeling, and P&amp;L across three years.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_04_Use_of_Funds_Model_v1_1.xlsx" target="_blank">
+          <div class="doc-icon">💰</div>
+          <div>
+            <div class="doc-label">Use of Funds Model</div>
+            <div class="doc-type">XLSX · v1.1</div>
+            <div class="doc-desc">Detailed allocation of the $15K launch capital across all spend categories.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_05_Product_Roadmap_v1_1.pdf" target="_blank">
+          <div class="doc-icon">🗺️</div>
+          <div>
+            <div class="doc-label">Product Roadmap</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">Phase gates — Feature Freeze → Alpha → Beta → Monetization → Scale, with required metrics at each gate.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_06_Founder_Veteran_Narrative_v1_1.pdf" target="_blank">
+          <div class="doc-icon">🦅</div>
+          <div>
+            <div class="doc-label">Founder / Veteran Narrative</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">Founder background, veteran-owned execution advantage, and evidence discipline. Bring to VBOC.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_07_Lender_Funding_Request_v1_1.pdf" target="_blank">
+          <div class="doc-icon">🏦</div>
+          <div>
+            <div class="doc-label">Lender Funding Request</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">$15K capital request with budget breakdown, app economics, and risk controls for lender review.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_08_VBOC_SBDC_Meeting_Questions_v1_1.pdf" target="_blank">
+          <div class="doc-icon">🤝</div>
+          <div>
+            <div class="doc-label">VBOC / SBTDC Questions</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">15 questions across financing, app economics, legal structure, and go-to-market to bring to advisor meetings.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_09_MVP_Feature_Freeze_Checklist_v1_1.pdf" target="_blank">
+          <div class="doc-icon">✅</div>
+          <div>
+            <div class="doc-label">MVP Feature Freeze Checklist</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">What's in MVP vs. post-launch, with mandatory analytics events for launch instrumentation.</div>
+          </div>
+        </a>
+        <a class="doc-card" href="./Business Documents/Hero_Mode_10_90_Day_Go_To_Market_Plan_v1_1.pdf" target="_blank">
+          <div class="doc-icon">🚀</div>
+          <div>
+            <div class="doc-label">90-Day Go-To-Market Plan</div>
+            <div class="doc-type">PDF · v1.1</div>
+            <div class="doc-desc">Day 1–30 activation, Day 31–60 retention, Day 61–90 monetization, with result/action decision matrix.</div>
+          </div>
+        </a>
       </div>
     </div>
   </div>
