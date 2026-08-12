@@ -2127,6 +2127,8 @@ function hmOpenConsentManager() {
   <!-- TODAY'S WORKOUT BANNER -->
   <div id="today-workout-banner"></div>
   <div id="deload-banner" style="display:none"></div>
+  <!-- Plan summary bar — injected by hmRenderTrain() -->
+  <div id="plan-summary-slot"></div>
   <!-- Custom Workout Builder entry -->
   <div id="custom-workout-entry" onclick="openCustomWorkout()" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
     <div style="width:38px;height:38px;border-radius:10px;background:rgba(var(--accent-rgb),.1);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚡</div>
@@ -4277,10 +4279,10 @@ function hmRenderTrain(){
   if (!root || !HM_PLAN) return;
   const g = HM_PLAN.goals;
   let html = '';
-  // plan summary + edit
+  // plan summary + edit — rendered into #plan-summary-slot (above Custom Session / Add-Ons)
   const editCount = hmPlanEditsCount();
   html += hmWildcardCardHTML();
-  html += '<div class="plan-summary-card"><div class="plan-summary-txt">' +
+  let summaryHTML = '<div class="plan-summary-card"><div class="plan-summary-txt">' +
     '<div class="plan-summary-label">Your Plan' + (editCount ? ' · ' + editCount + ' edit' + (editCount > 1 ? 's' : '') : '') + '</div>' +
     '<div class="plan-summary-val">' + (g.goal === 'endurance' ? '🏁 ' + (HM_EVENT_LABEL[g.event] || '5K') : HM_GOAL_LABEL[g.goal]) + ' · ' + hmScheduleTrainCount(g) + ' days/wk · ' + g.session + ' min · ' + g.weeks + ' weeks</div></div>' +
     '<div class="plan-edit-btn" onclick="hmOpenSchedule()" title="Rest days & which workout is on which day">🗓 WEEK</div>' +
@@ -4288,11 +4290,13 @@ function hmRenderTrain(){
     '<div class="plan-edit-btn' + (window._hmEditMode ? ' on' : '') + '" onclick="hmToggleEditMode()" title="Customize exercises">' + (window._hmEditMode ? '✓ DONE' : '✎ EDIT') + '</div>' +
     '<div class="plan-edit-btn" onclick="gpOpen()">GOALS</div></div>';
   if (window._hmEditMode) {
-    html += '<div style="display:flex;gap:8px;align-items:center;background:rgba(var(--accent-rgb),.06);border:1px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:12px">' +
+    summaryHTML += '<div style="display:flex;gap:8px;align-items:center;background:rgba(var(--accent-rgb),.06);border:1px solid var(--border2);border-radius:12px;padding:10px 13px;margin-bottom:12px">' +
       '<div style="flex:1;font-size:11.5px;color:var(--text2);line-height:1.45">⇄ swap · ✎ sets & reps · ✕ remove · add exercises at the bottom of each day. Your edits stick, even if you rebuild goals.</div>' +
       (editCount ? '<div class="plan-edit-btn" style="color:#C08080;border-color:rgba(180,60,60,.3)" onclick="hmResetPlanEdits()">RESET</div>' : '') +
       '</div>';
   }
+  const _summarySlot = document.getElementById('plan-summary-slot');
+  if (_summarySlot) _summarySlot.innerHTML = summaryHTML;
   // phase pills
   const _phState = hmPhaseStateLoad();
   const _activePhIdx = _phState.phaseIdx;
