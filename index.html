@@ -2159,20 +2159,6 @@ function hmOpenConsentManager() {
   <div id="hero-class-root" style="margin-bottom:16px"></div>
   <!-- GENERATED TRAINING PLAN -->
   <div id="train-plan-root"></div>
-  <!-- SESSION NOTE -->
-  <div id="session-note-card" style="margin-top:12px;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:14px 16px">
-    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">📝 Session Note</div>
-    <textarea id="session-note-ta" placeholder="How did the session go? Notes on form, energy, what to remember next time…" maxlength="500"
-      style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;line-height:1.5;padding:10px 12px;resize:none;outline:none;font-family:inherit;min-height:72px"
-      oninput="snAutoResize(this);snSave(this.value)" onfocus="this.style.borderColor='var(--border2)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)" id="session-note-count">0 / 500</div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span id="sf-count-display" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)"></span>
-        <button onclick="hmShareWorkout()" style="padding:7px 14px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.05em;cursor:pointer;-webkit-tap-highlight-color:transparent">↗ Share Workout</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- NUTRITION -->
@@ -19844,6 +19830,10 @@ function buildSessionCard(phaseId, dow) {
           placeholder="Session notes — how did it feel? Any PRs, tweaks, energy level…"
           oninput="notesInput(this.value)"
           onclick="event.stopPropagation()">${noteGet(today)}</textarea>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:6px">
+          <span id="sf-count-display" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)"></span>
+          <button onclick="hmShareWorkout();event.stopPropagation()" style="padding:6px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.05em;cursor:pointer;-webkit-tap-highlight-color:transparent">↗ Share Workout</button>
+        </div>
       </div>
       <button class="skip-day-btn" onclick="var w=document.getElementById('skip-reason-wrap');w.style.display=w.style.display==='flex'?'none':'flex';event.stopPropagation()">⏭ Skip today's session</button>
     </div>`;

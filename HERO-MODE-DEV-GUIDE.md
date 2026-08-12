@@ -1208,3 +1208,22 @@ Score denominators updated from /32 to /30 throughout `competitive_chart.html`.
 
 ### PWA → Native app conversion summary (for reference)
 Capacitor wraps existing HTML/JS in a native shell — zero app code changes. Unlocks: App Store organic search, IAP, reliable push notifications on iOS, HealthKit/Health Connect, background processing. Steps: `npm install @capacitor/core @capacitor/cli`, `npx cap init`, `npx cap add ios`, `npx cap add android`, add `@revenuecat/purchases-capacitor` for IAP, build on Mac for iOS. Needs Apple Developer Program ($99/yr) + Google Play ($25 one-time).
+
+### Target a Muscle add-on (v74)
+New feature: users can add focused muscle-group training to an existing plan without rebuilding it. Entry point: 🎯 TARGET button in the plan summary bar.
+
+**How it works:**
+- `HM_ADDON_MUSCLES` constant defines 13 muscle groups, each with tag filters (maps to `EX` tag field) and `dayKeys` for smart day pre-selection.
+- `hmTargetMuscle()` → muscle grid step → `hmMusclePick(id)` exercise list (max 3 selectable) → `hmMuscleStep3()` day picker (pre-selects smart-matched days across ALL phases) → `hmMuscleApply()` injects exercises via existing `hmPlanEditsSave`/`hmApplyPlan` pipeline.
+- Smart day matching: stores day NAMES, expands to all phase|di keys at apply time — "add to Pull Day" hits every phase that has a Pull Day.
+- Overlay: `#hm-muscle-picker`, z-index 9983. `.mp-sheet` is `position:absolute; top:15%; bottom:0` — must NOT have `position:relative` (causes unconstrained height = no scroll).
+
+### Recruit skin assets (v74)
+- `assets/ui/bg-recruit.png` — Gold topographic map from `Recruit/Gold.png`; renders at opacity 0.46 with gradient mask in hero banner.
+- `assets/ui/emblem-recruit.png` — Military chevron badge from `Recruit/recruit.png`.
+- Theme system auto-picks up by filename (`bg-{id}.png`, `emblem-{id}.png`) — no code changes needed.
+
+### Plan summary bar moved above Custom Session / Add-Ons (v75)
+The "Your Plan / Build Muscle · WEEK · TARGET · EDIT · GOALS" bar was moved from the top of `#train-plan-root` to a static `#plan-summary-slot` div placed directly above `#custom-workout-entry` in the HTML. This positions it at eye level to grab attention before the user scrolls to the add-ons section.
+
+**Architecture:** `hmRenderTrain()` now builds `summaryHTML` separately and injects it via `document.getElementById('plan-summary-slot').innerHTML = summaryHTML` instead of prepending it to the main `html` variable. The slot lives in static HTML at line ~2131. `#train-plan-root` (at line ~2159, below Custom Session) still receives the wildcard card, phase pills, and exercise days.

@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v75'; // v75: Plan summary bar moved above Custom Session / Add-Ons
+const CACHE_VERSION = 'hero-mode-v76'; // v76: Session note consolidated into tracker; bottom card removed
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
