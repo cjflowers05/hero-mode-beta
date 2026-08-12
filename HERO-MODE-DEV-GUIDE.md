@@ -738,7 +738,7 @@ Payload: `btoa(JSON.stringify({ v: 1, d: 'YYYY-MM-DD', e: [{ k: exKey, n: name, 
 
 **Power Score:** weighted average — `STR×0.25 + END×0.20 + VIT×0.20 + AGI×0.15 + DIS×0.20`
 
-**Hero Rating:** `min(99, round(40 + avg_stat * 0.59))` — shown as 0-99 + letter grade (C → S+)
+**Hero Rating:** `min(99, round(40 + avg_stat * 0.59))` — shown as 0-99 + letter grade (C → S+). **Grade is suppressed for new users** (`hasActivity` check: if all workout-based stats are 0, shows `—` / `KEEP TRAINING` instead of a C grade). Same suppression applied to the shareable canvas image.
 
 **Key functions:**
 - `hmRarityTier(lvl)` — returns `{ name, color, glow }` object

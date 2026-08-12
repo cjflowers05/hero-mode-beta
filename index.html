@@ -24645,7 +24645,7 @@ function renderHeroCard(el) {
           <div class="hc-back-footer">
             <div><div class="hc-bf-lbl">Total XP</div><div class="hc-bf-val">${(xpData.xp||0).toLocaleString()}</div></div>
             <div><div class="hc-bf-lbl">Streak</div><div class="hc-bf-val">${streak} DAYS</div></div>
-            <div><div class="hc-bf-lbl">Hero Rating</div><div class="hc-bf-val">${gradeDisplay} · ${ratingDisplay}</div></div>
+            <div><div class="hc-bf-lbl">Hero Rating</div><div class="hc-bf-val">${hasActivity ? grade + ' · ' + rating : 'KEEP TRAINING'}</div></div>
           </div>
           <button class="hc-share-btn" onclick="event.stopPropagation();hmShare('hero-card')">↗ SHARE HERO CARD</button>
         </div>
@@ -24671,6 +24671,7 @@ async function hmBuildHeroCardCanvas() {
   const power   = hmPowerScore(stats);
   const rating  = hmHeroRating(stats);
   const grade   = hmHeroRatingGrade(rating);
+  const hasActivity = stats.STR > 0 || stats.END > 0 || stats.VIT > 0 || stats.AGI > 0;
   const streak  = Math.max(
     (typeof calcStreak === 'function') ? calcStreak() : 0,
     (xpData.login && xpData.login.streak) ? xpData.login.streak : 0
@@ -24745,7 +24746,7 @@ async function hmBuildHeroCardCanvas() {
   ];
   const barY0 = nameY + 318, BAR_H = 14, ROW = 34, BAR_X = 150, BAR_W = W - 300;
   ctx.fillStyle = MUTED; ctx.font = '22px monospace'; ctx.textAlign = 'left';
-  ctx.fillText('DERIVED STATS — LAST 7 DAYS', BAR_X, barY0);
+  ctx.fillText('HERO STATS — LAST 7 DAYS', BAR_X, barY0);
   STATS_D.forEach((s, i) => {
     const y = barY0 + 28 + i * ROW;
     ctx.fillStyle = GOLD; ctx.font = 'bold 24px monospace';
@@ -24761,7 +24762,7 @@ async function hmBuildHeroCardCanvas() {
   const rY = barY0 + 28 + 5 * ROW + 24;
   ctx.textAlign = 'center';
   ctx.fillStyle = GOLD; ctx.font = 'bold 52px monospace';
-  ctx.fillText('HERO RATING  ' + grade + ' · ' + rating, W / 2, rY);
+  ctx.fillText(hasActivity ? 'HERO RATING  ' + grade + ' · ' + rating : 'KEEP TRAINING — LOG YOUR FIRST WORKOUT', W / 2, rY);
   if (streak > 0) {
     ctx.fillStyle = MUTED; ctx.font = '28px monospace';
     ctx.fillText('🔥 ' + streak + '-day streak', W / 2, rY + 44);
