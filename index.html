@@ -9977,7 +9977,7 @@ function meRenderRecipePicker(query) {
   const list = document.getElementById('me-recipe-list');
   if (!list) return;
   const q = (query || '').toLowerCase().trim();
-  const recipes = (window.rbRecipes || []).filter(r =>
+  const recipes = loadRbRecipes().filter(r =>
     !q || r.name.toLowerCase().includes(q) || (r.tag || '').toLowerCase().includes(q)
   );
   if (!recipes.length) {
@@ -9999,7 +9999,7 @@ function meRenderRecipePicker(query) {
 }
 
 function mePickRecipe(id) {
-  const recipe = (window.rbRecipes || []).find(r => r.id == id);
+  const recipe = loadRbRecipes().find(r => r.id == id);
   if (!recipe) return;
   meParsed.push({ n: recipe.name, s: '1 serving', conf: 'high', original: recipe.name,
     c: recipe.cal || 0, p: recipe.prot || 0, b: recipe.carb || 0, f: recipe.fat || 0, qty: 1 });
