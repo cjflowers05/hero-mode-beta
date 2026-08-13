@@ -5169,16 +5169,19 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="log-field-wrap"><div class="log-field-label">Servings</div><input class="log-field" id="re-servings" type="number" placeholder="2" style="width:100%"></div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-      <div class="log-field-wrap"><div class="log-field-label">Cal</div><input class="log-field" id="re-cal" type="number" placeholder="450" inputmode="decimal" style="width:100%"></div>
-      <div class="log-field-wrap"><div class="log-field-label">Protein</div><input class="log-field" id="re-prot" type="number" placeholder="40" inputmode="decimal" style="width:100%"></div>
-      <div class="log-field-wrap"><div class="log-field-label">Carbs</div><input class="log-field" id="re-carb" type="number" placeholder="30" inputmode="decimal" style="width:100%"></div>
-      <div class="log-field-wrap"><div class="log-field-label">Fat</div><input class="log-field" id="re-fat" type="number" placeholder="12" inputmode="decimal" style="width:100%"></div>
-    </div>
-
-    <div class="log-field-wrap" style="margin-bottom:10px">
+    <div class="log-field-wrap" style="margin-bottom:6px">
       <div class="log-field-label">Ingredients (one per line)</div>
       <textarea class="log-field" id="re-ingredients" placeholder="200g chicken breast&#10;2 tbsp soy sauce&#10;1 tbsp honey&#10;1 tsp garlic" style="width:100%;height:110px;resize:none;font-size:13px;line-height:1.6"></textarea>
+    </div>
+
+    <button onclick="rbEstimateMacros()" style="width:100%;padding:9px;border-radius:10px;background:rgba(201,168,76,.07);border:1px dashed var(--border2);color:var(--gold);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer;margin-bottom:8px;-webkit-tap-highlight-color:transparent">✨ ESTIMATE MACROS FROM INGREDIENTS</button>
+    <div id="re-estimate-note" style="display:none;font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:10px;line-height:1.6"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      <div class="log-field-wrap"><div class="log-field-label">Cal <span style="color:var(--text3);font-size:8px">/ serving</span></div><input class="log-field" id="re-cal" type="number" placeholder="450" inputmode="decimal" style="width:100%"></div>
+      <div class="log-field-wrap"><div class="log-field-label">Protein <span style="color:var(--text3);font-size:8px">/ srv</span></div><input class="log-field" id="re-prot" type="number" placeholder="40" inputmode="decimal" style="width:100%"></div>
+      <div class="log-field-wrap"><div class="log-field-label">Carbs <span style="color:var(--text3);font-size:8px">/ srv</span></div><input class="log-field" id="re-carb" type="number" placeholder="30" inputmode="decimal" style="width:100%"></div>
+      <div class="log-field-wrap"><div class="log-field-label">Fat <span style="color:var(--text3);font-size:8px">/ srv</span></div><input class="log-field" id="re-fat" type="number" placeholder="12" inputmode="decimal" style="width:100%"></div>
     </div>
 
     <div class="log-field-wrap" style="margin-bottom:14px">
@@ -11967,15 +11970,51 @@ function rbDeleteRecipe() {
 function openRecipeImport() {
   // Clear form
   ['re-name','re-ingredients','re-instructions'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+    const el = document.getElementById(id); if (el) el.value = '';
   });
   ['re-cal','re-prot','re-carb','re-fat','re-servings'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+    const el = document.getElementById(id); if (el) el.value = '';
   });
+  const note = document.getElementById('re-estimate-note');
+  if (note) { note.style.display = 'none'; note.innerHTML = ''; }
   document.getElementById('recipeEditModal').classList.add('open');
   lockBodyScroll();
+}
+
+function rbEstimateMacros() {
+  const ingText = document.getElementById('re-ingredients').value.trim();
+  if (!ingText) { showToast('Add ingredients first', 'error'); return; }
+
+  const lines = ingText.split('\n').map(l => l.trim()).filter(Boolean);
+  const parsed = parseMealText(lines.join(', '));
+  if (!parsed.length) { showToast('Could not estimate — try adding amounts (e.g. "200g chicken")', 'error'); return; }
+
+  const known = parsed.filter(f => f.conf !== 'unknown' && f.conf !== 'searching');
+  const unknown = parsed.filter(f => f.conf === 'unknown').map(f => f.original);
+
+  const totC = known.reduce((a, f) => a + (f.c || 0), 0);
+  const totP = known.reduce((a, f) => a + (f.p || 0), 0);
+  const totB = known.reduce((a, f) => a + (f.b || 0), 0);
+  const totF = known.reduce((a, f) => a + (f.f || 0), 0);
+
+  const servings = Math.max(1, parseFloat(document.getElementById('re-servings').value) || 1);
+  document.getElementById('re-cal').value  = Math.round(totC / servings);
+  document.getElementById('re-prot').value = Math.round(totP / servings);
+  document.getElementById('re-carb').value = Math.round(totB / servings);
+  document.getElementById('re-fat').value  = Math.round(totF / servings);
+
+  const note = document.getElementById('re-estimate-note');
+  if (note) {
+    const breakdown = known.map(f =>
+      `<span style="color:var(--text2)">${f.original || f.n}</span> — ${f.c} cal · ${f.p}g P`
+    ).join('<br>');
+    let html = `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Estimated from ${known.length} of ${parsed.length} ingredients · ${servings} serving${servings !== 1 ? 's' : ''}</div>${breakdown}`;
+    if (unknown.length) html += `<br><span style="color:#C87850">⚠ Not recognized: ${unknown.join(', ')} — add their macros manually</span>`;
+    html += `<div style="margin-top:6px;color:var(--text3);font-size:10px">These are estimates. Adjust the fields above if needed.</div>`;
+    note.innerHTML = html;
+    note.style.display = 'block';
+  }
+  showToast('Macros estimated — review and adjust', 'success');
 }
 
 function closeRecipeEdit() {
