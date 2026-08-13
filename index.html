@@ -22110,7 +22110,7 @@ function cwRenderSession() {
       <div class="cw-ex-tag">${muscle.toUpperCase()}${ex.tag ? ' · ' + ex.tag.toUpperCase() : ''}</div>
       ${ex.cues && ex.cues[0] ? `<div class="cw-ex-cue">${ex.cues[0].t || ex.cues[0]}</div>` : ''}
       <div class="cw-ex-actions">
-        <button class="cw-log-btn" onclick="closeCustomWorkout();openLogSheet('${item.key}')">LOG SET</button>
+        <button class="cw-log-btn" onclick="openLogSheet('${item.key}')">LOG SET</button>
         ${hasAlts ? `<button class="cw-swap-btn" onclick="cwSwapExercise(${idx})">↻ Swap</button>` : ''}
       </div>
     </div>`;

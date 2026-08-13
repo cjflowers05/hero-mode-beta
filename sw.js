@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v85'; // v85: Chest opening — animated build-up + physics confetti + trophy reveal
+const CACHE_VERSION = 'hero-mode-v86'; // v86: Fix custom workout LOG SET closing the session before log sheet opens
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
