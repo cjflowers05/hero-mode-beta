@@ -481,6 +481,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .me-result-serving{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:4px}
 .me-result-macros{font-family:'DM Mono',monospace;font-size:10px;color:var(--text2)}
 .me-result-del{width:24px;height:24px;border-radius:6px;border:1px solid rgba(180,60,60,.25);background:rgba(180,60,60,.06);color:#C08080;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px}
+.me-qty-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.me-qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--border2);background:var(--bg4);color:var(--gold);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace;-webkit-tap-highlight-color:transparent}
+.me-qty-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);min-width:56px;text-align:center}
 .me-unknown-row{display:flex;gap:6px;margin-bottom:8px;align-items:center}
 .me-unknown-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none}
 .me-unknown-input::placeholder{color:var(--text3)}
@@ -9925,6 +9928,13 @@ function meRemoveItem(i) {
   renderMeResults();
 }
 
+function meChangeQty(i, delta) {
+  if (!meParsed[i]) return;
+  const cur = meParsed[i].qty || 1;
+  meParsed[i].qty = Math.max(0.5, Math.round((cur + delta) * 2) / 2);
+  renderMeResults();
+}
+
 function meSetUnknown(i, cal, prot, carb, fat) {
   meParsed[i].c = parseInt(cal)||0;
   meParsed[i].p = parseInt(prot)||0;
@@ -10033,12 +10043,21 @@ function renderMeResults() {
         const sourceLabel = isApi
           ? `<span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:4px">${food.source === 'nutritionix' ? 'Nutritionix' : 'USDA'}</span>`
           : '';
+        const qty = food.qty || 1;
+        const qtyLabel = qty === 1 ? '1 serving' : qty + ' servings';
+        const totC = Math.round(food.c * qty), totP = Math.round(food.p * qty);
+        const totB = Math.round(food.b * qty), totF = Math.round(food.f * qty);
         html += `<div class="me-result-item">
           <div class="me-result-icon ${confClass}">${confIcon}</div>
           <div class="me-result-body">
             <div class="me-result-name">${food.n}${sourceLabel}</div>
             <div class="me-result-serving">${food.s || food.original}</div>
-            <div class="me-result-macros">${food.c} cal · ${food.p}g P · ${food.b}g C · ${food.f}g F</div>
+            <div class="me-result-macros">${totC} cal · ${totP}g P · ${totB}g C · ${totF}g F</div>
+            <div class="me-qty-row">
+              <button class="me-qty-btn" onclick="meChangeQty(${i},-0.5)">−</button>
+              <div class="me-qty-val">${qtyLabel}</div>
+              <button class="me-qty-btn" onclick="meChangeQty(${i},0.5)">+</button>
+            </div>
           </div>
           <button class="me-result-del" onclick="meRemoveItem(${i})">✕</button>
         </div>`;
@@ -10050,10 +10069,10 @@ function renderMeResults() {
 
   // Totals bar — exclude items still searching or fully unknown
   const addable = meParsed.filter(f => f.conf !== 'unknown' && f.conf !== 'searching');
-  const totC = addable.reduce((a,f) => a+f.c, 0);
-  const totP = addable.reduce((a,f) => a+f.p, 0);
-  const totB = addable.reduce((a,f) => a+f.b, 0);
-  const totF = addable.reduce((a,f) => a+f.f, 0);
+  const totC = addable.reduce((a,f) => a + f.c * (f.qty||1), 0);
+  const totP = addable.reduce((a,f) => a + f.p * (f.qty||1), 0);
+  const totB = addable.reduce((a,f) => a + f.b * (f.qty||1), 0);
+  const totF = addable.reduce((a,f) => a + f.f * (f.qty||1), 0);
   document.getElementById('me-totals-bar').innerHTML = `
     <div class="pm-preview-item"><div class="me-total-val">${Math.round(totC)}</div><div class="me-total-lbl">cal</div></div>
     <div class="pm-preview-item"><div class="me-total-val">${Math.round(totP)}g</div><div class="me-total-lbl">protein</div></div>
@@ -10071,7 +10090,11 @@ function meConfirm() {
   const day = ntDay(ntCurrentDate);
   const addable = meParsed.filter(f => f.conf !== 'unknown' && f.conf !== 'searching');
   addable.forEach(food => {
-    day.meals[meMeal].push({ n: food.n, s: food.s, c: food.c, p: food.p, b: food.b, f: food.f });
+    const qty = food.qty || 1;
+    const qtyTag = qty !== 1 ? ' ×' + qty : '';
+    day.meals[meMeal].push({ n: food.n + qtyTag, s: food.s,
+      c: Math.round(food.c * qty), p: Math.round(food.p * qty),
+      b: Math.round(food.b * qty), f: Math.round(food.f * qty) });
   });
   saveNtDB();
   renderNutriTracker();
