@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-12. Current SW version: v81.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-13. Current SW version: v85.*
 
 ---
 
@@ -1243,5 +1243,14 @@ Each identified food in the meal parser results view (View B) gains a `−/+` st
 ### Recipe macro estimator wizard (v80)
 The Add Recipe form was restructured: **Ingredients** textarea first, then an **✨ ESTIMATE MACROS FROM INGREDIENTS** button (dashed gold border), then a breakdown note, then per-serving macro fields. `rbEstimateMacros()` calls `parseMealText()` on the joined ingredient lines, sums known-food macros, divides by servings count, and fills the cal/prot/carb/fat inputs. Unrecognized ingredients are listed in orange with a "flagged" label.
 
-### Add from Recipe Book in meal entry modal (v81)
-A third view (View C, `#me-recipe-view`) was added to the "What did you eat?" modal alongside View A (text entry) and View B (parser results). A **📖 Add from Recipe Book** button appears below the "Identify Foods →" button in View A. Clicking it calls `meOpenRecipePicker()`, which renders a searchable card list from `window.rbRecipes`. Tapping a recipe calls `mePickRecipe(id)` which pushes a `meParsed` entry (qty:1) and navigates to View B. The user can then adjust the serving stepper or confirm alongside any text-parsed items. `meCloseRecipePicker()` returns to View B if `meParsed` has items, otherwise View A.
+### Add from Recipe Book in meal entry modal (v81–v82)
+A third view (View C, `#me-recipe-view`) was added to the "What did you eat?" modal alongside View A (text entry) and View B (parser results). A **📖 Add from Recipe Book** button appears below the "Identify Foods →" button in View A. Clicking it calls `meOpenRecipePicker()`, which renders a searchable card list using `loadRbRecipes()` (reads fresh from localStorage — v82 fix; was `window.rbRecipes` which is undefined when the Recipe Book tab hasn't been visited). Tapping a recipe calls `mePickRecipe(id)` which pushes a `meParsed` entry (qty:1) and navigates to View B.
+
+### Hero card back face — encouraging copy + ghost shimmer bars (v83)
+Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Generic description removed and replaced with a context-aware block — `!hasActivity` shows "EVERY LEGEND STARTS AT ZERO." in Bebas Neue + action hints per stat; `hasActivity` shows "Stats built from your last 7 days." Empty stat bars (val=0) now use `.hc-bar-ghost` class which adds a CSS shimmer animation (`@keyframes hc-shimmer`). Stat numbers show `—` at 0.28 opacity instead of `0`.
+
+### Hero card front face — theme card background (v84)
+`renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### Chest opening moment — full animated reveal (v85)
+`hmOpenChest()` rebuilt from scratch — no video dependency. **Phase 1 (build-up):** dark overlay with 28 ambient rising gold sparkles on a `<canvas>` (rAF loop), pulsing radial glow ring, large chest emoji with shake+glow animation, "ALL QUESTS COMPLETE" / "YOUR REWARD AWAITS" text, "OPEN CHEST ▸" button. Chest icon itself is also tappable. **Phase 2 (reveal):** white screen flash → phase-swap → 🏆 trophy emoji with `hmChestBounce`, "CHEST OPENED" with gold text-shadow glow, "+50 BONUS XP" with green glow, random motivational quote, "CLAIM IT" button. Physics confetti: `hmConfettiBurst(canvas)` spawns 90 particles (circles + rectangles) with gravity (980 px/s²), air drag (0.988), per-particle rotation, and alpha fade as particles exit the bottom third of the screen. Canvas auto-removes when all particles are done. Quest state key: `s.quests.chest` (flat, not `s.quests[date]`).
