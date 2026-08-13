@@ -4944,6 +4944,7 @@ document.addEventListener('DOMContentLoaded', () => {
         oninput="meAutoResize(this)"></textarea>
       <div class="me-hint">Separate items with commas. Include amounts if you know them — "2 cups rice", "200g chicken", "1 scoop protein". The app will do the rest.</div>
       <button class="me-parse-btn" onclick="meParse()">Identify Foods →</button>
+      <button class="me-parse-btn" onclick="meOpenRecipePicker()" style="margin-top:8px;background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2)">📖 Add from Recipe Book</button>
       <div class="me-manual-link" onclick="meOpenManual()">or enter manually with exact numbers</div>
       <div class="me-safe-pad"></div>
     </div>
@@ -4956,6 +4957,16 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="me-totals" id="me-totals-bar" style="flex-shrink:0"></div>
       <button class="me-confirm-btn" id="me-confirm-btn" onclick="meConfirm()" style="margin-top:8px">Save to Log</button>
       <div class="me-back-link" onclick="meBack()">← edit text</div>
+      <div class="me-safe-pad"></div>
+    </div>
+
+    <!-- View C: recipe picker -->
+    <div id="me-recipe-view" style="display:none;flex:1;min-height:0;flex-direction:column">
+      <div class="me-meal-lbl" id="me-recipe-lbl">BREAKFAST</div>
+      <div class="me-heading" style="margin-bottom:10px">Pick a recipe</div>
+      <input class="log-field" id="me-recipe-search" placeholder="Search recipes…" oninput="meRenderRecipePicker(this.value)" style="margin-bottom:10px;font-size:14px;flex-shrink:0">
+      <div id="me-recipe-list" style="flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch"></div>
+      <div class="me-back-link" onclick="meCloseRecipePicker()">← back</div>
       <div class="me-safe-pad"></div>
     </div>
   </div>
@@ -9935,6 +9946,67 @@ function meChangeQty(i, delta) {
   if (!meParsed[i]) return;
   const cur = meParsed[i].qty || 1;
   meParsed[i].qty = Math.max(0.5, Math.round((cur + delta) * 2) / 2);
+  renderMeResults();
+}
+
+function meOpenRecipePicker() {
+  document.getElementById('me-entry-view').style.display = 'none';
+  document.getElementById('me-results-view').style.display = 'none';
+  const rv = document.getElementById('me-recipe-view');
+  rv.style.display = 'flex';
+  rv.style.flexDirection = 'column';
+  document.getElementById('me-recipe-lbl').textContent = meMeal.toUpperCase();
+  const srch = document.getElementById('me-recipe-search');
+  if (srch) srch.value = '';
+  meRenderRecipePicker('');
+}
+
+function meCloseRecipePicker() {
+  document.getElementById('me-recipe-view').style.display = 'none';
+  if (meParsed.length) {
+    const rv = document.getElementById('me-results-view');
+    rv.style.display = 'flex'; rv.style.flexDirection = 'column';
+    document.getElementById('me-results-lbl').textContent = meMeal.toUpperCase();
+    renderMeResults();
+  } else {
+    document.getElementById('me-entry-view').style.display = 'block';
+  }
+}
+
+function meRenderRecipePicker(query) {
+  const list = document.getElementById('me-recipe-list');
+  if (!list) return;
+  const q = (query || '').toLowerCase().trim();
+  const recipes = (window.rbRecipes || []).filter(r =>
+    !q || r.name.toLowerCase().includes(q) || (r.tag || '').toLowerCase().includes(q)
+  );
+  if (!recipes.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px 10px;color:var(--text3);font-size:13px">No recipes found.<br>Add some in the Recipe Book tab.</div>';
+    return;
+  }
+  list.innerHTML = recipes.map(r => {
+    const cal = r.cal || 0, prot = r.prot || 0;
+    const tag = r.tag || 'General';
+    return `<div onclick="mePickRecipe(${r.id})" style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:11px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="font-size:22px;flex-shrink:0">🍳</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">${tag} · ${cal} cal · ${prot}g P per serving</div>
+      </div>
+      <div style="color:var(--gold);font-size:20px;flex-shrink:0;line-height:1">+</div>
+    </div>`;
+  }).join('');
+}
+
+function mePickRecipe(id) {
+  const recipe = (window.rbRecipes || []).find(r => r.id == id);
+  if (!recipe) return;
+  meParsed.push({ n: recipe.name, s: '1 serving', conf: 'high', original: recipe.name,
+    c: recipe.cal || 0, p: recipe.prot || 0, b: recipe.carb || 0, f: recipe.fat || 0, qty: 1 });
+  document.getElementById('me-recipe-view').style.display = 'none';
+  const rv = document.getElementById('me-results-view');
+  rv.style.display = 'flex'; rv.style.flexDirection = 'column';
+  document.getElementById('me-results-lbl').textContent = meMeal.toUpperCase();
   renderMeResults();
 }
 

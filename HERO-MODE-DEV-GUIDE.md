@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-11. Current SW version: v70.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-12. Current SW version: v81.*
 
 ---
 
@@ -1227,3 +1227,21 @@ New feature: users can add focused muscle-group training to an existing plan wit
 The "Your Plan / Build Muscle · WEEK · TARGET · EDIT · GOALS" bar was moved from the top of `#train-plan-root` to a static `#plan-summary-slot` div placed directly above `#custom-workout-entry` in the HTML. This positions it at eye level to grab attention before the user scrolls to the add-ons section.
 
 **Architecture:** `hmRenderTrain()` now builds `summaryHTML` separately and injects it via `document.getElementById('plan-summary-slot').innerHTML = summaryHTML` instead of prepending it to the main `html` variable. The slot lives in static HTML at line ~2131. `#train-plan-root` (at line ~2159, below Custom Session) still receives the wildcard card, phase pills, and exercise days.
+
+### Session note consolidated into tracker; Share Workout moved (v76)
+The standalone `#session-note-card` at the bottom of the Train tab was removed entirely — it was confusing UX because the session tracker already contains a notes textarea. The **↗ Share Workout** button was relocated into the session tracker's notes row (`.session-notes-row`) so it lives alongside the note input with a character count display.
+
+### Plan summary bar responsive fix for mobile (v77)
+`.plan-summary-card` gained `flex-wrap:wrap` and `.plan-summary-txt` got `flex:1;min-width:160px`. The edit/goals buttons use `flex-shrink:0`. At ≤420px, plan text snaps to `flex-basis:100%` and buttons become `flex:1` for a clean two-column row. This prevents the bar from scrunching on small screens.
+
+### Custom food entry — serving size + save for later (v78)
+`#fm-custom-serving` input (e.g. "1 cup, 100g") and `#fm-custom-qty` (servings eaten, step 0.25) added to the custom food form. Macro fields are labeled "per serving." "💾 SAVE & ADD TO LOG" calls `ntAddCustomFood(true)` which generates `id: 'custom-' + Date.now()` and calls `myFoodsSave()`. "Add once without saving" calls `ntAddCustomFood(false)` — skips saving. The logged entry multiplies per-serving macros by qty.
+
+### Meal parser — per-item serving stepper (v79)
+Each identified food in the meal parser results view (View B) gains a `−/+` stepper (step 0.5 servings). `meChangeQty(i, delta)` updates `meParsed[i].qty`. `renderMeResults()` computes totals as `food.c * (food.qty||1)`. The totals bar and `meConfirm()` both respect qty. Unknown foods are not steppered (no macro data).
+
+### Recipe macro estimator wizard (v80)
+The Add Recipe form was restructured: **Ingredients** textarea first, then an **✨ ESTIMATE MACROS FROM INGREDIENTS** button (dashed gold border), then a breakdown note, then per-serving macro fields. `rbEstimateMacros()` calls `parseMealText()` on the joined ingredient lines, sums known-food macros, divides by servings count, and fills the cal/prot/carb/fat inputs. Unrecognized ingredients are listed in orange with a "flagged" label.
+
+### Add from Recipe Book in meal entry modal (v81)
+A third view (View C, `#me-recipe-view`) was added to the "What did you eat?" modal alongside View A (text entry) and View B (parser results). A **📖 Add from Recipe Book** button appears below the "Identify Foods →" button in View A. Clicking it calls `meOpenRecipePicker()`, which renders a searchable card list from `window.rbRecipes`. Tapping a recipe calls `mePickRecipe(id)` which pushes a `meParsed` entry (qty:1) and navigates to View B. The user can then adjust the serving stepper or confirm alongside any text-parsed items. `meCloseRecipePicker()` returns to View B if `meParsed` has items, otherwise View A.
