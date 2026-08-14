@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-13. Current SW version: v86.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-14. Current SW version: v87.*
 
 ---
 
@@ -1254,6 +1254,9 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Chest opening moment — full animated reveal (v85)
 `hmOpenChest()` rebuilt from scratch — no video dependency. **Phase 1 (build-up):** dark overlay with 28 ambient rising gold sparkles on a `<canvas>` (rAF loop), pulsing radial glow ring, large chest emoji with shake+glow animation, "ALL QUESTS COMPLETE" / "YOUR REWARD AWAITS" text, "OPEN CHEST ▸" button. Chest icon itself is also tappable. **Phase 2 (reveal):** white screen flash → phase-swap → 🏆 trophy emoji with `hmChestBounce`, "CHEST OPENED" with gold text-shadow glow, "+50 BONUS XP" with green glow, random motivational quote, "CLAIM IT" button. Physics confetti: `hmConfettiBurst(canvas)` spawns 90 particles (circles + rectangles) with gravity (980 px/s²), air drag (0.988), per-particle rotation, and alpha fade as particles exit the bottom third of the screen. Canvas auto-removes when all particles are done. Quest state key: `s.quests.chest` (flat, not `s.quests[date]`).
+
+### Original recipe library — third-party content removed (v87)
+All 20 recipes attributed to "Cooking For Gains" (Cameron Dukes, b5–b13) and "Matt West" (b14–b24) replaced with 20 original Hero Mode recipes. All `source` fields now read `"Hero Mode"`. `rbSeedIfEmpty()` updated to force-replace any existing builtin whose `name` or `source` has changed (while preserving the user's `fav` flag), so existing users get the updated recipes automatically on next app open. New recipes span: High Protein, Meal Prep, Breakfast, Cut, Snack, Pre-Workout, Post-Workout tags.
 
 ### Custom workout LOG SET fix (v86)
 Bug: tapping LOG SET inside `cwRenderSession()` called `closeCustomWorkout()` before opening the log sheet, killing the entire active session. Fix: removed `closeCustomWorkout();` from the button's `onclick`. Both modals share `z-index:515` on `.log-modal-overlay`; `#logModal` is later in the DOM than `#customWorkoutModal` so it naturally stacks on top. After `closeLogModal()` the custom workout modal is still `display:flex`.
