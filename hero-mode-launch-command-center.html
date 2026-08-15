@@ -285,8 +285,8 @@
   <div class="cost-summary" id="sec-costs">
     <div class="cost-col">
       <div class="cost-eyebrow">Core launch (one-time)</div>
-      <div class="cost-amount gold">~$369</div>
-      <div class="cost-note">Wyoming LLC via Northwest ($225) + Apple Dev ($99) + Google Play ($25) + domain (~$20). Add ~<strong style="color:var(--gold2)">$2,200</strong> for full IP/legal shield — trademark ($700) + T&amp;C attorney ($1,000) + privacy review ($500).</div>
+      <div class="cost-amount gold">~$568</div>
+      <div class="cost-note">NC LLC via Formations Secure ($424) + Apple Dev ($99) + Google Play ($25) + domain (~$20). Add ~<strong style="color:var(--gold2)">$2,200</strong> for full IP/legal shield — trademark ($700) + T&amp;C attorney ($1,000) + privacy review ($500).</div>
     </div>
     <div class="cost-col">
       <div class="cost-eyebrow">Monthly (pre-revenue)</div>
@@ -315,7 +315,7 @@
         <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
         <div class="item-body">
           <div class="item-title">SBA Express Loan — up to $500K, 36-hr decision, no guarantee fee for veterans</div>
-          <div class="item-desc">The SBA waives the upfront guarantee fee (typically 2–3.5% of the loan amount) for veteran-owned businesses on SBA Express Loans. Decisions in 36 hours vs. the standard SBA process. You need LLC + EIN + business bank account in place first. Apply through a participating lender — use the Lender Match tool at sba.gov/lenders-match. For a pre-revenue app, expect to provide a personal guarantee. Target $5K–$25K to cover year-one costs: LLC ($225) + Apple Dev ($99) + Google Play ($25) + trademark ($700) + attorney T&amp;C ($1,000–1,500) + sound license ($180) + 6 months of $27/mo recurring = ~$2,800 total year-one hard costs before you earn a dollar. A $10K loan covers this with runway to spare.</div>
+          <div class="item-desc">The SBA waives the upfront guarantee fee (typically 2–3.5% of the loan amount) for veteran-owned businesses on SBA Express Loans. Decisions in 36 hours vs. the standard SBA process. You need LLC + EIN + business bank account in place first. Apply through a participating lender — use the Lender Match tool at sba.gov/lenders-match. For a pre-revenue app, expect to provide a personal guarantee. Target $5K–$25K to cover year-one costs: NC LLC via Formations Secure ($424) + Apple Dev ($99) + Google Play ($25) + trademark ($700) + attorney T&amp;C ($1,000–1,500) + sound license ($180) + 6 months of $27/mo recurring = ~$3,100 total year-one hard costs before you earn a dollar. A $10K loan covers this with runway to spare.</div>
           <div class="item-tags"><span class="tag tag-free">NO GUARANTEE FEE — vet benefit</span><span class="tag tag-paid">Requires LLC + EIN first</span></div>
         </div>
         <div class="item-cost"><span class="one-time">$5K–500K</span><br>sba.gov</div>
@@ -378,11 +378,11 @@
       <div class="item" id="item-llc" onclick="toggle('llc')">
         <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
         <div class="item-body">
-          <div class="item-title">Form HeroMode LLC in Wyoming — via Northwest Registered Agent</div>
-          <div class="item-desc">Wyoming is one of the best states for LLC formation: no state income tax, strong asset protection laws, low annual fees (~$52/yr report fee after year one), and no requirement to be a Wyoming resident. File through Northwest Registered Agent (northwestregisteredagent.com) — they handle the state filing AND serve as your registered agent (required by Wyoming law — you need a physical in-state address on file). Northwest's formation package is $225 all-in for year one. They're privacy-friendly and don't upsell aggressively. Once formed, you'll get your Articles of Organization — keep this safe, you'll need it to open a business bank account.</div>
-          <div class="item-tags"><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-paid">One-time cost</span></div>
+          <div class="item-title">Form HeroMode LLC in North Carolina — via Formations.llc Secure Package</div>
+          <div class="item-desc">Forming in NC makes sense since you're physically based and operating here — forming in another state (e.g. Wyoming) would require a foreign qualification filing in NC anyway, adding cost and complexity. Using <strong>Formations.llc Secure Package</strong> ($299 + $125 NC state filing fee = <strong>$424 total</strong>). Secure includes: LLC Articles filing, EIN, Operating Agreement, Registered Agent (required — you need a physical in-state address on file), fast-track/expedited filing, essential compliance documents, and 30 days of document changes. Renews at $199/yr for registered agent. NC also requires a $200/yr Annual Report (due April 15). Once formed you'll get your Articles of Organization — keep this safe, you'll need it to open a Mercury business bank account. Cancel the Formations SmartBooks bookkeeping trial before day 90 or it goes to $9.99/mo.</div>
+          <div class="item-tags"><span class="tag tag-blocker">BLOCKER</span><span class="tag tag-paid">$424 one-time · $399/yr ongoing</span></div>
         </div>
-        <div class="item-cost"><span class="one-time">$225</span><br>Northwest / WY</div>
+        <div class="item-cost"><span class="one-time">$424</span><br>Formations / NC</div>
       </div>
 
       <div class="item" id="item-ein" onclick="toggle('ein')">
@@ -620,8 +620,8 @@
       <div class="item" id="item-gdpr-consent" onclick="toggle('gdpr-consent')">
         <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
         <div class="item-body">
-          <div class="item-title">GDPR Article 9 health data consent screen — built ✓</div>
-          <div class="item-desc">Consent screen fires after age gate on first launch. Four granular toggles: Workout &amp; Performance, Wellness Check-ins, GPS Walk Tracking, Nutrition Tracking. "Accept All &amp; Start Training" or "Accept Selected." Consent stored as hm-consent-record: {ts, categories[], version: 1} in localStorage. Revocable from Settings → Data &amp; Privacy → Data Consent. Consent manager re-opens the screen with current toggle state so the user can adjust per-category. Satisfies GDPR Art. 9 explicit consent requirement for special-category health data.</div>
+          <div class="item-title">GDPR Article 9 health data consent screen — built ✓ (v88: two-bucket model)</div>
+          <div class="item-desc">Consent screen fires after T&amp;C acceptance on first launch. Two labeled sections: 🔒 On Your Device (Workout, Wellness, GPS, Nutrition — health data never leaves the device) and 📡 Usage Analytics (Firebase — sent to Hero Mode servers, opt-out anytime). "Accept All &amp; Start Training" or "Accept Selected." Consent stored as hm-consent-record: {ts, categories[], version: 2}. Analytics preference stored separately as hm-analytics-consent ('true'/'false'). Settings → Data &amp; Privacy has both a Data Consent row (reopens full screen) and a Usage Analytics On/Off toggle (hmToggleAnalytics()). All future Firebase logEvent() calls gated behind hmAnalyticsEnabled(). Satisfies GDPR Art. 9 explicit consent for health data.</div>
           <div class="item-tags"><span class="tag tag-free">BUILT</span><span class="tag tag-ip">GDPR Art. 9</span></div>
         </div>
         <div class="item-cost"><span class="free">Done</span></div>
@@ -651,7 +651,7 @@
         <div class="item-cb"><div class="cb"><span class="cb-check">✓</span></div></div>
         <div class="item-body">
           <div class="item-title">Breach notification procedure — written ✓ (FTC Health Breach Notification Rule)</div>
-          <div class="item-desc">breach-notification-procedure.md written and committed to the repo. Covers: definition of breach (pre- and post-backend), 60-day notification timeline (Day 0 discovery → Day 60 FTC filing if 500+ users), scope assessment checklist, complete user notification email template, FTC submission URL (ftc.gov/healthbreach), and record-keeping requirements. Post-backend additions (Firebase anomaly alerts, Firestore audit logging) documented for cloud phase. Store with LLC records from Northwest Registered Agent. Satisfies FTC 16 CFR Part 318.</div>
+          <div class="item-desc">breach-notification-procedure.md written and committed to the repo. Covers: definition of breach (pre- and post-backend), 60-day notification timeline (Day 0 discovery → Day 60 FTC filing if 500+ users), scope assessment checklist, complete user notification email template, FTC submission URL (ftc.gov/healthbreach), and record-keeping requirements. Post-backend additions (Firebase anomaly alerts, Firestore audit logging) documented for cloud phase. Store with LLC records from Formations.llc. Satisfies FTC 16 CFR Part 318.</div>
           <div class="item-tags"><span class="tag tag-free">WRITTEN</span><span class="tag tag-ip">FTC 16 CFR 318</span></div>
         </div>
         <div class="item-cost"><span class="free">Done</span></div>
@@ -1101,9 +1101,9 @@
           <div class="annual-note">Renews each January</div>
         </div>
         <div class="annual-item">
-          <div class="annual-label">Wyoming LLC (after yr 1)</div>
-          <div class="annual-cost">$177/yr</div>
-          <div class="annual-note">$52 state report + $125 NW registered agent</div>
+          <div class="annual-label">NC LLC (after yr 1)</div>
+          <div class="annual-cost">$399/yr</div>
+          <div class="annual-note">$200 NC Annual Report (Apr 15) + $199 Formations registered agent</div>
         </div>
         <div class="annual-item">
           <div class="annual-label">Domain renewal</div>
@@ -1268,7 +1268,7 @@
           <div class="risk-card-top"><span class="risk-badge">🔴 HIGH</span>
             <div class="risk-card-title">User Injury from AI-Generated Plan</div></div>
           <div class="risk-card-desc">A user follows the AI workout plan, tears a muscle or suffers a cardiac event, and files a claim against the app. Most realistic user-initiated lawsuit at scale — statistical probability rises with every 1,000 users you add.</div>
-          <div class="risk-card-fix"><strong>Shield:</strong> Attorney T&amp;C with liability limitation. Wyoming LLC separates personal assets. "Not medical advice" disclaimer visible in-app, not just buried in the T&amp;C.</div>
+          <div class="risk-card-fix"><strong>Shield:</strong> Attorney T&amp;C with liability limitation. NC LLC (Formations Secure) separates personal assets. "Not medical advice" disclaimer visible in-app, not just buried in the T&amp;C.</div>
         </div>
 
         <div class="risk-card risk-high">
