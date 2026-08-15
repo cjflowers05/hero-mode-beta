@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-14. Current SW version: v87.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-14. Current SW version: v88.*
 
 ---
 
@@ -1251,6 +1251,9 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### Two-bucket consent model + analytics opt-out (v88)
+Consent screen restructured into two clearly labeled sections: **🔒 On Your Device** (workout, wellness, GPS, nutrition — same 4 categories, unchanged) and **📡 Usage Analytics — sent to Hero Mode servers** (new App Analytics toggle, defaults on). Subtitle and legal footer updated to remove the false "nothing is sent to a server" claim. `hmConsentSubmit()` now also reads `hm-cs-toggle-analytics` and writes `hm-analytics-consent` (`'true'`/`'false'`) to localStorage. `hmOpenConsentManager()` reflects the analytics toggle when reopened from Settings. New functions: `hmAnalyticsEnabled()` (returns `true` unless `hm-analytics-consent === 'false'`) and `hmToggleAnalytics()` (flips the preference and updates the Settings row label). Settings → Data & Privacy now has a **📊 Usage Analytics** row showing On/Off, wired to `hmToggleAnalytics()`. All future Firebase `logEvent()` calls must be gated behind `hmAnalyticsEnabled()`. `privacy-policy.html` updated to match: two-bucket summary, section 2.5 expanded with Firebase Analytics + Crashlytics details and opt-out instructions, section 4.1 split into on-device health data vs server-side analytics, section 5 CONSENT row updated, section 6 now specifically names Firebase Analytics and Firebase Crashlytics.
 
 ### Chest opening moment — full animated reveal (v85)
 `hmOpenChest()` rebuilt from scratch — no video dependency. **Phase 1 (build-up):** dark overlay with 28 ambient rising gold sparkles on a `<canvas>` (rAF loop), pulsing radial glow ring, large chest emoji with shake+glow animation, "ALL QUESTS COMPLETE" / "YOUR REWARD AWAITS" text, "OPEN CHEST ▸" button. Chest icon itself is also tappable. **Phase 2 (reveal):** white screen flash → phase-swap → 🏆 trophy emoji with `hmChestBounce`, "CHEST OPENED" with gold text-shadow glow, "+50 BONUS XP" with green glow, random motivational quote, "CLAIM IT" button. Physics confetti: `hmConfettiBurst(canvas)` spawns 90 particles (circles + rectangles) with gravity (980 px/s²), air drag (0.988), per-particle rotation, and alpha fade as particles exit the bottom third of the screen. Canvas auto-removes when all particles are done. Quest state key: `s.quests.chest` (flat, not `s.quests[date]`).

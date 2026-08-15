@@ -1869,6 +1869,8 @@ document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
 .hm-cs-btn-secondary{width:100%;padding:12px;background:none;border:1px solid #2A3448;border-radius:12px;color:#8892A4;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:border-color .15s,color .15s}
 .hm-cs-btn-secondary:hover{border-color:#C9A84C;color:#C9A84C}
 .hm-cs-legal{font-size:11px;color:#4A5568;margin-top:16px;line-height:1.65}
+.hm-cs-section-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#4A5A78;padding:10px 16px 6px}
+.hm-cs-section-analytics{border-top:1px solid #1E2535;padding-top:12px}
 </style>
 
 <div id="hm-consent-screen">
@@ -1876,8 +1878,9 @@ document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
     <div class="hm-cs-bolt">🛡️</div>
     <div class="hm-cs-brand">Hero Mode · Privacy</div>
     <div class="hm-cs-heading">Your Data, Your Control</div>
-    <div class="hm-cs-sub">Hero Mode stores health and activity data to power your training. Everything stays on your device — nothing is sent to a server. Select what you're comfortable tracking.</div>
+    <div class="hm-cs-sub">Hero Mode uses two types of data. Your health &amp; activity stays on your device — only you see it. Usage analytics help us build a better app and go to Hero Mode's servers. You control both, always.</div>
     <div class="hm-cs-cats">
+      <div class="hm-cs-section-label">🔒 On Your Device — health &amp; activity</div>
       <div class="hm-cs-cat">
         <span class="hm-cs-cat-icon">🏋️</span>
         <div class="hm-cs-cat-body">
@@ -1898,7 +1901,7 @@ document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
         <span class="hm-cs-cat-icon">📍</span>
         <div class="hm-cs-cat-body">
           <div class="hm-cs-cat-name">GPS Walk Tracking</div>
-          <div class="hm-cs-cat-desc">Walk routes and location points (stays on device)</div>
+          <div class="hm-cs-cat-desc">Walk routes and location points</div>
         </div>
         <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-gps" checked><span class="hm-cs-slider"></span></label>
       </div>
@@ -1910,10 +1913,19 @@ document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
         </div>
         <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-nutrition" checked><span class="hm-cs-slider"></span></label>
       </div>
+      <div class="hm-cs-section-label hm-cs-section-analytics">📡 Usage Analytics — sent to Hero Mode servers</div>
+      <div class="hm-cs-cat">
+        <span class="hm-cs-cat-icon">📊</span>
+        <div class="hm-cs-cat-body">
+          <div class="hm-cs-cat-name">App Analytics</div>
+          <div class="hm-cs-cat-desc">Which features you use, session patterns. Helps us improve Hero Mode. Never sold.</div>
+        </div>
+        <label class="hm-cs-toggle"><input type="checkbox" id="hm-cs-toggle-analytics" checked><span class="hm-cs-slider"></span></label>
+      </div>
     </div>
     <button class="hm-cs-btn-primary" onclick="hmConsentSubmit(true)">ACCEPT ALL &amp; START TRAINING</button>
     <button class="hm-cs-btn-secondary" onclick="hmConsentSubmit(false)">ACCEPT SELECTED</button>
-    <div class="hm-cs-legal">Consent is stored only on this device. Change or revoke anytime in Settings → Data &amp; Privacy. Required by GDPR Article 9.</div>
+    <div class="hm-cs-legal">Health data stays on your device. Change analytics preference anytime in Settings → Data &amp; Privacy. Health data consent required by GDPR Article 9.</div>
   </div>
 </div>
 
@@ -1943,7 +1955,10 @@ function hmConsentSubmit(acceptAll) {
       return;
     }
   }
-  localStorage.setItem('hm-consent-record', JSON.stringify({ ts: Date.now(), categories: cats, version: 1 }));
+  var analyticsEl = document.getElementById('hm-cs-toggle-analytics');
+  var analyticsOn = acceptAll ? true : (analyticsEl ? analyticsEl.checked : true);
+  localStorage.setItem('hm-analytics-consent', analyticsOn ? 'true' : 'false');
+  localStorage.setItem('hm-consent-record', JSON.stringify({ ts: Date.now(), categories: cats, version: 2 }));
   var el = document.getElementById('hm-consent-screen');
   el.classList.add('hm-cs-out');
   setTimeout(function() { el.classList.add('hm-cs-hide'); }, 420);
@@ -1965,8 +1980,22 @@ function hmOpenConsentManager() {
     var el = document.getElementById('hm-cs-toggle-' + c);
     if (el) el.checked = cats.indexOf(c) !== -1;
   });
+  var analyticsEl = document.getElementById('hm-cs-toggle-analytics');
+  if (analyticsEl) analyticsEl.checked = hmAnalyticsEnabled();
   var scr = document.getElementById('hm-consent-screen');
   if (scr) { scr.classList.remove('hm-cs-hide'); scr.classList.remove('hm-cs-out'); }
+}
+
+function hmAnalyticsEnabled() {
+  return localStorage.getItem('hm-analytics-consent') !== 'false';
+}
+
+function hmToggleAnalytics() {
+  var next = !hmAnalyticsEnabled();
+  localStorage.setItem('hm-analytics-consent', next ? 'true' : 'false');
+  var el = document.getElementById('hm-stg-analytics-val');
+  if (el) el.textContent = next ? 'On' : 'Off';
+  if (typeof showToast === 'function') showToast(next ? 'Usage analytics enabled' : 'Usage analytics disabled', 'info');
 }
 </script>
 
@@ -13419,6 +13448,8 @@ function hmShowSettings() {
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">DATA &amp; PRIVACY</div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(hmOpenConsentManager,350)">'
     + '<span>🛡️ Data Consent</span><span style="color:var(--text3)">Manage ›</span></div>'
+    + '<div class="hm-settings-row" onclick="hmToggleAnalytics()">'
+    + '<span>📊 Usage Analytics</span><span id="hm-stg-analytics-val" style="color:var(--text3)">' + (hmAnalyticsEnabled() ? 'On' : 'Off') + '</span></div>'
     + '<div class="hm-settings-row" onclick="hmCycleRetention()">'
     + '<span>🗑️ Data Retention</span><span id="hm-stg-retention-val" style="color:var(--text3)">' + hmRetentionLabel() + '</span></div>'
     + '<div class="hm-settings-row" onclick="window.open(\'privacy-policy.html\',\'_blank\')">'

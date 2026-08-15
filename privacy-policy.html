@@ -108,12 +108,12 @@
   <header>
     <div class="header-logo">Hero Mode</div>
     <h1>Privacy Policy</h1>
-    <div class="header-meta">HeroMode &nbsp;·&nbsp; Effective: August 8, 2026 &nbsp;·&nbsp; Last updated: August 8, 2026</div>
+    <div class="header-meta">HeroMode &nbsp;·&nbsp; Effective: August 8, 2026 &nbsp;·&nbsp; Last updated: August 14, 2026</div>
     <div class="header-bar"></div>
   </header>
 
   <div class="callout">
-    <p><strong>Plain-language summary:</strong> Hero Mode collects your workout data, account information, and app usage signals so we can back up your progress, power personalized training recommendations, and improve the app. We use industry-standard encryption, never sell your data to third parties, and give you full control to export or delete everything at any time.</p>
+    <p><strong>Plain-language summary:</strong> Hero Mode uses two types of data. Your health &amp; activity data (workouts, nutrition, wellness, GPS) stays on your device — it is never sent to a server. We separately collect anonymous usage analytics (which features you use, session patterns) to improve the app — this goes to our servers via Firebase. You can opt out of analytics at any time in Settings → Data &amp; Privacy. We never sell your data to third parties.</p>
   </div>
 
   <nav class="toc">
@@ -187,14 +187,15 @@
   </table>
 
   <h3>2.5 Usage &amp; Analytics Data</h3>
-  <p>We collect aggregated signals about how you interact with the app:</p>
+  <p>If you have opted in to analytics (the default), we collect aggregated signals about how you interact with the app via <strong>Google Firebase Analytics</strong>:</p>
   <ul>
     <li>Which features you use and how often</li>
     <li>Session length and frequency</li>
-    <li>Which exercises and workouts are most popular (aggregate, not individual)</li>
-    <li>Screens visited and navigation patterns</li>
+    <li>Which screens you visit and navigation patterns</li>
+    <li>App version and device type (for compatibility)</li>
   </ul>
-  <p>This data is used to improve the app and is analyzed at an aggregate level, not used to profile individual users.</p>
+  <p>This data is sent to Hero Mode's Firebase project, analyzed at an aggregate level, and never used to profile individual users or shared with advertisers. <strong>You can opt out at any time</strong> — go to Settings → Data &amp; Privacy → Usage Analytics and toggle it off. When opted out, no analytics events are sent to our servers.</p>
+  <p>Crash and error reports (via <strong>Firebase Crashlytics</strong>) are included under the analytics consent and contain device model, OS version, app version, and the state of the app at the time of the crash. No health or workout data is included in crash reports.</p>
 
   <!-- 3 -->
   <h2 id="s3">3. How We Use Your Data</h2>
@@ -234,8 +235,9 @@
   <!-- 4 -->
   <h2 id="s4">4. How We Store Your Data</h2>
 
-  <h3>4.1 Current Version — On-Device Storage</h3>
-  <p><strong>In the current version of Hero Mode, all data is stored exclusively on your device</strong> — in your browser's local storage or, when installed as an app, in protected app storage. No workout logs, wellness entries, GPS tracks, or nutrition data is sent to any external server. Your data never leaves your device unless you explicitly export it.</p>
+  <h3>4.1 Current Version — Storage Model</h3>
+  <p><strong>Health &amp; activity data stays on your device.</strong> Workout logs, wellness entries, GPS tracks, and nutrition data are stored exclusively in your device's local storage (or protected app storage when installed as a native app). This data never leaves your device unless you explicitly export it.</p>
+  <p><strong>Usage analytics go to Hero Mode's servers.</strong> If you have opted in to analytics (the default), app usage events are sent to Google Firebase and stored in Hero Mode's Firebase project. This data is not linked to any personally identifiable information — it is anonymous by design. You can stop this at any time via Settings → Data &amp; Privacy → Usage Analytics.</p>
 
   <h3>4.2 Encryption at Rest</h3>
   <p>On-device data is protected by your operating system's built-in encryption:</p>
@@ -272,7 +274,7 @@
     </tr>
     <tr>
       <td><span class="tag">CONSENT</span> Granular data consent</td>
-      <td>On first launch, users explicitly consent to each health data category (workout, wellness, GPS, nutrition) individually. Consent is recorded with a timestamp and can be revoked at any time from Settings → Data &amp; Privacy.</td>
+      <td>On first launch, users explicitly consent to each health data category (workout, wellness, GPS, nutrition) individually, and separately to usage analytics. All preferences are recorded with a timestamp and can be changed at any time from Settings → Data &amp; Privacy.</td>
     </tr>
     <tr>
       <td><span class="tag">RETENTION</span> Data retention limits</td>
@@ -303,14 +305,19 @@
       <td>User ID, purchase receipt, subscription status</td>
     </tr>
     <tr>
-      <td><strong>Cloud infrastructure provider</strong></td>
-      <td>Hosting, database, storage</td>
-      <td>All stored user data (processed on our behalf under data processing agreement)</td>
+      <td><strong>Google Firebase Analytics</strong></td>
+      <td>App usage analytics (if opted in)</td>
+      <td>Feature usage events, session length, screen visits — anonymous, no health data</td>
     </tr>
     <tr>
-      <td><strong>Crash reporting service</strong></td>
-      <td>Bug detection and diagnosis</td>
-      <td>Device info, app state at crash time, anonymized user ID</td>
+      <td><strong>Google Firebase Crashlytics</strong></td>
+      <td>Crash &amp; error reporting (if opted in)</td>
+      <td>Device model, OS version, app version, crash state — no health data</td>
+    </tr>
+    <tr>
+      <td><strong>Cloud infrastructure provider</strong></td>
+      <td>Hosting, database, storage (future cloud sync)</td>
+      <td>All stored user data (processed on our behalf under data processing agreement)</td>
     </tr>
     <tr>
       <td><strong>Email delivery service</strong></td>
