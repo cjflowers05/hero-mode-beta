@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-14. Current SW version: v88.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-14. Current SW version: v89.*
 
 ---
 
@@ -1251,6 +1251,9 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### T&C acceptance screen + Terms of Service (v89)
+New first-run screen inserted between age gate and data consent: `#hm-tc-screen` (z-index 14600). Flow is now: **Age gate → T&C → Consent → App**. T&C screen shows 5 summary sections (fitness disclaimer, age, subscriptions, data, liability), a checkbox that must be checked before the "AGREE & CONTINUE" button enables, and links to `terms-of-service.html` and `privacy-policy.html`. On submit, `hm-tc-record` (`{ ts, version:1 }`) is saved to localStorage, then `hmShowConsentScreen()` is called. `hmShowTCScreen()` is the new hand-off point from the age gate (was `hmShowConsentScreen()`). Consent screen IIFE now also checks for `hm-tc-record` — if missing, consent screen stays hidden (T&C handles the flow). Settings → Legal section gains two new rows: 📋 Terms of Service and 🔒 Privacy Policy (both `window.open`). `terms-of-service.html` created — 16 sections covering acceptance, age, service description, fitness disclaimer, accounts, subscriptions, IP, acceptable use, privacy, disclaimers, liability limitation, indemnification, termination, governing law (Wyoming), dispute resolution (AAA arbitration, no class action), and changes.
 
 ### Two-bucket consent model + analytics opt-out (v88)
 Consent screen restructured into two clearly labeled sections: **🔒 On Your Device** (workout, wellness, GPS, nutrition — same 4 categories, unchanged) and **📡 Usage Analytics — sent to Hero Mode servers** (new App Analytics toggle, defaults on). Subtitle and legal footer updated to remove the false "nothing is sent to a server" claim. `hmConsentSubmit()` now also reads `hm-cs-toggle-analytics` and writes `hm-analytics-consent` (`'true'`/`'false'`) to localStorage. `hmOpenConsentManager()` reflects the analytics toggle when reopened from Settings. New functions: `hmAnalyticsEnabled()` (returns `true` unless `hm-analytics-consent === 'false'`) and `hmToggleAnalytics()` (flips the preference and updates the Settings row label). Settings → Data & Privacy now has a **📊 Usage Analytics** row showing On/Off, wired to `hmToggleAnalytics()`. All future Firebase `logEvent()` calls must be gated behind `hmAnalyticsEnabled()`. `privacy-policy.html` updated to match: two-bucket summary, section 2.5 expanded with Firebase Analytics + Crashlytics details and opt-out instructions, section 4.1 split into on-device health data vs server-side analytics, section 5 CONSENT row updated, section 6 now specifically names Firebase Analytics and Firebase Crashlytics.

@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v88'; // v88: Two-bucket consent model — analytics opt-out + updated privacy policy
+const CACHE_VERSION = 'hero-mode-v89'; // v89: T&C acceptance screen + Terms of Service page + Settings Legal links
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

@@ -1823,7 +1823,7 @@ function hmAgeGateSubmit() {
     el.classList.add('hm-ag-out');
     setTimeout(function(){
       el.classList.add('hm-ag-hide');
-      if (typeof hmShowConsentScreen === 'function') hmShowConsentScreen();
+      if (typeof hmShowTCScreen === 'function') hmShowTCScreen();
     }, 450);
   } else {
     var yearsLeft = 16 - age;
@@ -1839,6 +1839,110 @@ function hmAgeGateSubmit() {
 document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
   if (e.key === 'Enter') hmAgeGateSubmit();
 });
+</script>
+
+<!-- ── T&C ACCEPTANCE — required before data consent ── -->
+<style>
+#hm-tc-screen{position:fixed;inset:0;z-index:14600;background:#0A0C12;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px 40px;font-family:'DM Sans',system-ui,sans-serif;overflow-y:auto}
+#hm-tc-screen.hm-tc-out{opacity:0;pointer-events:none;transition:opacity .4s ease}
+#hm-tc-screen.hm-tc-hide{display:none}
+.hm-tc-inner{width:100%;max-width:360px;text-align:center}
+.hm-tc-icon{font-size:44px;margin-bottom:8px}
+.hm-tc-brand{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.28em;color:#7A6020;font-weight:700;text-transform:uppercase;margin-bottom:28px}
+.hm-tc-heading{font-size:21px;font-weight:800;color:#E2E8F0;line-height:1.3;margin-bottom:8px}
+.hm-tc-sub{font-size:13px;color:#8892A4;line-height:1.65;margin-bottom:20px}
+.hm-tc-scroll{background:#12151E;border:1px solid #2A3448;border-radius:14px;padding:4px 0;margin-bottom:20px;max-height:260px;overflow-y:auto;text-align:left}
+.hm-tc-section{padding:13px 16px;border-bottom:1px solid #1E2535}
+.hm-tc-section:last-child{border-bottom:none}
+.hm-tc-sec-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#C9A84C;margin-bottom:6px;font-weight:700}
+.hm-tc-section p{font-size:12px;color:#8892A4;line-height:1.55;margin:0}
+.hm-tc-check-row{display:flex;align-items:flex-start;gap:10px;padding:14px 4px;cursor:pointer;text-align:left}
+.hm-tc-check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:#C9A84C;cursor:pointer}
+.hm-tc-check-label{font-size:13px;color:#8892A4;line-height:1.55}
+.hm-tc-check-label a{color:#C9A84C;text-decoration:underline}
+.hm-tc-btn-agree{width:100%;padding:14px;background:linear-gradient(135deg,#C9A84C,#F0C060);color:#000;font-family:'DM Mono',monospace;font-weight:800;font-size:13px;letter-spacing:.12em;border:none;border-radius:12px;cursor:pointer;text-transform:uppercase;transition:filter .15s,opacity .15s;margin-bottom:10px}
+.hm-tc-btn-agree:disabled{opacity:.32;cursor:not-allowed}
+.hm-tc-btn-agree:not(:disabled):hover{filter:brightness(1.1)}
+.hm-tc-foot{font-size:11px;color:#4A5568;margin-top:8px;line-height:1.65}
+</style>
+
+<div id="hm-tc-screen">
+  <div class="hm-tc-inner">
+    <div class="hm-tc-icon">⚔️</div>
+    <div class="hm-tc-brand">Hero Mode · Terms</div>
+    <div class="hm-tc-heading">Before You Begin</div>
+    <div class="hm-tc-sub">Please review these terms. By using Hero Mode you agree to train responsibly.</div>
+    <div class="hm-tc-scroll">
+      <div class="hm-tc-section">
+        <div class="hm-tc-sec-title">Fitness Disclaimer</div>
+        <p>Hero Mode is a fitness tracking app, not medical advice. Consult a qualified healthcare professional before starting any exercise program, especially if you have a pre-existing condition or injury. You train at your own risk.</p>
+      </div>
+      <div class="hm-tc-section">
+        <div class="hm-tc-sec-title">Age Requirement</div>
+        <p>You must be at least 16 years old to use Hero Mode.</p>
+      </div>
+      <div class="hm-tc-section">
+        <div class="hm-tc-sec-title">Premium Subscriptions</div>
+        <p>Hero Mode Premium is billed through the App Store or Google Play. Subscriptions auto-renew unless cancelled at least 24 hours before the renewal date. Manage or cancel in your device's store account settings.</p>
+      </div>
+      <div class="hm-tc-section">
+        <div class="hm-tc-sec-title">Your Data</div>
+        <p>Your health and activity data stays on your device and is never sold. We collect optional usage analytics to improve the app — you choose on the next screen. See our Privacy Policy for full details.</p>
+      </div>
+      <div class="hm-tc-section">
+        <div class="hm-tc-sec-title">Limitation of Liability</div>
+        <p>HeroMode LLC is not liable for any injury, loss, or damage resulting from use of the app or its training recommendations. Use of this app does not constitute a personal trainer or medical relationship.</p>
+      </div>
+    </div>
+    <label class="hm-tc-check-row">
+      <input type="checkbox" id="hm-tc-checkbox" onchange="hmTCCheckboxChanged()">
+      <span class="hm-tc-check-label">I have read and agree to the <a href="terms-of-service.html" target="_blank" onclick="event.stopPropagation()">Terms of Service</a> and <a href="privacy-policy.html" target="_blank" onclick="event.stopPropagation()">Privacy Policy</a></span>
+    </label>
+    <button class="hm-tc-btn-agree" id="hm-tc-btn" disabled onclick="hmTCSubmit()">AGREE &amp; CONTINUE</button>
+    <div class="hm-tc-foot">You can review these documents anytime in Settings → Legal.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (localStorage.getItem('hm-tc-record')) {
+    document.getElementById('hm-tc-screen').classList.add('hm-tc-hide');
+    return;
+  }
+  if (localStorage.getItem('hm-age-ok') !== '1') {
+    document.getElementById('hm-tc-screen').classList.add('hm-tc-hide');
+    return;
+  }
+})();
+
+function hmTCCheckboxChanged() {
+  var btn = document.getElementById('hm-tc-btn');
+  var cb  = document.getElementById('hm-tc-checkbox');
+  if (btn) btn.disabled = !cb.checked;
+}
+
+function hmTCSubmit() {
+  var cb = document.getElementById('hm-tc-checkbox');
+  if (!cb || !cb.checked) return;
+  localStorage.setItem('hm-tc-record', JSON.stringify({ ts: Date.now(), version: 1 }));
+  var el = document.getElementById('hm-tc-screen');
+  el.classList.add('hm-tc-out');
+  setTimeout(function() {
+    el.classList.add('hm-tc-hide');
+    if (typeof hmShowConsentScreen === 'function') hmShowConsentScreen();
+  }, 420);
+}
+
+function hmShowTCScreen() {
+  if (localStorage.getItem('hm-tc-record')) {
+    if (typeof hmShowConsentScreen === 'function') hmShowConsentScreen();
+    return;
+  }
+  var el = document.getElementById('hm-tc-screen');
+  if (!el) return;
+  el.classList.remove('hm-tc-hide');
+  el.classList.remove('hm-tc-out');
+}
 </script>
 
 <!-- ── GDPR CONSENT — health data consent (GDPR Art. 9) ── -->
@@ -1935,12 +2039,17 @@ document.getElementById('hm-ag-year').addEventListener('keydown', function(e){
     document.getElementById('hm-consent-screen').classList.add('hm-cs-hide');
     return;
   }
-  // Age gate must clear first — hide until it calls hmShowConsentScreen()
+  // Age gate must clear first
   if (localStorage.getItem('hm-age-ok') !== '1') {
     document.getElementById('hm-consent-screen').classList.add('hm-cs-hide');
     return;
   }
-  // hm-age-ok=1 but no consent record — show immediately (edge case: returning user)
+  // T&C must be accepted before consent screen
+  if (!localStorage.getItem('hm-tc-record')) {
+    document.getElementById('hm-consent-screen').classList.add('hm-cs-hide');
+    return;
+  }
+  // hm-age-ok=1 + tc-record but no consent — show immediately (edge case: returning user)
 })();
 
 function hmConsentSubmit(acceptAll) {
@@ -13445,6 +13554,10 @@ function hmShowSettings() {
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">LEGAL</div>'
     + '<div class="hm-settings-row" onclick="hmViewDisclaimer()">'
     + '<span>⚠️ Legal Disclaimer</span><span style="color:var(--text3)">›</span></div>'
+    + '<div class="hm-settings-row" onclick="window.open(\'terms-of-service.html\',\'_blank\')">'
+    + '<span>📋 Terms of Service</span><span style="color:var(--text3)">›</span></div>'
+    + '<div class="hm-settings-row" onclick="window.open(\'privacy-policy.html\',\'_blank\')">'
+    + '<span>🔒 Privacy Policy</span><span style="color:var(--text3)">›</span></div>'
     + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text3);margin-top:20px;margin-bottom:8px">DATA &amp; PRIVACY</div>'
     + '<div class="hm-settings-row" onclick="hmCloseSettings();setTimeout(hmOpenConsentManager,350)">'
     + '<span>🛡️ Data Consent</span><span style="color:var(--text3)">Manage ›</span></div>'
