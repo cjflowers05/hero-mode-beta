@@ -2305,6 +2305,8 @@ function hmToggleAnalytics() {
   <div id="hero-class-root" style="margin-bottom:16px"></div>
   <!-- GENERATED TRAINING PLAN -->
   <div id="train-plan-root"></div>
+  <!-- FOCUS EXTRAS — NL sculpt bar below the plan -->
+  <div id="hm-sculpt-bar" style="display:none;margin-top:4px;margin-bottom:20px"></div>
 </div>
 
 <!-- NUTRITION -->
@@ -3068,6 +3070,89 @@ const HM_FOCUS_ADD = {
   core:{pick:'core2',role:'core',days:['*']},
   flexibility:{pick:'yoga2',role:'stretch',days:['*']},
 };
+
+// ── SCULPT / FOCUS EXTRAS ──────────────────────────────────────
+// Maps natural-language body intent to HM_FOCUS_ADD keys.
+const HM_SCULPT_MAP = [
+  { kw:['chest','pec','pecs'],                                                    focus:'chest' },
+  { kw:['arm','arms','bicep','biceps','gun','guns','curl'],                        focus:'arms' },
+  { kw:['shoulder','shoulders','delt','delts'],                                   focus:'shoulders' },
+  { kw:['back','lat','lats'],                                                     focus:'back' },
+  { kw:['leg','legs','quad','quads','hamstring','hamstrings','squat'],            focus:'legs' },
+  { kw:['glute','glutes','butt','booty','hip','hips'],                            focus:'glutes' },
+  { kw:['core','abs','stomach','belly','love handle','oblique','gut','waist','midsection'], focus:'core' },
+  { kw:['flex','flexibility','mobility','stretch','yoga'],                         focus:'flexibility' },
+];
+
+function hmSculptParse(text) {
+  const t = text.toLowerCase();
+  const found = [];
+  HM_SCULPT_MAP.forEach(m => {
+    if (m.kw.some(k => t.includes(k)) && !found.includes(m.focus)) found.push(m.focus);
+  });
+  return found;
+}
+
+function hmSculptApply() {
+  const inp = document.getElementById('hm-sculpt-input');
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  const focuses = hmSculptParse(text);
+  if (!focuses.length) {
+    if (typeof showToast === 'function') showToast('Try "sculpt my chest" or "burn stomach fat"', 'info');
+    return;
+  }
+  const g = window.HM_PLAN ? window.HM_PLAN.goals : null;
+  const equip = (g && g.equip && g.equip.length) ? g.equip : [];
+  const exp = (g && g.exp) || 'beg';
+  const today = slToday();
+  const existing = cwTodayLoad();
+  const existingKeys = (existing && existing.date === today) ? existing.exercises : [];
+  const newKeys = [];
+  const used = new Set(existingKeys);
+  focuses.forEach(f => {
+    const fa = HM_FOCUS_ADD[f];
+    if (!fa || !fa.pick) return;
+    const resolved = hmResolve(fa.pick, equip, used, 0, exp);
+    if (resolved && !existingKeys.includes(resolved[0]) && !newKeys.includes(resolved[0])) {
+      newKeys.push(resolved[0]);
+      used.add(resolved[0]);
+    }
+  });
+  if (!newKeys.length) {
+    if (typeof showToast === 'function') showToast('Those exercises are already in today\'s add-ons', 'info');
+    return;
+  }
+  cwTodaySave({ date: today, exercises: [...existingKeys, ...newKeys], cardio: (existing && existing.date === today) ? (existing.cardio || null) : null });
+  if (typeof cwRenderTodayAddon === 'function') cwRenderTodayAddon();
+  const names = newKeys.map(k => (typeof EX !== 'undefined' && EX[k] ? EX[k].name : k)).join(', ');
+  if (typeof showToast === 'function') showToast('Added: ' + names + ' ⚡', 'success');
+  inp.value = '';
+  setTimeout(() => {
+    const addon = document.getElementById('cw-today-addon');
+    if (addon) addon.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 200);
+}
+window.hmSculptApply = hmSculptApply;
+
+function hmRenderSculptBar() {
+  const el = document.getElementById('hm-sculpt-bar');
+  if (!el) return;
+  if (!window.HM_PLAN) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.innerHTML =
+    '<div style="padding:14px 16px;border-radius:14px;background:var(--bg2);border:1px solid var(--border)">' +
+      '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px">Want more today?</div>' +
+      '<div style="display:flex;gap:8px">' +
+        '<input id="hm-sculpt-input" type="text" placeholder="e.g. sculpt my chest · burn stomach fat · build my arms"' +
+          ' style="flex:1;padding:11px 13px;border-radius:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:13px;font-family:system-ui,sans-serif;outline:none;min-width:0"' +
+          ' onkeydown="if(event.key===\'Enter\')hmSculptApply()">' +
+        '<button onclick="hmSculptApply()" style="padding:11px 16px;border-radius:10px;background:var(--gold);border:none;color:#0A0A08;font-family:\'Bebas Neue\',sans-serif;font-size:15px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;flex-shrink:0">ADD ⚡</button>' +
+      '</div>' +
+    '</div>';
+}
+window.hmRenderSculptBar = hmRenderSculptBar;
 
 const HM_DOW_NAMES = ['','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const HM_GOAL_LABEL = {muscle:'Build Muscle',fat:'Lose Fat',recomp:'Build + Burn',strength:'Get Stronger',fit:'All-Round Fitness',endurance:'Race / Endurance',crosstraining:'Cross-Training'};
@@ -4462,6 +4547,7 @@ function hmRenderTrain(){
     window.HM_TODAY_DAYS[ph.id] = m;
   });
   window.TODAY_PHASE_DAYS = window.HM_TODAY_DAYS;
+  if (typeof hmRenderSculptBar === 'function') hmRenderSculptBar();
 }
 
 function hmRenderRoadmap(){
@@ -4519,7 +4605,7 @@ function hmApplyNutrition(){
 
 // Re-run all row-level integrations after (re)rendering the plan
 function hmRefreshIntegrations(){
-  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass','renderTodayDashboard','hmInitPetSettings','hmTrainLayoutApply','hmWellnessLayoutApply'];
+  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass','renderTodayDashboard','hmInitPetSettings','hmTrainLayoutApply','hmWellnessLayoutApply','hmRenderSculptBar'];
   fns.forEach(fn => { try { if (typeof window[fn] === 'function') window[fn](); } catch(e) { console.warn('hm refresh', fn, e); } });
 }
 

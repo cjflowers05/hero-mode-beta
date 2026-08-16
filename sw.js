@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v90'; // v90: Recent foods strip in food modal — one-tap re-add from prior logs
+const CACHE_VERSION = 'hero-mode-v91'; // v91: Sculpt bar — natural-language focus extras appended below the plan
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
