@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-15. Current SW version: v89.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-15. Current SW version: v91.*
 
 ---
 
@@ -1251,6 +1251,12 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### Sculpt bar — natural-language focus extras below the plan (v91, 2026-08-15)
+`<div id="hm-sculpt-bar">` added below `train-plan-root`. User types a plain-English body goal ("sculpt my chest", "burn stomach fat", "build my arms") and `hmSculptParse(text)` maps keywords to focus area IDs (chest, arms, shoulders, back, legs, glutes, core, flexibility). `hmSculptApply()` calls `hmResolve(HM_FOCUS_ADD[f].pick, equip, used, 0, exp)` to get the correct exercise for the user's equipment, then saves it to `cwTodaySave()`. Exercises appear immediately in the existing "Today's Add-Ons" section as loggable cards. Key gotcha: `HM_FOCUS_ADD[f].pick` is a pick-pool key (e.g. `chestiso`), not a direct `EX` key — must go through `hmResolve()`. `hmRenderSculptBar()` called from `hmRenderTrain()` so it renders on initial page load (not just on plan regeneration). Added to `hmRefreshIntegrations()` list too.
+
+### Recent foods strip in food modal (v90, 2026-08-15)
+`getRecentFoods()` pulls the last 15 unique food names from `ntDB`. In `renderFoodResults()`, when `fmCurrentCat === 'All'` and no search query, a "Recent" chip strip is prepended to the results. Each chip shows name + calories; clicking it calls `ntAddFoodToMeal(food)` and closes the modal. CSS classes: `.fm-recent-strip`, `.fm-recent-chip`, `.fm-recent-chip-name`, `.fm-recent-chip-cal`.
 
 ### NC LLC formation decision + command center update (v89-patch, 2026-08-15)
 LLC entity changed from Wyoming (Northwest Registered Agent) to **North Carolina** via **Formations.llc Secure Package** ($299 + $125 NC state filing = $424 one-time; $399/yr ongoing: $199 registered agent + $200 NC Annual Report due April 15). `terms-of-service.html` entity and governing law updated from Wyoming → North Carolina. `hero-mode-launch-command-center.html` updated: LLC cost, annual renewals, SBA loan estimate, risk cards, breach procedure. GDPR consent item in command center updated to reflect v88 two-bucket analytics model.
