@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-29. Current SW version: v93.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-29. Current SW version: v94.*
 
 ---
 
@@ -1251,6 +1251,17 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### 5 clean lifestyle skins (v94, 2026-08-29)
+Added after the Signature Modes group in `HERO_THEMES`, before Standard Themes. All are `lock:2`, free tier, not in `HM_PREMIUM_THEME_IDS`. Palettes are desaturated; names are moods/states, not combat roles. No new image assets required — emoji fallback handles the picker. Background image assets (`bg-steady.png`, etc.) can be dropped into `assets/ui/` later to override the swatch gradient.
+
+| ID | Name | Accent | Tagline |
+|---|---|---|---|
+| `steady` | Steady 🌿 | Sage green `#7AB89A` | Steady Wins the Race |
+| `daybreak` | Daybreak 🌅 | Warm amber `#D4855A` | Every Morning Is a Fresh Start |
+| `minimal` | Minimal 🎯 | Cool silver `#AAB8C4` | Signal Over Noise |
+| `momentum` | Momentum ⚡ | Fresh lime `#78C840` | Keep the Streak Alive |
+| `glow` | Glow ✨ | Antique gold `#D4AF72` | Radiate What You Cultivate |
 
 ### Train tab declutter — plan first, compact quick-workouts, collapsible More Programs (v93, 2026-08-29)
 Restructured `#tab-workout` section order so the generated training plan and sculpt bar appear **first** (immediately after the today banner and plan summary), not last. Previously, the plan was buried below Custom Session, Deck of Cards, Daily Quests, Cardio Widget, Cardio Program, and Hero Class.
