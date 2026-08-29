@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v94'; // v94: 5 clean lifestyle skins — Steady, Daybreak, Minimal, Momentum, Glow
+const CACHE_VERSION = 'hero-mode-v95'; // v95: Clean skins unlocked from level 1 (day-one access)
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
