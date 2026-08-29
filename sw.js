@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v93'; // v93: Train tab declutter — plan first, compact quick-workouts row, More Programs collapsible
+const CACHE_VERSION = 'hero-mode-v94'; // v94: 5 clean lifestyle skins — Steady, Daybreak, Minimal, Momentum, Glow
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
