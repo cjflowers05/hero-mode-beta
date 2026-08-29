@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-15. Current SW version: v91.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-29. Current SW version: v92.*
 
 ---
 
@@ -1251,6 +1251,17 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### Beginner plan cap + gender field + female focus bias (v92, 2026-08-29)
+**Gender field:** `gp-gender` selector (Male/m, Female/f, Prefer not to say/n) added to the plan builder form after the experience level picker. Saved as `g.gender` via `gpBuild()`, restored in `gpFill()`. Single-select group wired through the standard `gpInitButtons()` single array.
+
+**Beginner plan structure:** `hmEffectiveDays(g)` returns `3` when `g.exp === 'beg'` for any goal except endurance/cross-training (those are structured programs that adapt at any level). `hmSplitFor()` and `hmDefaultSchedule()` both call `hmEffectiveDays(g)` instead of using `g.days` directly, so a beginner always receives a 3-day full-body split (fullA/fullB/fullC) regardless of how many days they selected. At the top of `hmGeneratePlan()`, `g` is shallow-copied and `g.days` is overwritten with the effective day count before any split/schedule logic runs.
+
+**Beginner rep schemes:** `HM_SCHEME_BEG` constant (`{main:'3 × 10', second:'3 × 10', acc:'2 × 12', iso:'2 × 12', core:'2 × 15', power:'3 × 5', carry:'2 × 30m'}`) overrides all goal-specific HM_SCHEMES entries when `g.exp === 'beg'`. Applied in `hmBuildDay()` at the `const scheme = ...` line.
+
+**Female focus defaults:** When `g.gender === 'f'` and `g.focus` is empty and the goal is muscle/fat/recomp/fit, `hmGeneratePlan()` auto-sets `g.focus = ['glutes', 'legs']` before building days, biasing the plan toward glute/leg add-on exercises without requiring the user to manually select focus areas.
+
+**Form UX:** Selecting "New" experience level auto-selects 3 training days and shows `#gp-beg-hint` (a gold-tinted advisory note). `gpFill()` also restores the hint visibility when reopening the form. All done inside the same `gpInitButtons()` click handler.
 
 ### Sculpt bar — natural-language focus extras below the plan (v91, 2026-08-15)
 `<div id="hm-sculpt-bar">` added below `train-plan-root`. User types a plain-English body goal ("sculpt my chest", "burn stomach fat", "build my arms") and `hmSculptParse(text)` maps keywords to focus area IDs (chest, arms, shoulders, back, legs, glutes, core, flexibility). `hmSculptApply()` calls `hmResolve(HM_FOCUS_ADD[f].pick, equip, used, 0, exp)` to get the correct exercise for the user's equipment, then saves it to `cwTodaySave()`. Exercises appear immediately in the existing "Today's Add-Ons" section as loggable cards. Key gotcha: `HM_FOCUS_ADD[f].pick` is a pick-pool key (e.g. `chestiso`), not a direct `EX` key — must go through `hmResolve()`. `hmRenderSculptBar()` called from `hmRenderTrain()` so it renders on initial page load (not just on plan regeneration). Added to `hmRefreshIntegrations()` list too.
