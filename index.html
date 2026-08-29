@@ -2585,6 +2585,13 @@ function hmToggleAnalytics() {
       <div class="gp-btn" data-val="adv" role="button" aria-pressed="false"><img class="gp-exp-shield" src="assets/ui/gp/Advanced.png" alt=""><div class="gp-btn-name">Advanced</div><div class="gp-btn-sub">3+ years</div></div>
       <div class="gp-btn" data-val="elite" role="button" aria-pressed="false"><img class="gp-exp-shield" src="assets/ui/gp/elite.png" alt=""><div class="gp-btn-name">Elite</div><div class="gp-btn-sub">5+ years</div></div>
     </div>
+    <div class="gp-q">Sex <span class="gp-opt">(personalizes your default focus areas)</span></div>
+    <div class="gp-grid g3" id="gp-gender">
+      <div class="gp-btn" data-val="m" role="button" aria-pressed="false"><div class="gp-btn-name">Male</div></div>
+      <div class="gp-btn" data-val="f" role="button" aria-pressed="false"><div class="gp-btn-name">Female</div></div>
+      <div class="gp-btn" data-val="n" role="button" aria-pressed="false"><div class="gp-btn-name">Prefer not to say</div></div>
+    </div>
+    <div id="gp-beg-hint" style="display:none;padding:10px 14px;border-radius:10px;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.22);font-size:12px;color:var(--gold);margin:4px 0 4px;line-height:1.5">⚡ Beginners get better results with 3 full-body sessions per week — more days too early leads to burnout. We've set it to 3 for you.</div>
     <div class="gp-q">Training days per week</div>
     <div class="gp-grid g4" id="gp-days">
       <div class="gp-btn" data-val="3" role="button" aria-pressed="false"><div class="gp-btn-name">3</div></div>
@@ -2778,6 +2785,9 @@ const HM_SCHEMES = {
              build:{main:'5 × 3',second:'4 × 5',acc:'3 × 10',iso:'3 × 12',core:'3 × 15',power:'6 × 2',carry:'4 × 40m'},
              peak: {main:'3 × 3 heavy',second:'4 × 4',acc:'3 × 10',iso:'3 × 12',core:'3 × 15',power:'5 × 2',carry:'4 × 40m'} },
 };
+
+// Beginner override: simpler, lower-volume schemes for all goals/phases
+const HM_SCHEME_BEG = {main:'3 × 10',second:'3 × 10',acc:'2 × 12',iso:'2 × 12',core:'2 × 15',power:'3 × 5',carry:'2 × 30m'};
 
 // ── Phase metadata per goal ──
 const HM_PHASE_META = {
@@ -3231,7 +3241,7 @@ function hmWarmupBlock(){
 // Build one workout day → {name, focus, icon, dow, blocks:[{label,note,items,cardio}]}
 function hmBuildDay(tplKey, g, phaseType, phaseIdx, dayIdx){
   const tpl = HM_DAY_T[tplKey];
-  const scheme = (HM_SCHEMES[g.goal] || HM_SCHEMES.fit)[phaseType];
+  const scheme = g.exp === 'beg' ? HM_SCHEME_BEG : (HM_SCHEMES[g.goal] || HM_SCHEMES.fit)[phaseType];
   const equip = g.equip.length ? g.equip : [];
   if (tpl.special === 'cond') return hmBuildCondDay(tpl, g, phaseIdx);
   if (tpl.special === 'run')  return hmBuildRunDay(tpl, g, phaseIdx, dayIdx);
@@ -3372,17 +3382,24 @@ function hmWeekSpans(weeks){
   return [[1,4],[5,10],[11,16]];
 }
 
+// Effective training days — beginners cap at 3 full-body regardless of what was selected.
+// Endurance and cross-training are structured programs that adapt for any level, so no cap there.
+function hmEffectiveDays(g){
+  if (g.exp === 'beg' && g.goal !== 'endurance' && g.goal !== 'crosstraining') return 3;
+  return g.days;
+}
 // The split of workout templates for a goal/day-count
 function hmSplitFor(g){
-  return (g.goal === 'endurance' ? HM_ENDURO_SPLITS[g.days]
-        : g.goal === 'crosstraining'  ? HM_WOD_SPLITS[g.days]
-        : HM_SPLITS[g.days]) || HM_SPLITS[4];
+  const days = hmEffectiveDays(g);
+  return (g.goal === 'endurance' ? HM_ENDURO_SPLITS[days]
+        : g.goal === 'crosstraining'  ? HM_WOD_SPLITS[days]
+        : HM_SPLITS[days]) || HM_SPLITS[4];
 }
 // Weekly schedule = array[7], Mon(0)…Sun(6), each a split-slot index or null (rest).
 // This is what the user controls: which workout (or rest) lands on which day.
 function hmDefaultSchedule(g){
   const split = hmSplitFor(g);
-  const dows = HM_DOWS[g.days] || HM_DOWS[4]; // 1=Mon…6=Sat, 0=Sun
+  const dows = HM_DOWS[hmEffectiveDays(g)] || HM_DOWS[4]; // 1=Mon…6=Sat, 0=Sun
   const sch = [null,null,null,null,null,null,null];
   split.forEach((tpl, i) => { const dow = dows[i]; if (dow != null) sch[dow === 0 ? 6 : dow - 1] = i; });
   return sch;
@@ -3585,6 +3602,15 @@ window.hmOpenPainGuard = hmOpenPainGuard; window.hmClosePainGuard = hmClosePainG
 window.hmPainRest = hmPainRest; window.hmPainRestore = hmPainRestore; window.hmPainSwap = hmPainSwap;
 
 function hmGeneratePlan(g){
+  // Adaptive defaults — make a shallow copy so we don't mutate the stored goals object
+  g = Object.assign({}, g);
+  // Beginners use effective day count (max 3 full-body)
+  g.days = hmEffectiveDays(g);
+  // Female users with no manual focus selection get glute + leg bias for muscle/fat/recomp/fit goals
+  if (g.gender === 'f' && (!g.focus || !g.focus.length) &&
+      (g.goal === 'muscle' || g.goal === 'fat' || g.goal === 'recomp' || g.goal === 'fit')) {
+    g.focus = ['glutes', 'legs'];
+  }
   const spans = hmWeekSpans(g.weeks);
   const metas = HM_PHASE_META[g.goal] || HM_PHASE_META.fit;
   const split = hmSplitFor(g);
@@ -4660,7 +4686,7 @@ function gpSyncGoalImgs(){
   });
 }
 function gpInitButtons(){
-  const single = ['gp-goal','gp-exp','gp-days','gp-session','gp-weeks'];
+  const single = ['gp-goal','gp-exp','gp-gender','gp-days','gp-session','gp-weeks'];
   single.forEach(id => {
     const grp = document.getElementById(id);
     if (!grp) return;
@@ -4673,6 +4699,16 @@ function gpInitButtons(){
         const w = document.getElementById('gp-event-wrap');
         if (w) w.style.display = btn.dataset.val === 'endurance' ? '' : 'none';
         gpSyncGoalImgs();
+      }
+      if (id === 'gp-exp') {
+        const isBeg = btn.dataset.val === 'beg';
+        const hint = document.getElementById('gp-beg-hint');
+        if (hint) hint.style.display = isBeg ? '' : 'none';
+        if (isBeg) {
+          document.querySelectorAll('#gp-days .gp-btn').forEach(b => b.classList.remove('sel'));
+          const d3 = document.querySelector('#gp-days .gp-btn[data-val="3"]');
+          if (d3) d3.classList.add('sel');
+        }
       }
     });
   });
@@ -4699,11 +4735,13 @@ function gpFill(g){
     if (!grp) return;
     grp.querySelectorAll('.gp-btn').forEach(b => b.classList.toggle('sel', vals.indexOf(b.dataset.val) !== -1));
   };
-  mark('gp-goal', [g.goal]); mark('gp-exp', [g.exp]); mark('gp-days', [String(g.days)]);
+  mark('gp-goal', [g.goal]); mark('gp-exp', [g.exp]); mark('gp-gender', [g.gender || 'n']); mark('gp-days', [String(g.days)]);
   gpSyncGoalImgs();
   mark('gp-session', [String(g.session)]); mark('gp-weeks', [String(g.weeks)]);
   mark('gp-equip', g.equip); mark('gp-activities', g.activities || []); mark('gp-focus', g.focus || []);
   mark('gp-event', [g.event || '5k']);
+  const begHint = document.getElementById('gp-beg-hint');
+  if (begHint) begHint.style.display = (g.exp === 'beg') ? '' : 'none';
   const evw = document.getElementById('gp-event-wrap');
   if (evw) evw.style.display = g.goal === 'endurance' ? '' : 'none';
   const w = document.getElementById('gp-weight');
@@ -4734,6 +4772,7 @@ function gpBuild(){
   const g = {
     goal: gpVal('gp-goal', 'muscle'),
     exp: gpVal('gp-exp', 'beg'),
+    gender: gpVal('gp-gender', 'n'),
     days: parseInt(gpVal('gp-days', '4'), 10),
     session: parseInt(gpVal('gp-session', '60'), 10),
     equip: gpVals('gp-equip'),

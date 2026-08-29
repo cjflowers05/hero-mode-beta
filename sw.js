@@ -1,6 +1,6 @@
 // Hero Mode service worker — network-first with offline fallback.
 // Bump CACHE_VERSION when shipping breaking changes.
-const CACHE_VERSION = 'hero-mode-v91'; // v91: Sculpt bar — natural-language focus extras appended below the plan
+const CACHE_VERSION = 'hero-mode-v92'; // v92: Beginner plan cap (3-day full-body) + gender field + female focus bias
 const PRECACHE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
