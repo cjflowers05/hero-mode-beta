@@ -2266,47 +2266,53 @@ function hmToggleAnalytics() {
 </div>
 
 <div id="tab-workout" class="tab-content">
-  <!-- Train layout customizer trigger — pinned at top so it's always reachable -->
-  <div id="train-customize-bar" style="display:flex;justify-content:flex-end;margin-bottom:4px">
-    <button onclick="hmTrainCustomizeOpen()" style="background:var(--bg3);border:1px solid var(--gold);border-radius:10px;cursor:pointer;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.06em;padding:9px 18px;min-height:44px;transition:opacity .15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">⚙ CUSTOMIZE</button>
-  </div>
   <!-- TODAY'S WORKOUT BANNER -->
   <div id="today-workout-banner"></div>
   <div id="deload-banner" style="display:none"></div>
   <!-- Plan summary bar — injected by hmRenderTrain() -->
   <div id="plan-summary-slot"></div>
-  <!-- Custom Workout Builder entry -->
-  <div id="custom-workout-entry" onclick="openCustomWorkout()" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
-    <div style="width:38px;height:38px;border-radius:10px;background:rgba(var(--accent-rgb),.1);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚡</div>
-    <div style="flex:1">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:.04em">Custom Session / Add-Ons</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:1px">Build from scratch or add exercises to today's plan</div>
-    </div>
-    <div style="color:var(--text3);font-size:16px">›</div>
-  </div>
-  <!-- Deck of Cards workout entry -->
-  <div onclick="openDeckWorkout()" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
-    <div style="width:38px;height:38px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🃏</div>
-    <div style="flex:1">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);letter-spacing:.04em">Deck of Cards</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:1px">Military-style full-body workout · flip a card, do the reps</div>
-    </div>
-    <div style="color:var(--text3);font-size:16px">›</div>
-  </div>
+  <!-- GENERATED TRAINING PLAN — primary content, lives at the top -->
+  <div id="train-plan-root"></div>
+  <!-- FOCUS EXTRAS — NL sculpt bar below the plan -->
+  <div id="hm-sculpt-bar" style="display:none;margin-top:4px;margin-bottom:16px"></div>
   <!-- Today's custom add-ons (rendered by cwRenderTodayAddon) -->
   <div id="cw-today-addon" style="display:none;margin-bottom:10px"></div>
   <!-- Daily quests (rendered by hmRenderQuests) -->
   <div id="daily-quests"></div>
   <!-- CARDIO TRACKER WIDGET -->
   <div id="train-cardio-widget"></div>
-  <!-- CARDIO PROGRAM -->
-  <div id="cardio-prog-root" style="margin-bottom:16px"></div>
-  <!-- HERO CLASS — personal curated program -->
-  <div id="hero-class-root" style="margin-bottom:16px"></div>
-  <!-- GENERATED TRAINING PLAN -->
-  <div id="train-plan-root"></div>
-  <!-- FOCUS EXTRAS — NL sculpt bar below the plan -->
-  <div id="hm-sculpt-bar" style="display:none;margin-top:4px;margin-bottom:20px"></div>
+  <!-- QUICK WORKOUTS — compact two-button row -->
+  <div id="custom-workout-entry" style="display:flex;gap:8px;margin-bottom:6px">
+    <div onclick="openCustomWorkout()" style="flex:1;display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s;min-width:0" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(var(--accent-rgb),.1);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">⚡</div>
+      <div style="min-width:0">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Custom</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Build or add-ons</div>
+      </div>
+    </div>
+    <div onclick="openDeckWorkout()" style="flex:1;display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:border-color .15s;min-width:0" onmouseenter="this.style.borderColor='var(--border2)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🃏</div>
+      <div style="min-width:0">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Deck of Cards</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Military-style AMRAP</div>
+      </div>
+    </div>
+  </div>
+  <!-- MORE PROGRAMS — collapsible, closed by default when a generated plan exists -->
+  <div id="train-more-wrap" style="margin-bottom:8px">
+    <div onclick="hmToggleMorePrograms()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:13px;cursor:pointer;user-select:none">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text3);letter-spacing:.06em">MORE PROGRAMS</div>
+      <span id="train-more-chev" style="color:var(--text3);font-size:13px;transition:transform .2s">▾</span>
+    </div>
+    <div id="train-more-body" style="display:none;padding-top:6px">
+      <div id="cardio-prog-root" style="margin-bottom:10px"></div>
+      <div id="hero-class-root" style="margin-bottom:10px"></div>
+    </div>
+  </div>
+  <!-- Plan layout customizer — at the bottom so it doesn't compete with content -->
+  <div id="train-customize-bar" style="display:flex;justify-content:flex-end;margin-bottom:4px">
+    <button onclick="hmTrainCustomizeOpen()" style="background:none;border:none;border-radius:10px;cursor:pointer;color:var(--text3);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.06em;padding:8px 4px;transition:color .15s" onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">⚙ CUSTOMIZE LAYOUT</button>
+  </div>
 </div>
 
 <!-- NUTRITION -->
@@ -4631,7 +4637,7 @@ function hmApplyNutrition(){
 
 // Re-run all row-level integrations after (re)rendering the plan
 function hmRefreshIntegrations(){
-  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass','renderTodayDashboard','hmInitPetSettings','hmTrainLayoutApply','hmWellnessLayoutApply','hmRenderSculptBar'];
+  const fns = ['initDoneBtns','refreshAllDoneBtns','initLogBtns','slInjectLogButtons','altApplySwaps','initAltBtns','initExerciseRowHandlers','wdRefreshDayBadges','applyWorkoutSoreBadges','cwRenderTodayAddon','checkDeload','hmTrimApply','renderTracker','renderTodayBanner','hmRenderQuests','hmFbApplyRowMarkers','renderTrainCardioWidget','renderHeroClass','renderTodayDashboard','hmInitPetSettings','hmTrainLayoutApply','hmWellnessLayoutApply','hmRenderSculptBar','hmInitMorePrograms'];
   fns.forEach(fn => { try { if (typeof window[fn] === 'function') window[fn](); } catch(e) { console.warn('hm refresh', fn, e); } });
 }
 
@@ -4811,6 +4817,7 @@ function gpBuild(){
 document.addEventListener('DOMContentLoaded', () => {
   gpInitButtons();
   hmApplyPlan(false);
+  if (typeof hmInitMorePrograms === 'function') hmInitMorePrograms();
   if (!hmLoadGoals()) {
     document.getElementById('gp-skip').classList.remove('show');
     gpFill(HM_DEFAULT_GOALS);
@@ -24989,11 +24996,11 @@ function hmConfettiBurst(canvas) {
 // ── TRAIN TAB CUSTOMIZER ─────────────────────────────────────────────────────
 const TRAIN_LAYOUT_KEY = 'hm-train-layout';
 const TRAIN_SECTIONS = [
-  { id: 'custom-workout-entry', label: 'Custom Session', icon: '⚡', desc: 'Build from scratch or add to today\'s plan' },
-  { id: 'daily-quests',         label: 'Daily Quests',   icon: '🎯', desc: 'Your 3 daily challenges' },
-  { id: 'train-cardio-widget',  label: 'Cardio Tracker', icon: '🏃', desc: 'Quick cardio log widget' },
-  { id: 'cardio-prog-root',     label: 'Cardio Program', icon: '📈', desc: 'Structured cardio plan (5K, etc.)' },
-  { id: 'train-plan-root',      label: 'Training Plan',  icon: '💪', desc: 'Your full phase-based program' },
+  { id: 'custom-workout-entry', label: 'Quick Workouts',  icon: '⚡', desc: 'Custom session + Deck of Cards' },
+  { id: 'daily-quests',         label: 'Daily Quests',    icon: '🎯', desc: 'Your 3 daily challenges' },
+  { id: 'train-cardio-widget',  label: 'Cardio Tracker',  icon: '🏃', desc: 'Quick cardio log widget' },
+  { id: 'train-more-wrap',      label: 'More Programs',   icon: '📈', desc: 'Cardio program + Hero class' },
+  { id: 'train-plan-root',      label: 'Training Plan',   icon: '💪', desc: 'Your full phase-based program' },
 ];
 
 function hmTrainLayoutLoad() {
@@ -25021,6 +25028,29 @@ function hmTrainToggleSection(cb) {
   if (track) track.style.background = cb.checked ? 'var(--gold)' : 'var(--bg4)';
   if (knob)  knob.style.left        = cb.checked ? '23px' : '3px';
 }
+
+function hmToggleMorePrograms() {
+  const body = document.getElementById('train-more-body');
+  const chev = document.getElementById('train-more-chev');
+  if (!body) return;
+  const nowOpen = body.style.display !== 'none';
+  body.style.display = nowOpen ? 'none' : '';
+  if (chev) chev.style.transform = nowOpen ? '' : 'rotate(180deg)';
+  try { localStorage.setItem('hm-more-programs-open', nowOpen ? '0' : '1'); } catch(e) {}
+}
+function hmInitMorePrograms() {
+  const body = document.getElementById('train-more-body');
+  const chev = document.getElementById('train-more-chev');
+  if (!body) return;
+  let pref = null;
+  try { pref = localStorage.getItem('hm-more-programs-open'); } catch(e) {}
+  // Default: closed if the user has a generated plan, open otherwise
+  const hasPlan = !!(typeof hmLoadGoals === 'function' && hmLoadGoals());
+  const open = pref !== null ? pref === '1' : !hasPlan;
+  body.style.display = open ? '' : 'none';
+  if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+window.hmToggleMorePrograms = hmToggleMorePrograms;
 
 function hmTrainCustomizeOpen() {
   const saved = hmTrainLayoutLoad();
