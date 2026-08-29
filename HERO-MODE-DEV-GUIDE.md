@@ -1,6 +1,6 @@
 # Hero Mode — Developer Guide
 
-*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-29. Current SW version: v92.*
+*Living document. Update this file whenever a system changes, a new feature ships, or a gotcha is discovered. Last updated: 2026-08-29. Current SW version: v93.*
 
 ---
 
@@ -1251,6 +1251,17 @@ Back face overhaul: flat "KEEP TRAINING" → "FORGE IT" / "START FORGING". Gener
 
 ### Hero card front face — theme card background (v84)
 `renderHeroCard()` now resolves `assets/ui/card-bg-{theme.id}.png` and injects an `<img class="hc-card-bg">` as the first child of `.hc-face.hc-front`. CSS: `position:absolute;inset:0;object-fit:cover;opacity:.22` with a gradient mask (`mask-image: linear-gradient(145deg,…)`). Convention: drop a `card-bg-{id}.png` in `assets/ui/` for any theme. Currently: `card-bg-recruit.png` (from `assets/ui/Recruit/white.png`).
+
+### Train tab declutter — plan first, compact quick-workouts, collapsible More Programs (v93, 2026-08-29)
+Restructured `#tab-workout` section order so the generated training plan and sculpt bar appear **first** (immediately after the today banner and plan summary), not last. Previously, the plan was buried below Custom Session, Deck of Cards, Daily Quests, Cardio Widget, Cardio Program, and Hero Class.
+
+**Changes:**
+- `#train-plan-root` and `#hm-sculpt-bar` moved above Daily Quests and Quick Workouts
+- Custom Session + Deck of Cards compressed into a single `#custom-workout-entry` flex row (two compact side-by-side buttons instead of two full-height rows)
+- Cardio Program (`#cardio-prog-root`) and Hero Class (`#hero-class-root`) wrapped in `#train-more-wrap` / `#train-more-body` collapsible; closed by default when a generated plan exists, open otherwise; pref stored in `hm-more-programs-open` localStorage key
+- `hmToggleMorePrograms()` / `hmInitMorePrograms()` added; `hmInitMorePrograms` registered in `hmRefreshIntegrations` fns array and called from the first DOMContentLoaded listener
+- `TRAIN_SECTIONS` customizer updated: `cardio-prog-root` → `train-more-wrap`; `custom-workout-entry` now represents the combined Quick Workouts row
+- CUSTOMIZE LAYOUT button moved to the bottom and styled as a ghost text button so it doesn't compete with the plan
 
 ### Beginner plan cap + gender field + female focus bias (v92, 2026-08-29)
 **Gender field:** `gp-gender` selector (Male/m, Female/f, Prefer not to say/n) added to the plan builder form after the experience level picker. Saved as `g.gender` via `gpBuild()`, restored in `gpFill()`. Single-select group wired through the standard `gpInitButtons()` single array.
